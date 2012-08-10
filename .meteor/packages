@@ -3,5 +3,11 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-autopublish
 coffeescript
+accounts-ui
+backbone
+jquery
+router
+deps-extensions
+accounts
+accounts-passwords

@@ -1,0 +1,13 @@
+{
+  "meteor": {
+    "branch": "auth"
+  },
+  "packages": {
+    "router": {
+      "git": "https://github.com/tmeasday/meteor-router.git"
+    }
+    "deps-extensions": {
+      "git": "https://github.com/tmeasday/meteor-deps-extensions.git"
+    }
+  }
+}
