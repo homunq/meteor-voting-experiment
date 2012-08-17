@@ -5,8 +5,6 @@ uniqueId = (length=8) ->
   
 @login_then = (cb) ->
   user = Meteor.user()
-  console.log 'user'
-  console.log user
   if !user
     newuser =
       username: uniqueId()
@@ -14,24 +12,21 @@ uniqueId = (length=8) ->
     Meteor.createUser newuser, {}, (err) ->
       if err
         console.log 'user creation failed'
+        console.log err
       else
         Meteor.loginWithPassword
           username: newuser.username
         , newuser.password, (err) ->
           if err
-            console.log "couldn't login: " + err
+            console.log "couldn't login: "
             console.log err
           else
             cb()
   else 
-    console.log 'await'
     Meteor.deps.await ->
-      console.log 'user awaiting'
-      console.log Meteor.user()
       user =  Meteor.user()
       user and not user.loading
     , ->
-      console.log 'user awaited'
       console.log Meteor.user()
     
       cb()

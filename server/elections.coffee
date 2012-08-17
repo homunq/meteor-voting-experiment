@@ -19,18 +19,29 @@ Meteor.methods
     ,
       multi: false
       
-  join_election: (eid) ->
-    Elections.update
-      _id: eid #or type convert????
-    ,
-      $push: @userId
-    ,
-      multi: false
       
-    Meteor.users.update
-      _id: @userId()
-    ,
-      $set:
-        eid: eid
-    ,
-      multi: false
+      
+      
+      
+  join_election: (eid) ->
+    uid = @userId()
+    election = Elections.findOne
+      _id: eid
+    if !election
+      throw Meteor.error 404, "no such election"
+    if (_.indexOf election.voters, uid) == -1
+      Elections.update
+        _id: eid
+      ,
+        $push: 
+          voters: uid
+      ,
+        multi: false
+        
+      Meteor.users.update
+        _id: @userId()
+      ,
+        $set:
+          eid: eid
+      ,
+        multi: false

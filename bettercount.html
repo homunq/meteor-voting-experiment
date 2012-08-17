@@ -3,28 +3,13 @@
 </head>
 
 <body>
-		{{> hello}} hahah
+	
+  <div id="main">
+		{{{render currentPage}}}
+  
+  </div>
 </body>
 
-<template name="hello">
-	{{#if round_is 0}}
-	  {{> r0}}
-	  {{greeting}}
-	  <input type="button" value="Click" />
-	{{/if}}
-	{{#if round_is 1}}
-	  <h1>Hello bettercount!</h1>
-	  {{greeting}}
-	  <input type="button" value="Click" />
-	{{/if}}
-	{{#if round_is 2}}
-	  <h1>Hello bettercount!</h1>
-	  {{greeting}}
-	  <input type="button" value="Click" />
-	{{/if}}
-	{{#if round_is 3}}
-	  <h1>Hello bettercount!</h1>
-	  {{greeting}}
-	  <input type="button" value="Click" />
-	{{/if}}
+<template name="election">
+	<div>.. I think {{user}} is in election {{eid}}</div>~
 </template>
