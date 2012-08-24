@@ -9,7 +9,7 @@ uniqueId = (length=8) ->
     newuser =
       username: uniqueId()
       password: uniqueId()
-    Meteor.createUser newuser, {}, (err) ->
+    Meteor.createUser _(newuser).clone(), {}, (err) ->
       if err
         console.log 'user creation failed'
         console.log err

@@ -7,14 +7,14 @@ class MyRouter extends ReactiveRouter
     console.log 'newww'
     console.log Backbone.history.getFragment()
     login_then ->
-      Meteor.call 'new_election', ->
+      Election.make ->
         #console.log 'qwpr' + JSON.stringify Meteor.user()
     #@navigate 'election/new',
     #  trigger: true
 
   election: (eid) =>
     login_then =>
-      Meteor.call 'join_election', eid, =>
+      Election.join eid, =>
         #console.log 'asdt' + JSON.stringify Meteor.user()
         @goto 'election'
 
