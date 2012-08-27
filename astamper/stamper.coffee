@@ -1,6 +1,6 @@
 class Field
   constructor: (default_val, @validator) ->
-    if (_ default_val).isFunction 
+    if (_ default_val).isFunction() 
       @default = default_val
     else
       @default = ->
@@ -18,24 +18,26 @@ field = -> #just some sugar to save typing "new".
 class StamperInstance
   #todo: getters/setters; hide actual values in _raw object
   constructor: (props) ->
+    props ?= {}
     if @_fields
       for pname, prop of props
-        if not @_fields[pname]?
-          throw new Error "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
-        else if @_fields[pname].invalid
-          throw new Error "Invalid property val: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
-      for name, f of @_fields
+        if pname isnt "_id"
+          if not @_fields[pname]?
+            throw new Error "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
+          else if @_fields[pname].invalid()
+            throw new Error "Invalid property val: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
+      for fname, f of @_fields
         if not props[fname]?
           props[fname] = f.default(props)
     _.extend this, props
   
   @fields: (_fields) ->
-    @_fields = {}
+    @::_fields ?= {}
     
     for fname, f of _fields
       if not (f instanceof Field)
-        f = field f
-      @_fields[fname] = f
+        f = new field f
+      @::_fields[fname] = f
        
   @static: (fn) -> #for use inside @register
     fn.static = true
@@ -64,17 +66,20 @@ class StamperInstance
             if not cur_instance
               throw Meteor.Error 404, "No such object on #{ if Meteor.isServer then 'server'  else 'client' }"
               
-            cur_instance.userId = @userId #sneak in a method for current userId
+            cur_instance.userId = =>
+              @userId() #sneak in a method for current userId
             cur_instance[smname] args...
         else #static
           servermethods[smname] = (args...) ->
-            self.userId = @userId
+            self.userId = =>
+              @userId() #sneak in a method for current userId
             self[smname] args...
             
         if Meteor.is_client 
           self[mname] = (args...) ->
             cur_instance = self
-            cur_instance.userId = @userId #sneak in a method for current userId
+            cur_instance.userId = =>
+              @userId() #sneak in a method for current userId
             if method.static
               Meteor.call smname, args...
             else
@@ -90,12 +95,19 @@ class StamperInstance
     @
      
   save: (cb) ->
+    console.log "save: " + @_id
     if @_id
       @collection.update
         _id: @_id
       , @raw(), cb
+      return @_id
     else
-      @collection.insert @, cb
+      x = @raw()
+      console.log "raw: ", x
+      returnv= @collection.insert @raw(), cb
+      console.log "saved: ", Elections.findOne
+        _id: returnv
+      returnv
           
   remove: (cb) ->
     @collection.remove

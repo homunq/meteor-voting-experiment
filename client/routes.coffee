@@ -16,7 +16,7 @@ class MyRouter extends ReactiveRouter
     login_then =>
       Election.join eid, =>
         #console.log 'asdt' + JSON.stringify Meteor.user()
-        @goto 'election'
+        @goto 'loggedIn'
 
 @Router = new MyRouter()
 
@@ -30,3 +30,29 @@ Meteor.startup ->
         trigger: false
       Meteor.subscribe 'election',
         eid: eid
+        
+if (Handlebars) 
+  Handlebars.registerHelper 'rounder', ->
+    e = Session.get 'election'
+    if e?.round is 0
+      return 'signup'
+    else if e?.round > 0
+      return 'election'
+    'handshake'
+  Handlebars.registerHelper 'round', ->
+    e = Session.get 'election'
+    e.round
+    
+    
+  Handlebars.registerHelper 'system', ->
+    e = Session.get 'election'
+    e.system
+    
+    
+  Handlebars.registerHelper 'scenario', ->
+    e = Session.get 'election'
+    e.scenario
+    
+  Handlebars.registerHelper 'step', ->
+    Meteor.user().step ? "init"
+  

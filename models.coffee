@@ -10,64 +10,60 @@ Votes = new Meteor.Collection 'votes'
 #  election: 1
 #  round: 1
 #  vote: [3,1,1] #higher is better
+### denormalized info
+#  system: 'approval'
 #  done: false #denormalzed copy: all votes in for this round
 
 Elections = new Meteor.Collection 'elections', null
 
 class Election extends StamperInstance
+  collection: Elections
   
   @fields
     scenario: 'chicken'
     system: 'approval'
-    factions: []
-    nonfactions: [] #[0, 0, 1, 1, ... 2, ...]
+    voters: []
     numvotes: [0] #9 voters connected, 3 votes r1, 0 r2.
     full: false
     round: 0
     stimes: ->
       [new Date]
-    rtime:[20, 40] #time since start, floor 5
-    winners: [1, 3]
-  scen: (scenarioname) ->
-    if @ == Election
-      return Scenarios[scenarioname]
-    Scenarios[@scenario]
+    seed: ->
+      Math.floor((Math.random()*0xffffff)+1);
+    rtime:[] #time since start, floor 5
+    winners: []
     
-  sys: (sysname) ->
-    if @ == Election
-      return Systems[sysname]
-    Systems[@system]
+  if Meteor.is_server
+    @fields
+      factions: []
+      nonfactions: [] #[0, 0, 1, 1, ... 2, ...]
+    
     
   @register
     make: @static (options)->
       console.log "new election"
+      options ?= {}
       options = _(options).pick "scenario", "system"
       
       _(options).extend
         scenario: 'chicken'
         system: 'approval'
         voters: []
+        factions: []
         
       e = new Election options
-      e.nonfactions = e.scen().vfactions()
+      e.nonfactions = _(e.scen().vfactions()).shuffle()
       
-      e.addVoter @userId()
+      eid = e.addVoterAndSave @userId()
+      console.log "e IS ", e
+      console.log "EID IS "+eid
+      console.log "UID IS "+@userId()
       
-      eid = e.save()
-      
-      console.log eid
-      console.log @userId()
-      
-      Meteor.users.update
-        _id: @userId()
-      ,
-        $set:
-          eid: eid
-      ,
-        multi: false
       
     join: @static (eid) ->
       uid = @userId()
+      console.log "join EID IS "+eid
+      console.log "join UID IS "+uid
       election = Elections.findOne
         _id: eid
       if !election
@@ -113,8 +109,39 @@ class Election extends StamperInstance
       
       if done then @finishRound()
       
+      console.log "newVote update"
       Elections.update @_id, @
-  @
+  
+  #local (non-registered) methods
+      
+      
+  scen: (scenarioname) ->
+    if @ == Election
+      return Scenarios[scenarioname]
+    Scenarios[@scenario]
+    
+  sys: (sysname) ->
+    if @ == Election
+      return Systems[sysname]
+    Systems[@system]
+    
+  addVoterAndSave: (vid) ->
+    console.log "addVoterAndSave "+vid + "     ;     "
+    console.log " "+ @nonfactions + @factions
+    @voters.push vid
+    faction = @nonfactions.pop()
+    @factions.push faction
+    eid = @save()
+    console.log " "+ @nonfactions + @factions + eid
+    Meteor.users.update
+      _id: vid
+    ,
+      $set:
+        eid: eid
+        faction: faction
+    ,
+      multi: false
+    eid
     
       
       
@@ -135,40 +162,6 @@ class Election extends StamperInstance
 
     
   
-class Scenario
-  #factSizes: [2, 1]
-  #payoffs: [[3, 0],
-  #         [2,2],
-  #         [0,3]]
-  
-  constructor: (props) ->
-    _.extend this, props
-    
-  numvoters: =>
-    numvoters = _.reduce @factSizes, (sum, addend) -> 
-      sum + addend
-    , 0
-    @numvoters = ->
-      numvoters
-    numvoters
-    
-  vfactions: =>
-    _.flatten((num for val in _.range factSize) for num, factSize of @factSizes)
-    
-    
-@Scenarios =
-  chicken: new Scenario
-    factSizes: [4, 2, 3]
-    payoffs: [[3, 0, 0],
-              [1, 3, 2],
-              [0, 2, 3]]
-  simple: new Scenario
-    factSizes: [2, 1]
-    payoffs: [[3, 0],
-              [2, 2],
-              [0, 3]]
-  
-    
 
 if Meteor.is_server
   # publish all the non-full elections.
@@ -194,11 +187,15 @@ if Meteor.is_server
 else if Meteor.is_client
   Meteor.subscribe 'elections'
   Meteor.autosubscribe ->
-    if Meteor.user().eid
+    if Meteor.user()?.eid
       Meteor.subscribe 'done_votes', Meteor.user().eid, ->
         console.log "done_votes (re)loaded"
 
   Meteor.autosubscribe ->
-    Session.set 'election', new Election Elections.findOne
-      _id: Meteor.user().eid
-    console.log "election (re)loaded"
+    console.log "election (re)loading", Meteor.user()
+    if Meteor.user()?.eid
+      e = Elections.findOne
+        _id: Meteor.user().eid
+      console.log "really (re)loading",Meteor.user().eid,  e
+      Session.set 'election', new Election e
+      console.log "really (re)loaded ",Meteor.user().eid,  e

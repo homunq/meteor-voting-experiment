@@ -6,10 +6,20 @@
 	
   <div id="main">
 		{{{render currentPage}}}
-  
   </div>
 </body>
 
-<template name="election">
-	<div>.. I think {{user}} is in election {{eid}}</div>~
+<template name="loggedIn">
+	<div>.. I think {{user}} is in election {{eid}}</div>
+	{{{render rounder}}}
+</template>
+
+<template name="signup">
+	<div>signup for {{{render system}}}</div>
+	{{{render step}}}
+</template>
+
+
+<template name="init">
+	<div>init for {{{render scenario}}}</div>
 </template>
