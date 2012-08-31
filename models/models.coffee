@@ -3,6 +3,7 @@
 echo = (args...) ->
   console.log args...
 
+echo "echo", echo
 
 Votes = new Meteor.Collection 'votes'
 #  voter: 12
@@ -10,13 +11,13 @@ Votes = new Meteor.Collection 'votes'
 #  election: 1
 #  round: 1
 #  vote: [3,1,1] #higher is better
-### denormalized info
+# ## denormalized info
 #  system: 'approval'
 #  done: false #denormalzed copy: all votes in for this round
 
 Elections = new Meteor.Collection 'elections', null
 
-class Election extends StamperInstance
+class @Election extends StamperInstance
   collection: Elections
   
   @fields
@@ -87,14 +88,14 @@ class Election extends StamperInstance
         
     newVote: (vote) =>
       if @round != vote.round
-        throw Meteor.Error 403, "Wrong round"
+        throw new Meteor.Error 403, "Wrong round"
       if Meteor.user() != vote.voter
         throw Meteor.Error 403, "That's not you"
       oldVote = Votes.findOne
         voter: vote.voter
         round: @round
       if oldVote
-        throw Meteor.Error 403, "You've already voted"
+        throw new Meteor.Error 403, "You've already voted"
       faction = @factionOf uid #throws error on failure
       
       @numvotes[@round] += 1
@@ -128,6 +129,10 @@ class Election extends StamperInstance
   addVoterAndSave: (vid) ->
     console.log "addVoterAndSave "+vid + "     ;     "
     console.log " "+ @nonfactions + @factions
+    if @nonfactions.length is 0
+      throw new Meteor.Error 403, "Election full"
+    if @round isnt 0
+      throw new Meteor.Error 403, "Huh? There's room but they moved on'"
     @voters.push vid
     faction = @nonfactions.pop()
     @factions.push faction
@@ -159,7 +164,7 @@ class Election extends StamperInstance
     
 #debugger
 
-
+echo 'Election', Election
     
   
 

@@ -1,4 +1,4 @@
-class MyRouter extends ReactiveRouter
+class @MyRouter extends ReactiveRouter
   routes:
     '': 'new_election'
     'election/:eid': 'election'
@@ -18,9 +18,12 @@ class MyRouter extends ReactiveRouter
         #console.log 'asdt' + JSON.stringify Meteor.user()
         @goto 'loggedIn'
 
-@Router = new MyRouter()
+global = @
+
+global.Router = new MyRouter()
 
 Meteor.startup ->
+  console.log 'startup router'
   Backbone.history.start
      pushState: true
   Meteor.autosubscribe ->
@@ -30,29 +33,3 @@ Meteor.startup ->
         trigger: false
       Meteor.subscribe 'election',
         eid: eid
-        
-if (Handlebars) 
-  Handlebars.registerHelper 'rounder', ->
-    e = Session.get 'election'
-    if e?.round is 0
-      return 'signup'
-    else if e?.round > 0
-      return 'election'
-    'handshake'
-  Handlebars.registerHelper 'round', ->
-    e = Session.get 'election'
-    e.round
-    
-    
-  Handlebars.registerHelper 'system', ->
-    e = Session.get 'election'
-    e.system
-    
-    
-  Handlebars.registerHelper 'scenario', ->
-    e = Session.get 'election'
-    e.scenario
-    
-  Handlebars.registerHelper 'step', ->
-    Meteor.user().step ? "init"
-  
