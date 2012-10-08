@@ -12,7 +12,7 @@ Votes = new Meteor.Collection 'votes'
 #  round: 1
 #  vote: [3,1,1] #higher is better
 # ## denormalized info
-#  system: 'approval'
+#  method: 'approval'
 #  done: false #denormalzed copy: all votes in for this round
 
 Elections = new Meteor.Collection 'elections', null
@@ -22,9 +22,10 @@ class @Election extends StamperInstance
   
   @fields
     scenario: 'chicken'
-    system: 'approval'
+    method: 'approval'
     voters: []
-    numvotes: [0] #9 voters connected, 3 votes r1, 0 r2.
+    factions: []
+    numVotes: [0] #9 voters connected, 3 votes r1, 0 r2.
     full: false
     round: 0
     stimes: ->
@@ -44,11 +45,11 @@ class @Election extends StamperInstance
     make: @static (options)->
       console.log "new election"
       options ?= {}
-      options = _(options).pick "scenario", "system"
+      options = _(options).pick "scenario", "method"
       
       _(options).extend
         scenario: 'chicken'
-        system: 'approval'
+        method: 'approval'
         voters: []
         factions: []
         
@@ -67,19 +68,18 @@ class @Election extends StamperInstance
       console.log "join UID IS "+uid
       election = Elections.findOne
         _id: eid
+      console.log "!time to add voter"
       if !election
+        console.log "!!!time to add voter"
         throw Meteor.Error 404, "no such election"
+      console.log "time to add voter"
+      election = new Election election
+      console.log election
       if (_.indexOf election.voters, uid) == -1
-        Elections.update
-          _id: eid
-        ,
-          $push: 
-            voters: uid
-        ,
-          multi: false
+        election.addVoterAndSave(uid)
           
         Meteor.users.update
-          _id: @userId()
+          _id: uid
         ,
           $set:
             eid: eid
@@ -112,6 +112,32 @@ class @Election extends StamperInstance
       
       console.log "newVote update"
       Elections.update @_id, @
+      
+    clearAll: @static ->
+      Elections.remove {}
+      
+    addVoterAndSave: (vid) ->
+      console.log "addVoterAndSave "+vid + "     ;     "
+      console.log " "+ @nonfactions + @factions
+      if @nonfactions.length is 0
+        throw new Meteor.Error 403, "Election full"
+      if @round isnt 0
+        throw new Meteor.Error 403, "Huh? There's room but they moved on'"
+      @voters.push vid
+      faction = @nonfactions.pop()
+      @factions.push faction
+      @numVotes[@round] += 1
+      eid = @save()
+      console.log " "+ @nonfactions + @factions + eid
+      Meteor.users.update
+        _id: vid
+      ,
+        $set:
+          eid: eid
+          faction: faction
+      ,
+        multi: false
+      eid
   
   #local (non-registered) methods
       
@@ -121,32 +147,11 @@ class @Election extends StamperInstance
       return Scenarios[scenarioname]
     Scenarios[@scenario]
     
-  sys: (sysname) ->
+  meth: (methname) ->
     if @ == Election
-      return Systems[sysname]
-    Systems[@system]
+      return Methods[methname]
+    Methods[@method]
     
-  addVoterAndSave: (vid) ->
-    console.log "addVoterAndSave "+vid + "     ;     "
-    console.log " "+ @nonfactions + @factions
-    if @nonfactions.length is 0
-      throw new Meteor.Error 403, "Election full"
-    if @round isnt 0
-      throw new Meteor.Error 403, "Huh? There's room but they moved on'"
-    @voters.push vid
-    faction = @nonfactions.pop()
-    @factions.push faction
-    eid = @save()
-    console.log " "+ @nonfactions + @factions + eid
-    Meteor.users.update
-      _id: vid
-    ,
-      $set:
-        eid: eid
-        faction: faction
-    ,
-      multi: false
-    eid
     
       
       
@@ -157,6 +162,9 @@ class @Election extends StamperInstance
         throw Meteor.Error 403, "Not a voter in this election"
       return i
     return @factions[i]  
+    
+  completeness: ->
+    "#{ @numVotes[@round] }/#{ @scen()?.numvoters() }"
     
   finishRound: =>
     echo "fR not impl"
@@ -169,6 +177,7 @@ echo 'Election', Election
   
 
 if Meteor.is_server
+  Elections.r
   # publish all the non-full elections.
   Meteor.publish 'elections', ->
     Elections.find {},

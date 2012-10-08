@@ -7,6 +7,9 @@ if (Handlebars?)
   Handlebars.registerHelper "eid", ->
     Meteor.user()?.eid
     
+  Handlebars.registerHelper "election", ->
+    Session.get 'election'
+    
   Handlebars.registerHelper "user", ->
     Meteor.user()?._id
     
@@ -22,10 +25,17 @@ if (Handlebars?)
     e = Session.get 'election'
     e?.round
     
-  Handlebars.registerHelper 'system', ->
+  Handlebars.registerHelper 'method', ->
     e = Session.get 'election'
-    e?.system
+    e?.method
     
+  Handlebars.registerHelper 'meth_subtemplate', (sub) ->
+    e = Session.get 'election'
+    new Handlebars.SafeString Template["#{ e?.method }_#{ sub }"]()
+    
+  Handlebars.registerHelper 'dmeth_subtemplate', (sub) ->
+    e = Session.get 'election'
+    new Handlebars.SafeString '#{ e?.method }_#{ sub }' + ': ' + Template["#{ e?.method }_#{ sub }"]()
     
   Handlebars.registerHelper 'scenario', ->
     e = Session.get 'election'

@@ -1,9 +1,10 @@
 class @MyRouter extends ReactiveRouter
   routes:
-    '': 'new_election'
+    '': 'newElection'
     'election/:eid': 'election'
+    'elections/clear/all': 'clearAll'
     
-  new_election: ->
+  newElection: ->
     console.log 'newww'
     console.log Backbone.history.getFragment()
     login_then ->
@@ -17,6 +18,10 @@ class @MyRouter extends ReactiveRouter
       Election.join eid, =>
         #console.log 'asdt' + JSON.stringify Meteor.user()
         @goto 'loggedIn'
+        
+  clearAll: ->
+    console.log "clear all"
+    Election.clearAll()
 
 global = @
 

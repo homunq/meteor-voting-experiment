@@ -73,20 +73,32 @@ class StamperInstance
           servermethods[smname] = (args...) ->
             self.userId = =>
               @userId() #sneak in a method for current userId
+            #console.log "Crashy?", smname
+            #console.log self
+            #console.log self.constructor
+            #console.log self.prototype
+            
+            #console.log self.__proto__
             self[smname] args...
             
-        if Meteor.is_client 
-          self[mname] = (args...) ->
-            cur_instance = self
-            cur_instance.userId = =>
-              @userId() #sneak in a method for current userId
-            if method.static
-              Meteor.call smname, args...
-            else
-              Meteor.call smname, self._id, args...
+        if method.static
+          goesOn = self
         else
-          self[mname] = method
-        self[smname] = method
+          goesOn = self.prototype
+        if Meteor.is_client 
+          do (method, smname) ->
+            #console.log "adding method ", mname, " to ", goesOn, "!!!!!!!!!!!!!!!!!!!!!!!"
+            goesOn[mname] = (args...) ->
+              cur_instance = self
+              cur_instance.userId = =>
+                @userId() #sneak in a method for current userId
+              if method.static
+                Meteor.call smname, args...
+              else
+                Meteor.call smname, self._id, args...
+        else
+          goesOn[mname] = method
+        goesOn[smname] = method
     Meteor.methods servermethods
     
   raw: ->
