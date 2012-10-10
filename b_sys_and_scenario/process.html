@@ -1,0 +1,14 @@
+
+<template name="whichStep">
+	<div class="navbar">
+	  <div class="navbar-inner">
+        <ul class="nav">
+        	{{steps}}
+        </ul>
+      </div>
+	</div>
+</template>
+
+<template name="oneStep">
+	<li {{#if thisStep}}class="active"{{/if}}><a href="#">{{stepNum}}: {{stepName}}</a></li>
+</template>
