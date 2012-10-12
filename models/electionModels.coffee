@@ -33,7 +33,7 @@ class @Election extends StamperInstance
     watchers: [] #before consent is clicked; ready to join
     voters: [] #consent is clicked, faction is assigned
     factions: []
-    stepDone: [0] #9 voters connected, 3 votes r1, 0 r2.
+    stepsDoneBy: [0] #9 voters connected, 3 votes r1, 0 r2.
     full: false
     stage: 0
     stimes: ->
@@ -69,7 +69,7 @@ class @Election extends StamperInstance
         
       e = new Election options
       if Meteor.is_server
-        e.nonfactions = _(e.scen().vfactions()).shuffle()
+        e.nonfactions = e.scen().shuffledFactions()
       
       eid = e.addWatcherAndSave @userId()
       console.log "e IS ", e
@@ -127,7 +127,7 @@ class @Election extends StamperInstance
       faction = @factionOf uid #throws error on failure
       
       @numvotes[@round] += 1
-      done = (@numvotes[@round] >= @scen.numvoters())
+      done = (@numvotes[@round] >= @scen.numVoters())
   
       _.extend vote
         election: @_id
@@ -196,13 +196,9 @@ class @Election extends StamperInstance
       
       
   scen: (scenarioname) ->
-    if @ == Election
-      return Scenarios[scenarioname]
     Scenarios[@scenario]
     
   meth: (methname) ->
-    if @ == Election
-      return Methods[methname]
     Methods[@method]
     
     
@@ -217,7 +213,7 @@ class @Election extends StamperInstance
     return @factions[i]  
     
   completeness: ->
-    "#{ @numVotes[@round] }/#{ @scen()?.numvoters() }"
+    "#{ @numVotes[@round] }/#{ @scen()?.numVoters() }"
     
   finishRound: =>
     echo "fR not impl"
