@@ -1,27 +1,32 @@
 class @MyRouter extends ReactiveRouter
   routes:
-    '': 'newElection'
+    '': 'watchElection'
     'election/:eid': 'election'
     'elections/clear/all': 'clearAll'
+    'elections/makeOne': 'makeElection'
     
-  newElection: ->
-    console.log 'newww'
+  watchElection: ->
+    console.log 'watch'
     console.log Backbone.history.getFragment()
     login_then ->
-      Election.make ->
+      Election.watchMain ->
         #console.log 'qwpr' + JSON.stringify Meteor.user()
     #@navigate 'election/new',
     #  trigger: true
 
   election: (eid) =>
     login_then =>
-      Election.join eid, =>
+      Election.watch eid, =>
         #console.log 'asdt' + JSON.stringify Meteor.user()
-        @goto 'loggedIn'
+        @goto 'loggedIn' #use that template
         
   clearAll: ->
     console.log "clear all"
     Election.clearAll()
+    
+  makeElection: ->
+    console.log "makeElection"
+    Election.make({}, true)
 
 global = @
 

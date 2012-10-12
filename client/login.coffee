@@ -27,8 +27,6 @@ uniqueId = (length=8) ->
       user =  Meteor.user()
       user and not user.loading
     , ->
-      console.log Meteor.user()
-    
       cb()
     , true #once only
     

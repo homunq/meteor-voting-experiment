@@ -59,10 +59,13 @@ class StamperInstance
         cur_instance = undefined
         smname = self.name + "_" + mname
         if !method.static #instance
-          servermethods[smname] = (id, args...) =>
+          servermethods[smname] = (id, obj, args...) =>
+            console.log "server calling ", smname
             if Meteor.is_server
-              cur_instance = new self self.collection.findOne
+              cur_instance = new self self.prototype.collection.findOne
                 _id: id
+            else
+              cur_instance = obj
             if not cur_instance
               throw Meteor.Error 404, "No such object on #{ if Meteor.isServer then 'server'  else 'client' }"
               
@@ -71,6 +74,7 @@ class StamperInstance
             cur_instance[smname] args...
         else #static
           servermethods[smname] = (args...) ->
+            console.log "server calling static ", smname
             self.userId = =>
               @userId() #sneak in a method for current userId
             #console.log "Crashy?", smname
@@ -89,13 +93,11 @@ class StamperInstance
           do (method, smname) ->
             #console.log "adding method ", mname, " to ", goesOn, "!!!!!!!!!!!!!!!!!!!!!!!"
             goesOn[mname] = (args...) ->
-              cur_instance = self
-              cur_instance.userId = =>
-                @userId() #sneak in a method for current userId
+              console.log "client calling ", smname
               if method.static
                 Meteor.call smname, args...
               else
-                Meteor.call smname, self._id, args...
+                Meteor.call smname, @_id, @, args...
         else
           goesOn[mname] = method
         goesOn[smname] = method
@@ -116,9 +118,11 @@ class StamperInstance
     else
       x = @raw()
       console.log "raw: ", x
-      returnv= @collection.insert @raw(), cb
-      console.log "saved: ", Elections.findOne
-        _id: returnv
+      returnv= @collection.insert @raw(), (error, result)=>
+        if !error
+          @_id = result
+        if cb
+          cb error, result
       returnv
           
   remove: (cb) ->

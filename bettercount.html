@@ -1,5 +1,6 @@
 <head>
   <title>bettercount</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -10,13 +11,14 @@
 </body>
 
 <template name="loggedIn">
+	{{{render "whichStep"}}}
 	<div>.. I think {{user}} is in election {{eid}}</div>
 	{{{render rounder}}}
 </template>
 
 <template name="signup">
 	<div>signup for {{{system}}}</div>
-	{{dmeth_subtemplate step}}
+	{{dmeth_subtemplate stage}}
 </template>
 
 
@@ -24,25 +26,6 @@
 	<div>init for {{{render scenario}}}</div>
 </template>
 
-<template name="step">
-	<div class="navbar navbar-inverse navbar-fixed-top">
-	  <div class="navbar-inner">
-        <ul class="nav">
-        	<li>Steps:</li>
-        	{{step 0 "Consent and explanation"}}
-        	{{step 1 "Scenario"}}
-        	{{step 2 "System"}}
-        	{{step 3 "Practice"}}
-        	{{step 4 "Practice Results"}}
-        	{{step 5 "Vote 1"}}
-        	{{step 6 "Payout Results 1"}}
-        	{{step 7 "Vote 2"}}
-        	{{step 8 "Payout Results 2"}}
-        	{{step 9 "Survey"}}
-        </div>
-      </div>
-	</div>
-</template>
 
 <template name="explanation">
 	<h2>Consent</h2>
@@ -57,7 +40,7 @@ to
 ${{maxaverage}} 
 each. Because your reward will depend on the behavior of other participants and the group
 to which you are assigned, it may be impossible for you to win a reward, and so your
-entire compensation could be as little 
+entire compensation could be as little as
 ${{baserate}}.</p>
 
 <p>You will gain no direct benefit from this research besides your payment and anything

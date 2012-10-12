@@ -41,7 +41,8 @@ if (Handlebars?)
     e = Session.get 'election'
     e.scenario
     
-  Handlebars.registerHelper 'step', ->
+  Handlebars.registerHelper 'stage', ->
+    console.log 'stage'
     e = Session.get 'election'
     if e?.round?
       steps = Meteor.user().steps
