@@ -9,7 +9,7 @@ class Scenario
     _.extend this, props
     
   numVoters: =>
-    numvoters = _.reduce @factSizes, (sum, addend) -> 
+    numVoters = _.reduce @factSizes, (sum, addend) -> 
       sum + addend
     , 0
     @numVoters = ->
@@ -44,5 +44,10 @@ class Scenario
     payoffs: [[3, 0],
               [2, 2],
               [0, 3]]
+  one: new Scenario
+    factSizes: [1]
+    payoffs: [[3],
+              [2],
+              [0]]
   
     

@@ -3,7 +3,7 @@ class @MyRouter extends ReactiveRouter
     '': 'watchElection'
     'election/:eid': 'election'
     'elections/clear/all': 'clearAll'
-    'elections/makeOne': 'makeElection'
+    'elections/makeOne/:scenario/:method': 'makeElection'
     
   watchElection: ->
     console.log 'watch'
@@ -24,9 +24,12 @@ class @MyRouter extends ReactiveRouter
     console.log "clear all"
     Election.clearAll()
     
-  makeElection: ->
-    console.log "makeElection"
-    Election.make({}, true)
+  makeElection: (scenario, method) ->
+    console.log "makeElection", scenario, method
+    Election.make(
+      scenario: scenario
+      method: method
+    , true)
 
 global = @
 

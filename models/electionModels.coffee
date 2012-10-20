@@ -33,7 +33,7 @@ class @Election extends StamperInstance
     watchers: [] #before consent is clicked; ready to join
     voters: [] #consent is clicked, faction is assigned
     factions: []
-    stepsDoneBy: [0] #9 voters connected, 3 votes r1, 0 r2.
+    stepsDoneBy: [0] #how many voters/watchers have done each step
     full: false
     stage: 0
     stimes: ->
@@ -56,11 +56,11 @@ class @Election extends StamperInstance
     
   @register
     make: @static (options, promote)->
-      console.log "new election"
+      console.log "new election", options 
       options ?= {}
       options = _(options).pick "scenario", "method"
       
-      _(options).extend
+      _(options).defaults
         scenario: 'chicken'
         method: 'approval'
         watchers: []
@@ -110,7 +110,7 @@ class @Election extends StamperInstance
         throw Meteor.Error 404, "no such election"
       election = new Election election
       console.log election
-      if (_.indexOf election.voters, uid) == -1
+      if (_.indexOf election.watchers, uid) == -1
         election.addWatcherAndSave(uid)
           
         

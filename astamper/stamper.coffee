@@ -57,13 +57,17 @@ class StamperInstance
             #Meteor.methods stub.
             #This technique isn't threadsafe but that's OK, no threads on client.
         cur_instance = undefined
+        
         smname = self.name + "_" + mname
         if !method.static #instance
-          servermethods[smname] = (id, obj, args...) =>
+          servermethods[smname] = (id, obj, args...) ->
             console.log "server calling ", smname
             if Meteor.is_server
               cur_instance = new self self.prototype.collection.findOne
                 _id: id
+             
+              console.log "server method on", id, cur_instance
+              console.log self.prototype.collection.find().fetch()
             else
               cur_instance = obj
             if not cur_instance
@@ -119,10 +123,14 @@ class StamperInstance
       x = @raw()
       console.log "raw: ", x
       returnv= @collection.insert @raw(), (error, result)=>
-        if !error
+        if !error and result
           @_id = result
+        console.log "saved", result, @_id
         if cb
           cb error, result
+      console.log returnv
+      if returnv
+        @_id = returnv
       returnv
           
   remove: (cb) ->
