@@ -1,0 +1,45 @@
+
+<template name="nextStep">
+	<a href="#" onclick="NextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
+	Next </a>
+</template>
+
+
+<template name="countdownWithSound">
+	
+        <audio id="starting" hidden="true">
+            <source src="/audio/starting.ogg" type="audio/ogg" />
+            <source src="/audio/starting.mp3" type="audio/mpeg" />
+            Your browser does not support HTML5 audio.
+        </audio>
+
+	{{{countdown}}}
+</template>
+
+<template name="countdownClock">
+	{{{displayCount}}}
+</template>
+
+<template name="countdownDone">
+	{{{call "playSound"}}}
+	<div>Countdown is done!</div>
+	{{{render "nextStep"}}}
+</template>
+
+
+<template name="scenarioTable">
+	<table class="table">
+		<tr><td rowspan="2">Voter faction</td><td rowspan="2">Number of voters in faction</td><td colspan="3">Payment if winner is site:</td></tr>
+		<tr>{{#each scen.candNames}}<td >{{this}}</td>{{/each}}</tr>
+	{{#with scenMyPayoffs}}
+		<tr><td>YOU:{{factName}}</td><td>{{factSize}}</td>
+			{{#each payoffs}}<td>{{bonus this}}</td>{{/each}}
+		</tr>
+	{{/with}}
+	{{#each scenOtherPayoffs}}{{#with this}}
+		<tr><td>{{factName}}</td><td>{{factSize}}</td>
+			{{#each payoffs}}<td>{{bonus this}}</td>{{/each}}
+		</tr>
+	{{/with}}{{/each}}
+	</table>
+</template>

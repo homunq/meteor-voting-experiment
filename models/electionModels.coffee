@@ -34,9 +34,10 @@ class @Election extends StamperInstance
     voters: [] #consent is clicked, faction is assigned
     factions: []
     stepsDoneBy: [0] #how many voters/watchers have done each step
+    stagesDoneBy: [0] #how many voters/watchers have done each step
     full: false
     stage: 0
-    stimes: ->
+    sTimes: ->
       now = new Date
       later = new Date
       later.setMinutes(now.getMinutes() + 100) #plus 1:40
@@ -106,28 +107,31 @@ class @Election extends StamperInstance
       uid = @userId()
       election = Elections.findOne
         _id: eid
+      console.log 'watch 2', eid
       if !election
         throw Meteor.Error 404, "no such election"
       election = new Election election
       console.log election
       if (_.indexOf election.watchers, uid) == -1
         election.addWatcherAndSave(uid)
+      else
+        console.log uid, " is already in ", election.watchers
           
         
     newVote: (vote) =>
-      if @round != vote.round
-        throw new Meteor.Error 403, "Wrong round"
+      if @stage != vote.stage
+        throw new Meteor.Error 403, "Wrong stage"
       if Meteor.user() != vote.voter
         throw Meteor.Error 403, "That's not you"
       oldVote = Votes.findOne
         voter: vote.voter
-        round: @round
+        stage: @stage
       if oldVote
         throw new Meteor.Error 403, "You've already voted"
       faction = @factionOf uid #throws error on failure
       
-      @numvotes[@round] += 1
-      done = (@numvotes[@round] >= @scen.numVoters())
+      @stagesDoneBy[@stage] += 1
+      done = (@stagesDoneBy[@stage] >= @scen.numVoters())
   
       _.extend vote
         election: @_id
@@ -136,12 +140,13 @@ class @Election extends StamperInstance
         
       Votes.insert vote
       
-      if done then @finishRound()
+      if done then @finishStage()
       
       console.log "newVote update"
       Elections.update @_id, @
       
     clearAll: @static ->
+      console.log "clearAll"
       Elections.remove {}
       
     addWatcherAndSave: (vid) ->
@@ -161,27 +166,28 @@ class @Election extends StamperInstance
       
     addVoterAndSave: (vid) ->
       console.log "addVoterAndSave "+vid + "     ;     "
-      console.log " "+ @nonfactions + @factions
-      if @nonfactions.length is 0
-        throw new Meteor.Error 403, "Election full"
-      if @round isnt 0
-        throw new Meteor.Error 403, "Huh? There's room but they moved on'"
-      @voters.push vid
-      faction = @nonfactions.pop()
-      @factions.push faction
-      @numVotes[@round] += 1
-      eid = @save()
-      console.log " "+ @nonfactions + @factions + eid
-      Meteor.users.update
-        _id: vid
-      ,
-        $set:
-          eid: eid
-          faction: faction
-          watcher: false
-      ,
-        multi: false
-      eid
+      if Meteor.is_server
+        console.log @nonfactions, @factions
+        if @nonfactions.length is 0
+          throw new Meteor.Error 403, "Election full"
+        if @stage isnt 0
+          throw new Meteor.Error 403, "Huh? There's room but they moved on'"
+        @voters.push vid
+        faction = @nonfactions.pop()
+        @factions.push faction
+        @stagesDoneBy[0] += 1
+        eid = @save()
+        console.log " "+ @nonfactions + @factions + eid
+        Meteor.users.update
+          _id: vid
+        ,
+          $set:
+            eid: eid
+            faction: faction
+            watcher: false
+        ,
+          multi: false
+        eid
       
     promote: ->
       console.log "promote"
@@ -195,10 +201,10 @@ class @Election extends StamperInstance
   #local (non-registered) methods
       
       
-  scen: (scenarioname) ->
+  scen: ->
     Scenarios[@scenario]
     
-  meth: (methname) ->
+  meth: ->
     Methods[@method]
     
     
@@ -213,9 +219,9 @@ class @Election extends StamperInstance
     return @factions[i]  
     
   completeness: ->
-    "#{ @numVotes[@round] }/#{ @scen()?.numVoters() }"
+    "#{ @numVotes[@stage] }/#{ @scen()?.numVoters() }"
     
-  finishRound: =>
+  finishStage: =>
     echo "fR not impl"
     
     
