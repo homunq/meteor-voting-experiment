@@ -297,8 +297,8 @@ if Meteor.is_server
       voter: 0
       #faction: 0 #do not hide this, even though it wouldn't be visible IRL
       
-  Meteor.publish 'results', (eid) ->
-    Results.find
+  Meteor.publish 'outcomes', (eid) ->
+    Outcomes.find
       election: eid
 
 else if Meteor.is_client
@@ -308,8 +308,8 @@ else if Meteor.is_client
     if eid
       Meteor.subscribe 'done_votes', eid, ->
         console.log "done_votes (re)loaded"
-      Meteor.subscribe 'results', eid, ->
-        console.log "done_votes (re)loaded"
+      Meteor.subscribe 'outcomes', eid, ->
+        console.log "outcomes (re)loaded"
 
   OLD_ELECTION = undefined
   OLD_USER = undefined
