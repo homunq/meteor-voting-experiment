@@ -6,11 +6,16 @@
 <body>
 	
   <div id="main">
+  	<!-- {{currentPage}} -->
 		{{{render currentPage}}}
   </div>
 </body>
 
 <template name="loggedIn">
+	{{#if error}}
+		<h1>{{{error}}}</h1>
+	{{/if}}
+	
 	{{{render "whichStep"}}}
 	<div>.. I think {{user}} is in election {{eid}} at {{stepName}}</div>
 	{{{render stepName}}}

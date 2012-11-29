@@ -9,64 +9,59 @@ if (Handlebars?)
   Handlebars.registerHelper "user", ->
     Meteor.user()?._id
     
-  Handlebars.registerHelper 'rounder', ->
-    e = Session.get 'election'
-    if e?.round is 0
-      return 'signup'
-    else if e?.round > 0
-      return 'election'
-    'handshake'
-    
-  Handlebars.registerHelper 'round', ->
-    e = Session.get 'election'
-    e?.round
+  Handlebars.registerHelper 'step', ->
+    Session.get 'step'
     
   Handlebars.registerHelper 'method', ->
-    e = Session.get 'election'
-    e?.method
+    (Session.get "method").name
     
   Handlebars.registerHelper 'meth_subtemplate', (sub) ->
-    e = Session.get 'election'
-    new Handlebars.SafeString Template["#{ e?.method }_#{ sub }"]()
+    new Handlebars.SafeString Template["#{ (Session.get 'method').name }_#{ sub }"]()
     
   Handlebars.registerHelper 'dmeth_subtemplate', (sub) ->
-    e = Session.get 'election'
-    new Handlebars.SafeString '#{ e?.method }_#{ sub }' + ': ' + Template["#{ e?.method }_#{ sub }"]()
+    new Handlebars.SafeString "#{ (Session.get 'method').name }_#{ method }" + ': ' + Template["#{ (Session.get 'method').name }_#{ sub }"]()
+    
+  Handlebars.registerHelper 'meth_blurb', ->
+    new Handlebars.SafeString Template["#{ (Session.get "method").name }_blurb"]()
+    
+  Handlebars.registerHelper 'meth_ballotLine', (candInfo) ->
+    new Handlebars.SafeString Template["#{ (Session.get "method").name }_ballotLine"](candInfo)
     
   Handlebars.registerHelper 'scenarioName', ->
     e = Session.get 'election'
     e.scenario
     
   Handlebars.registerHelper 'scen', ->
-    e = Session.get 'election'
-    e.scen()
+    (Session.get 'scenario')
     
   Handlebars.registerHelper 'scenMyPayoffs', ->
-    e = Session.get 'election'
-    e.scen().payoffsForFaction Meteor.user()?.faction
+    (Session.get 'scenario').payoffsForFaction Session.get 'faction'
     
   Handlebars.registerHelper 'scenOtherPayoffs', ->
-    e = Session.get 'election'
-    e.scen().payoffsExceptFaction Meteor.user()?.faction
+    (Session.get 'scenario').payoffsExceptFaction Session.get 'faction'
+    
+  Handlebars.registerHelper 'scenCandInfo', ->
+    result = (Session.get 'scenario').candInfo Session.get 'faction'
+    console.log "scenCandInfo", Session.get 'faction', (Session.get 'scenario'), result
+    result
     
     
   Handlebars.registerHelper 'stage', ->
     console.log 'stage'
-    e = Session.get 'election'
-    if e?.round?
-      steps = Meteor.user().steps
-      if steps?.length >= e.round
-        return steps[e.round]
-    "init"
+    return Session.get 'stage'
     
   Handlebars.registerHelper "steps", ->
     steps = []  
-    thisStep = Meteor.user().step
+    thisStep = Session.get 'step'
     for step, stepNum in PROCESS.steps
       steps.push  Template.oneStep _(
         thisStep: stepNum == thisStep
       ).extend step
     new Handlebars.SafeString steps.join ""
+    
+  Handlebars.registerHelper 'stepPopover', (stepName) ->
+    console.log stepName
+    new Handlebars.SafeString Template["#{ stepName }_popover"]()
     
   Handlebars.registerHelper "stepExplanations", ->
     steps = []  
@@ -83,7 +78,7 @@ if (Handlebars?)
     
   Handlebars.registerHelper 'stepName', ->
     console.log 'stepName'
-    step = Meteor.user()?.step
+    step = Session.get "step"
     console.log step
     if step isnt undefined
       return PROCESS.steps[step].name
@@ -91,10 +86,12 @@ if (Handlebars?)
     
 
   Handlebars.registerHelper 'mapImg', ->
-    faction = Meteor.user()?.faction
-    election = Session.get 'election'
+    faction = Session.get 'faction'
     if faction?
-      return election.scen().factPngs[faction]
+      scenario = Session.get 'scenario'
+      return scenario.factPngs[faction]
     'noFaction'
 
+  Handlebars.registerHelper 'error', ->
+    Session.get 'error'
       

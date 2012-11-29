@@ -43,6 +43,8 @@ class StamperInstance
     fn.static = true
     fn
     
+  raw: ->
+    return _.pick @, (_.keys @_fields)...
   #@from: (props) ->
   #  props.
     
@@ -67,7 +69,7 @@ class StamperInstance
                 _id: id
              
               console.log "server method on", id, cur_instance
-              console.log self.prototype.collection.find().fetch()
+              #console.log self.prototype.collection.find().fetch()
             else
               cur_instance = obj
             if not cur_instance
@@ -75,7 +77,9 @@ class StamperInstance
               
             cur_instance.userId = =>
               @userId() #sneak in a method for current userId
-            cur_instance[smname] args...
+            console.log "selfish????????????", self, cur_instance, typeof(cur_instance)
+            console.log "selfish????????????!!!!", cur_instance[smname]
+            cur_instance[smname].apply cur_instance, args
         else #static
           servermethods[smname] = (args...) ->
             console.log "server calling static ", smname

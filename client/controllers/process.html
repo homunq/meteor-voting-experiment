@@ -10,7 +10,11 @@
 </template>
 
 <template name="oneStep">
-	<li {{#if thisStep}}class="active"{{/if}}><a href="#">{{num}}: {{name}}</a></li>
+	<li {{#if thisStep}}class="active"{{/if}}><a href="#" class="hasPopover">{{num}}: {{name}}{{#if popover}}<span class="popover">{{{stepPopover name}}}</span>{{/if}}</a></li>
+</template>
+
+<template name="scenario_popover">
+	<img src="/images/{{mapImg}}.png">
 </template>
 
 <template name="oneStepExplanation">
@@ -123,12 +127,17 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 </template>
 
 <template name="method">
-	{{{render meth_subtemplate "_blurb"}}}
+	{{{meth_blurb}}}
 	{{{render "nextStep"}}}
 </template>
 
 <template name="practice">
-	practice
+	<h2>Practice voting</h2>
+	<p>Vote using the ballot below. This is a practice election only; you will not be paid any bonus based on 
+		this, so you should simply vote however you honestly feel about the candidates. After all participants
+		vote, and you have a chance to see the results of this election, you will move on to voting in two
+		"real" elections, with a bonus paid based on results.</p>
+	{{{render "ballot"}}}
 	{{{render "nextStep"}}}
 </template>
 <template name="results">

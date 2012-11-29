@@ -1,6 +1,34 @@
 
 <template name="approval_blurb">
-	<div>Voters online: {{election.completeness}}.</div>
-	<div>You will be completing a vote using Approval Voting. The ballot will ask you to approve or disapprove of each
-		candidate (potential firehouse site).</div>
+		<h2>Election Method: Approval Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>The ballot will ask you to approve or disapprove of each
+		candidate.</strong> You may approve of any number of candidates. If you approve of all candidates or
+		no candidates, your ballot will not affect the election.</p>
+		<h4>Sample</h4>
+		<p>This is <strong>only a sample ballot</strong>. It does <strong>nothing</strong>. You will have an 
+			opportunity to practice using this ballot and see the results in the following step.</p>
+		{{{render "ballot"}}}
+		<h3>Counting</h3>
+		<p>The winner will be the site with the most approvals</p>
+</template>
+
+
+<template name="ballot">
+	{{call "ballotSetup" step}}
+	<table class="table">
+		<tr><td >Candidate</td><td>Vote</td></tr>
+		{{#each scenCandInfo}}
+		<tr style="border-bottom: thin solid {{this.color}}; border-top: thin solid {{this.color}};">
+			<td>{{this.name}}</td>
+			<td>{{{meth_ballotLine this}}}</td>
+		</tr>
+		{{/each}}
+	</table>
+</template>
+
+
+<template name="approval_ballotLine">
+	<input type="radio" name="{{name}}" value="approve" onclick="voteFor({{num}},1);">Approve<br>
+	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
 </template>

@@ -36,6 +36,13 @@ class Scenario
     factSize: @factSizes[faction]
     payoffs: (payoff[faction] for payoff in @payoffs)
     
+  candInfo: (faction) ->
+    for candName, cand in @candNames
+      num: cand
+      name: @candNames[cand]
+      color: @candColors[cand]
+      myPayoff: @payoffs[cand][faction]
+    
     
 @Scenarios =
   chicken: new Scenario

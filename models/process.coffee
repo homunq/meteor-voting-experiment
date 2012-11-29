@@ -41,16 +41,18 @@ PROCESS = new Process "Base",
     stage: 0
     longName: "Outline, countdown, and consent"
     blurb: "See an outline of the experiment, and wait for the countdown to end and the experiment to begin."
+    prereqForNextStage: true
     beforeFinish: (cb) ->
       election = Session.get 'election'
       election.addVoterAndSave Meteor.user()._id, cb
 , 
   scenario:
-    suggestedMins: 2
+    suggestedMins: 2 
     maxMins: 3
     stage: 0
     longName: "Scenario (Candidates, voters, and payouts)"
     blurb: "Understand how much you and other voters will earn depending on which of the virtual candidates wins."
+    popover: true
 , 
   method:
     suggestedMins: 2
@@ -66,6 +68,9 @@ PROCESS = new Process "Base",
     prereqForNextStage: true
     longName: "Practice voting (round 0)"
     blurb: "Vote once for practice (no payout)."
+    beforeFinish: (cb) ->
+      election = Session.get 'election'
+      election.addVote VOTE.raw(), cb
 , 
   results:
     suggestedMins: 1
@@ -126,7 +131,9 @@ if Meteor.is_server
       true
 else  
   Meteor.autosubscribe ->
-    Meteor.subscribe 'stepRecords', Meteor.user()._id
+    user = Meteor.user()
+    if user?
+      Meteor.subscribe 'stepRecords', user._id
 
 class StepRecord extends StamperInstance
   
@@ -197,7 +204,7 @@ class StepRecord extends StamperInstance
                   multi: false
      
       console.log "save StepRecord 6", election
-      election.save()
+      election.save() 
         
       #move along if we can
       [thisStage, nextStage] = [PROCESS.step(@step).stage, PROCESS.step(@step + 1).stage]
@@ -211,6 +218,10 @@ class StepRecord extends StamperInstance
             step: @step + 1
         ,
           multi: false
+          
+      else
+        autosubscribe ->
+          Session.set "error", "Waiting for others"
               
               
   finish: ->
@@ -250,6 +261,11 @@ NextStep = ->
   if beforeFinish
     beforeFinish (error, result) ->
       console.log "beforeFinish done", error, result
-    
-  console.log "NextStep"
-  stepRecord.finish()
+      if !error
+        console.log "NextStep"
+        stepRecord.finish()
+      else
+        Session.set "error", "Sorry, experiment full."
+  else
+    console.log "NextStep direct"
+    stepRecord.finish()

@@ -59,3 +59,18 @@ playSound = ->
     setTimeout fn, ms
   sT 1000, ->
     document.getElementById('starting').play()
+  
+VOTE = null  
+ballotSetup = ->
+  step = Session.get('step')
+  user = Meteor.user()
+  if !VOTE or VOTE.step isnt step
+    VOTE = new Vote
+      step: step
+      voter: user._id
+      stage: Session.get('stage')
+  ""
+
+voteFor = (cand, grade) ->
+  console.log "voteFor", cand, grade
+  VOTE.vote[cand] = grade

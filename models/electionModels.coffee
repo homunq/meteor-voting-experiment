@@ -6,14 +6,18 @@ echo = (args...) ->
 echo "echo", echo
 
 Votes = new Meteor.Collection 'votes'
-#  voter: 12
-#  faction: 3
-#  election: 1
-#  round: 1
-#  vote: [3,1,1] #higher is better
-# ## denormalized info
-#  method: 'approval'
-#  done: false #denormalzed copy: all votes in for this round
+
+class @Vote extends StamperInstance
+  collection: Votes
+  
+  @fields
+    voter: null
+    faction: null
+    election: null
+    stage: null
+    step: null
+    vote: [] #higher is better
+    method: 'approval'
 
 Elections = new Meteor.Collection 'elections', null
 
@@ -49,6 +53,7 @@ class @Election extends StamperInstance
       Math.floor((Math.random()*0xffffff)+1);
     rtime:[] #time since start, floor 5
     winners: []
+    outcomes: []
     
   if Meteor.is_server
     @fields
@@ -118,10 +123,13 @@ class @Election extends StamperInstance
         console.log uid, " is already in ", election.watchers
           
         
-    newVote: (vote) =>
+    addVote: (vote) ->
+      console.log "addVote1", @
+      console.log "addVote2", @.raw()
+      uid = @userId()
       if @stage != vote.stage
-        throw new Meteor.Error 403, "Wrong stage"
-      if Meteor.user() != vote.voter
+        throw new Meteor.Error 403, "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
+      if uid != vote.voter
         throw Meteor.Error 403, "That's not you"
       oldVote = Votes.findOne
         voter: vote.voter
@@ -131,19 +139,18 @@ class @Election extends StamperInstance
       faction = @factionOf uid #throws error on failure
       
       @stagesDoneBy[@stage] += 1
-      done = (@stagesDoneBy[@stage] >= @scen.numVoters())
+      done = (@stagesDoneBy[@stage] >= @scen().numVoters())
   
-      _.extend vote
+      _.extend vote,
         election: @_id
         faction: faction
-        done: done
+        method: @method
         
       Votes.insert vote
       
       if done then @finishStage()
       
       console.log "newVote update"
-      Elections.update @_id, @
       
     clearAll: @static ->
       console.log "clearAll"
@@ -221,8 +228,25 @@ class @Election extends StamperInstance
   completeness: ->
     "#{ @numVotes[@stage] }/#{ @scen()?.numVoters() }"
     
-  finishStage: =>
-    echo "fR not impl"
+  votesForStage: (stage) ->
+    vc = Votes.find
+      election: @_id
+      stage: stage
+    v.vote for v in vc.fetch
+    
+  finishStage: (stage)=>
+    [winner, counts] = @meth.resolveVotes @scen.numCands(), @seed + stage, @votesForStage stage
+    outcome = new Outcome
+      winner: winner
+      counts: counts
+      election: @_id
+      stage: stage
+      method: @method
+      scenario: @scenario
+    outcome.save()
+    @winners[stage] = winner
+    @outcomes[stage] = outcome._id
+    @save()
     
     
 #debugger
@@ -230,6 +254,27 @@ class @Election extends StamperInstance
 echo 'Election', Election
     
   
+Outcomes = new Meteor.Collection 'outcomes', null
+
+class @Outcome extends StamperInstance
+  collection: Outcomes
+  
+  @fields
+    election: null
+    scenario: null
+    method: null
+    stage: 0
+    resolved: (new Date).getTime()
+    winner: []
+    
+  if Meteor.is_server
+    @fields
+      nonfactions: [] #[0, 0, 1, 1, ... 2, ...]
+    
+    
+  @register
+  
+
 
 if Meteor.is_server
   Elections.r
@@ -252,19 +297,43 @@ if Meteor.is_server
       voter: 0
       #faction: 0 #do not hide this, even though it wouldn't be visible IRL
       
-    
+  Meteor.publish 'results', (eid) ->
+    Results.find
+      election: eid
+
 else if Meteor.is_client
   Meteor.subscribe 'elections'
   Meteor.autosubscribe ->
-    if Meteor.user()?.eid
-      Meteor.subscribe 'done_votes', Meteor.user().eid, ->
+    eid = Meteor.user()?.eid
+    if eid
+      Meteor.subscribe 'done_votes', eid, ->
+        console.log "done_votes (re)loaded"
+      Meteor.subscribe 'results', eid, ->
         console.log "done_votes (re)loaded"
 
+  OLD_ELECTION = undefined
+  OLD_USER = undefined
   Meteor.autosubscribe ->
-    console.log "election (re)loading", Meteor.user()
-    if Meteor.user()?.eid
+    user = Meteor.user()
+    eid = user?.eid
+    console.log "election (re)loading", eid
+    if eid
       e = Elections.findOne
-        _id: Meteor.user().eid
+        _id: eid
       console.log "really (re)loading",Meteor.user().eid,  e
-      Session.set 'election', new Election e
-      console.log "really (re)loaded ",Meteor.user().eid,  e
+      election = new Election e
+      Session.set 'election', election
+      Session.set 'stage', election.stage
+      if eid isnt OLD_ELECTION?._id #don't obsessively reload stable values
+        if election.scen() isnt OLD_ELECTION?.scen()            
+          Session.set 'scenario', election.scen()
+        if election.meth() isnt OLD_ELECTION?.meth()            
+          Session.set 'method', election.meth()
+        OLD_ELECTION = election
+        console.log "really (re)loaded ",Meteor.user().eid,  e
+    if user?.faction isnt OLD_USER?.faction
+      Session.set 'faction', user.faction
+    if user?.step isnt OLD_USER?.step
+      Session.set 'step', user.step
+      
+    OLD_USER = user
