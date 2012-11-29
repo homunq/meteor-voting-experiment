@@ -1,7 +1,7 @@
 class @MyRouter extends ReactiveRouter
   routes:
     '': 'watchElection'
-    'election/:eid': 'election'
+    'election/:eid': 'inElection'
     'elections/clear/all': 'clearAll'
     'elections/makeOne/:scenario/:method': 'makeElection'
     
@@ -14,8 +14,10 @@ class @MyRouter extends ReactiveRouter
     #@navigate 'election/new',
     #  trigger: true
 
-  election: (eid) =>
+  inElection: (eid) =>
+    console.log "route: election"
     login_then =>
+      console.log "route: election; logged in"
       Election.watch eid, =>
         #console.log 'asdt' + JSON.stringify Meteor.user()
         @goto 'loggedIn' #use that template
@@ -42,7 +44,8 @@ Meteor.startup ->
   Meteor.autosubscribe ->
     eid = Meteor.user()?.eid
     if eid
+      console.log "routing to election"
       Router.navigate 'election/' + eid,
-        trigger: false
+        trigger: true #some redundancy here but no big problem
       Meteor.subscribe 'election',
         eid: eid
