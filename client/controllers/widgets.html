@@ -1,7 +1,11 @@
 
 <template name="nextStep">
+	{{#if stepWaiting}}<a href="#" onclick="alert('Waiting for others');return false;" id="nextStep" title="Waiting" class="btn btn-primary btn-large">
+	Waiting for other voters </a>
+	{{else}}
 	<a href="#" onclick="NextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
 	Next </a>
+	{{/if}}
 </template>
 
 
@@ -40,6 +44,18 @@
 		<tr><td>{{factName}}</td><td>{{factSize}}</td>
 			{{#each payoffs}}<td>{{bonus this}}</td>{{/each}}
 		</tr>
+	{{/with}}{{/each}}
+	</table>
+</template>
+
+<template name="outcomes">
+	<table class="table">
+		<tr><td>Candidate</td>{{{meth_resultHead}}}<td>Result</td><td>Bonus payment</td></tr>
+	{{#with winner}}
+		<tr><td>{{name}}</td>{{{meth_resultLine this}}}<td>WINNER</td><td>{{bonus myPayoff}} - to be paid</td></tr>
+	{{/with}}
+	{{#each losers}}{{#with this}}
+		<tr><td>{{name}}</td>{{{meth_resultLine this}}}<td>LOSER</td><td><small>({{bonus myPayoff}} - if they had won)</small></td></tr>
 	{{/with}}{{/each}}
 	</table>
 </template>

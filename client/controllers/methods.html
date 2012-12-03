@@ -19,8 +19,8 @@
 	<table class="table">
 		<tr><td >Candidate</td><td>Vote</td></tr>
 		{{#each scenCandInfo}}
-		<tr style="border-bottom: thin solid {{this.color}}; border-top: thin solid {{this.color}};">
-			<td>{{this.name}}</td>
+		<tr style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">
+			<td>{{name}} ({{bonus myPayoff}} for you)</td>
 			<td>{{{meth_ballotLine this}}}</td>
 		</tr>
 		{{/each}}
@@ -31,4 +31,12 @@
 <template name="approval_ballotLine">
 	<input type="radio" name="{{name}}" value="approve" onclick="voteFor({{num}},1);">Approve<br>
 	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
+</template>
+
+
+<template name="approval_resultHead">
+	<td>Count</td>
+</template>
+<template name="approval_resultLine">
+	<td>{{count}}</td>
 </template>

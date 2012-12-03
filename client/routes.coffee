@@ -32,6 +32,7 @@ class @MyRouter extends ReactiveRouter
       scenario: scenario
       method: method
     , true)
+    Meteor.logout()
 
 global = @
 

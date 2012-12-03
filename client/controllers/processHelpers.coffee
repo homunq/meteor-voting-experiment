@@ -24,8 +24,33 @@ if (Handlebars?)
   Handlebars.registerHelper 'meth_blurb', ->
     new Handlebars.SafeString Template["#{ (Session.get "method").name }_blurb"]()
     
-  Handlebars.registerHelper 'meth_ballotLine', (candInfo) ->
-    new Handlebars.SafeString Template["#{ (Session.get "method").name }_ballotLine"](candInfo)
+  Handlebars.registerHelper 'meth_ballotLine', (candInfos) ->
+    new Handlebars.SafeString Template["#{ (Session.get "method").name }_ballotLine"](candInfos)
+    
+  Handlebars.registerHelper 'meth_resultHead', ->
+    new Handlebars.SafeString Template["#{ (Session.get "method").name }_resultHead"]()
+    
+  Handlebars.registerHelper 'meth_resultLine', (candResult) ->
+    new Handlebars.SafeString Template["#{ (Session.get "method").name }_resultLine"](candResult)
+    
+  Handlebars.registerHelper 'winner', ->
+    e = Session.get 'election'
+    faction = Session.get 'faction'
+    outcome = new Outcome Outcomes.findOne
+      _id: e.outcomes[e.stage - 1]
+    e.scen().candInfo outcome.winner, faction, outcome.counts[outcome.winner]
+    
+  Handlebars.registerHelper 'losers', ->
+    e = Session.get 'election'
+    faction = Session.get 'faction'
+    outcome = new Outcome Outcomes.findOne
+      _id: e.outcomes[e.stage - 1]
+    losers = _.range e.scen().numCands()
+    losers.splice outcome.winner, 1
+    ((e.scen().candInfo loser, faction, outcome.counts[loser]) for loser in losers)
+    
+  Handlebars.registerHelper 'stepWaiting', ->
+    Session.get 'stepWaitingForStage'
     
   Handlebars.registerHelper 'scenarioName', ->
     e = Session.get 'election'
@@ -41,10 +66,13 @@ if (Handlebars?)
     (Session.get 'scenario').payoffsExceptFaction Session.get 'faction'
     
   Handlebars.registerHelper 'scenCandInfo', ->
-    result = (Session.get 'scenario').candInfo Session.get 'faction'
+    result = (Session.get 'scenario').candInfos Session.get 'faction'
     console.log "scenCandInfo", Session.get 'faction', (Session.get 'scenario'), result
     result
     
+  Handlebars.registerHelper 'surveyQuestions', ->
+    setupSurvey()
+    _.values(question)[0] for question in SURVEY.questions
     
   Handlebars.registerHelper 'stage', ->
     console.log 'stage'

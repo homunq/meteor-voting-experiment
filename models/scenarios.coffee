@@ -8,7 +8,18 @@ class Scenario
   constructor: (props) ->
     _.extend this, props
     
-  numVoters: =>
+    #same candidate numbers
+    @payoffs.length.should.equal(@candNames.length)
+    @candColors.length.should.equal(@candNames.length)
+    
+    #same faction numbers
+    for payoff in @payoffs
+      payoff.length.should.equal(@factSizes.length)
+    @factNames.length.should.equal(@factSizes.length)
+    @factColors.length.should.equal(@factSizes.length)
+    @factPngs.length.should.equal(@factSizes.length)
+    
+  numVoters: ->
     numVoters = _.reduce @factSizes, (sum, addend) -> 
       sum + addend
     , 0
@@ -16,17 +27,20 @@ class Scenario
       numVoters
     numVoters
     
-  vFactions: (skim) =>
+  numCands: ->
+    @payoffs.length
+    
+  vFactions: (skim) ->
     _.flatten(num for val in _.range(factSize - skim) for factSize, num in @factSizes)
     
     
-  shuffledFactions: =>
+  shuffledFactions: ->
     _(_.range(@factSizes.length)).shuffle().concat(_(@vFactions(1)).shuffle())
     
   payoffsExceptFaction: (myFaction) ->
     order = _.range @factSizes.length
     if myFaction?
-      order.splice myFaction
+      order.splice myFaction, 1
     @payoffsForFaction faction for faction in order
     
       
@@ -36,12 +50,16 @@ class Scenario
     factSize: @factSizes[faction]
     payoffs: (payoff[faction] for payoff in @payoffs)
     
-  candInfo: (faction) ->
-    for candName, cand in @candNames
-      num: cand
-      name: @candNames[cand]
-      color: @candColors[cand]
-      myPayoff: @payoffs[cand][faction]
+  candInfos: (faction, count) ->
+    for candName, candNum in @candNames
+      @candInfo candNum, faction, count
+      
+  candInfo: (candNum, faction, count) ->
+    num: candNum
+    name: @candNames[candNum]
+    color: @candColors[candNum]
+    myPayoff: @payoffs[candNum][faction]
+    count: count
     
     
 @Scenarios =
@@ -67,11 +85,21 @@ class Scenario
               [0, 2, 3]]
   simple: new Scenario
     factSizes: [2, 1]
+    factNames: ['X', 'Y']
+    factColors: ["#D40000", "#00D400"]
+    factPngs: ["4voters", "#2voters"]
+    candNames: ['X', 'Y', 'Z']
+    candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0],
               [2, 2],
               [0, 3]]
   mini: new Scenario
     factSizes: [1, 1]
+    factNames: ['X', 'Y']
+    factColors: ["#D40000", "#00D400"]
+    factPngs: ["4voters", "#2voters"]
+    candNames: ['X', 'Y', 'Z']
+    candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0],
               [2, 2],
               [0, 3]]

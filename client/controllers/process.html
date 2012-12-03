@@ -140,20 +140,49 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	{{{render "ballot"}}}
 	{{{render "nextStep"}}}
 </template>
+
 <template name="results">
-	results
+	<h2>Practice results</h2>
+	<p>The table below shows the winning candidate, and the bonus payout you <strong>would have</strong> received if
+		this were not just the practice round. You will now vote for a real payout. You
+		may or may not decide to change your vote based on what happened this time. Remember that the other voters
+		also have this choice.</p>
+	{{{render "outcomes"}}}
+	<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
+		not necessarily lead to the same winner.</p>
 	{{{render "nextStep"}}}
 </template>
+
 <template name="voting">
-	voting
+	<h2>Voting</h2>
+	<p>Please vote. You will be paid a bonus of $0 to {{bonus}}, depending on the results of this election among you and
+		the other voters. There are a total of 2 paying repetitions of this election, so you may earn up to two 
+		separate bonuses.</p>
+	{{{render "ballot"}}}
 	{{{render "nextStep"}}}
 </template>
+
 <template name="payouts">
-	payouts
+	<h2>Results</h2>
+	<p>The table below shows the winning candidate, and the bonus payout you <strong>will</strong> receive.</p>
+	{{{render "outcomes"}}}
+	<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
+		not necessarily lead to the same winner.</p>
 	{{{render "nextStep"}}}
 </template>
+
 <template name="survey">
-	survey
+	{{call "setupSurvey"}}
+	<h2>Survey</h2>
+	<p>Please answer the following questions.</p>
+	{{#each surveyQuestions}}
+		{{{ this.html }}}
+	{{/each}}
+	{{{render "nextStep"}}}
+</template>
+
+<template name="debrief">
+	<h1>Thank you.</h1>
 	
 <p>You have just participated in a study of voting systems. You learned about and participated in
 one of several single-winner voting systems.</p>
@@ -164,11 +193,12 @@ alternative systems. However, in order to have the confidence to move to an alte
 it helps to have a good understanding of how voters behave in these different systems. By
 participating in this research, you have helped increase that understanding.</p>
 
-<p>If you would like to receive a summary of the findings of this research, when it is available,
-check the box below. Your ID will be kept and used only for this purpose; your privacy will be
+<p>If you signed up to receive a summary of the findings of this research, when it is available,
+your Amazon id will be used for this purpose. It will also be used to . Your ID will be kept and used only for this purpose; your privacy will be
 ensured; and this is entirely at your option. You will be paid the same if you do not check the
 box. ________________</p>
 
 <p>Thank you. If you have any questions, please contact:</p>
 <p>Professor Luke Miratrix at lmiratrix@fas.harvard.edu</p>
+	{{{render "AmazonSubmit"}}}
 </template>

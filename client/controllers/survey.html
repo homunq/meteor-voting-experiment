@@ -1,0 +1,26 @@
+
+<template name="questionText">
+	<p>{{{text}}}</p>
+</template>
+
+<template name="questionWrapper">
+	<li>{{{text}}}</li>
+</template>
+
+<template name="answerText">
+	<input type="text" name="{{qName}}" onchange="surveyAnswer('{{qName}}',this.value);"><br/>
+</template>
+
+<template name="answerTextbox">
+	<textarea name="{{qName}}" onchange="surveyAnswer('{{qName}}',this.value);"/><br/>
+</template>
+
+<template name="answerRadio">
+	{{#each this.optionInfos}}
+	<input type="radio" name="{{../qName}}" onclick="surveyAnswer('{{../qName}}',{{this.num}});">{{this.text}} &nbsp;
+	{{/each}}
+</template>
+
+<template name="surveySection">
+	<h3>{{{text}}}</h3>
+</template>

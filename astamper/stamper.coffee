@@ -4,7 +4,7 @@ class Field
       @default = default_val
     else
       @default = ->
-        default_val
+        JSON.parse(JSON.stringify(default_val)) #lazy deep copy, without needing type checks.
       
   invalid: (val) ->
     if @validator
@@ -68,7 +68,7 @@ class StamperInstance
               cur_instance = new self self.prototype.collection.findOne
                 _id: id
              
-              console.log "server method on", id, cur_instance
+              console.log "server method on", id #, cur_instance
               #console.log self.prototype.collection.find().fetch()
             else
               cur_instance = obj
@@ -77,8 +77,6 @@ class StamperInstance
               
             cur_instance.userId = =>
               @userId() #sneak in a method for current userId
-            console.log "selfish????????????", self, cur_instance, typeof(cur_instance)
-            console.log "selfish????????????!!!!", cur_instance[smname]
             cur_instance[smname].apply cur_instance, args
         else #static
           servermethods[smname] = (args...) ->

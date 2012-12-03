@@ -22,10 +22,10 @@ class Process
         if (Handlebars?)
           options.blurb = new Handlebars.SafeString options.blurb
           
-        @steps.push new Step(name, @steps.length + 1, options)
+        @steps.push new Step(name, @steps.length, options)
         
         if options.stage > priorStage
-          @firstInStages[options.stage] = @steps.length
+          @firstInStages[options.stage] = @steps.length - 1
         priorStage = options.stage
         
         @suggestedMins += options.suggestedMins
@@ -86,6 +86,9 @@ PROCESS = new Process "Base",
     prereqForNextStage: true
     longName: "Voting round 1"
     blurb: "Vote. You will be paid based on results."
+    beforeFinish: (cb) ->
+      election = Session.get 'election'
+      election.addVote VOTE.raw(), cb
 , 
   payouts:
     suggestedMins: 1
@@ -101,6 +104,9 @@ PROCESS = new Process "Base",
     prereqForNextStage: true
     longName: "Voting round 2"
     blurb: "Vote. You will be paid again based on results."
+    beforeFinish: (cb) ->
+      election = Session.get 'election'
+      election.addVote VOTE.raw(), cb
 , 
   payouts:
     suggestedMins: 1
@@ -114,9 +120,19 @@ PROCESS = new Process "Base",
     suggestedMins: 2
     maxMins: 7
     stage: 4
-    prereqForNextStage: true
+    prereqForNextStage: false
     longName: "Survey"
-    blurb: "5-6 simple questions each about:<ul><li>you (gender, country, etc)</li><li>the voting system you used (on a 1-7 scale)</li><li>your general comments about the experiment</li></ul>"
+    blurb: "4-5 simple questions each about:<ul><li>you (gender, country, etc)</li><li>the voting system you used (on a 0-7 scale)</li><li>your general comments about the experiment</li></ul>"
+    beforeFinish: (cb) ->
+      sendSurvey cb
+, 
+  debrief:
+    suggestedMins: 1
+    maxMins: 3
+    stage: 4
+    prereqForNextStage: true
+    longName: "Debrief"
+    blurb: "Thanks for participating, and a simple explanation of what we hope to learn from this study. Submit job and receive base pay."
 
     
     
@@ -160,11 +176,10 @@ class StepRecord extends StamperInstance
     
   @register
     finished: ->
-      console.log "save StepRecord 1"
+      #console.log "save StepRecord 1"
       stepDoneBy = StepRecords.find(
             step: @step
             election: @election
-            voter: @voter
           ).count()
           
       
@@ -173,55 +188,59 @@ class StepRecord extends StamperInstance
       else
         election = new Election Elections.findOne
           _id: @election
-      console.log "save StepRecord 2", @, election, PROCESS.step(@step)#, _(@).pairs()
+      #console.log "save StepRecord 2", @, election, PROCESS.step(@step)#, _(@).pairs()
       election.stepsDoneBy[@step] = stepDoneBy
       
       if PROCESS.step(@step).prereqForNextStage
-        console.log "save StepRecord 3"
+        #console.log "save StepRecord 3"
         election.stage.should.equal PROCESS.step(@step).stage
         if (stepDoneBy >= election.scen().numVoters() or #full scenario
               (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
           
-          console.log "save StepRecord 4"
+          #console.log "save StepRecord 4"
           election.stage += 1
           
-          if Meteor.is_server
-            #move along everyone else who was waiting for that.
-            stepToPromote = PROCESS.firstInStages[election.stage] - 1
-            StepRecords.find(
-              election: @election
-              step: stepToPromote
-            ).forEach (record) ->
-              
-              console.log "save StepRecord 5"
-              if record.voter != @voter #that case is done below
-                Meteor.users.update
-                  _id: record.voter
-                ,
-                  $set:
-                    step: stepToPromote + 1
-                ,
-                  multi: false
+          #if Meteor.is_server
+          #  #move along everyone else who was waiting for that.
+          #  stepToPromote = PROCESS.firstInStages[election.stage] - 1
+          #  #console.log "save StepRecord 4.5", @election, stepToPromote, StepRecords.find({election: @election}).fetch()
+          #  StepRecords.find(
+          #    election: @election
+          #    step: stepToPromote
+          #  ).forEach (record) ->
+          #    
+          #    #console.log "save StepRecord 5"
+          #    if record.voter != @voter #that case is done below
+          #      Meteor.users.update
+          #        _id: record.voter
+          #      ,
+          #        $set:
+          #          step: stepToPromote + 1
+          #      ,
+          #        multi: false
      
-      console.log "save StepRecord 6", election
+      #console.log "save StepRecord 6", election
       election.save() 
         
       #move along if we can
       [thisStage, nextStage] = [PROCESS.step(@step).stage, PROCESS.step(@step + 1).stage]
       if election.stage >= nextStage
         
-        console.log "save StepRecord 7"
-        Meteor.users.update
-          _id: @voter
-        ,
-          $set:
-            step: @step + 1
-        ,
-          multi: false
+        #console.log "save StepRecord 7"
+        @moveOn()
           
       else
-        autosubscribe ->
-          Session.set "error", "Waiting for others"
+        Session.set "stepWaitingForStage", nextStage
+          
+    moveOn: ->
+      #console.log "moving on to step ",@step + 1
+      Meteor.users.update
+        _id: @voter
+      ,
+        $set:
+          step: @step + 1
+      ,
+        multi: false
               
               
   finish: ->
@@ -229,11 +248,11 @@ class StepRecord extends StamperInstance
       now = new Date
       @done = now.getTime()
       @save =>
-        console.log "finished:", @
+        #console.log "finished:", @
         @finished()
         @after()
     else #can't finish
-      console.log "can't finish stepRecord!"
+      #console.log "can't finish stepRecord!"
   
   after: ->
     if PROCESS.step(@step).after?
@@ -247,25 +266,34 @@ class StepRecord extends StamperInstance
 #
 
 Meteor.startup ->
-  #console.log _.keys Meteor
+  ##console.log _.keys Meteor
   if Meteor.is_client
     Meteor.autosubscribe ->
-      step = Meteor.user()?.step
+      step = Session.get "step"
       if step? and step != stepRecord?.step
-        console.log "New step"
+        #console.log "New step"
         window.stepRecord = new StepRecord()
 
+    Meteor.autosubscribe ->
+      stepWaitingForStage = Session.get "stepWaitingForStage"
+      if stepWaitingForStage
+        stage = Session.get "stage"
+        if stage is stepWaitingForStage
+          Session.set "stepWaitingForStage", no
+          stepRecord.moveOn()
+          
 NextStep = ->
   beforeFinish = PROCESS.step(stepRecord.step).beforeFinish
-  console.log "beforeFinish", beforeFinish
+  #console.log "beforeFinish", beforeFinish
   if beforeFinish
     beforeFinish (error, result) ->
-      console.log "beforeFinish done", error, result
+      #console.log "beforeFinish done", error, result
       if !error
-        console.log "NextStep"
+        #console.log "NextStep"
         stepRecord.finish()
       else
-        Session.set "error", "Sorry, experiment full."
+        #console.log error
+        Session.set "error", error.reason
   else
-    console.log "NextStep direct"
+    #console.log "NextStep direct"
     stepRecord.finish()

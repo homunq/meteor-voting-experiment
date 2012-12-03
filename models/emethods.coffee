@@ -33,8 +33,10 @@ Methods = makeMethods
         true
         
       resolveVotes: (numCands, votes) ->
+        console.log "resolveVotes", numCands, votes
         counts = _.map (_.zip votes...), (cvotes) ->
           _.reduce cvotes, (a,b) ->
+            b ?= 0
             a + b
           , 0
         winners = []
@@ -45,4 +47,4 @@ Methods = makeMethods
             winningVotes = count
           else if count is winningVotes
             winners.push cand
-        winners
+        [winners, counts]
