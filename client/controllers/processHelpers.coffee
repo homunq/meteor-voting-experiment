@@ -1,5 +1,52 @@
 
+            
+@STEP_RECORD = undefined
+
+Meteor.startup ->
+  ##console.log _.keys Meteor
+  if Meteor.is_client
+    Meteor.autosubscribe ->
+      step = Session.get "step"
+      if step? and step != STEP_RECORD?.step
+        #console.log "New step"
+        window.STEP_RECORD = new StepRecord()
+      else
+        console.log "not making STEP_RECORD", step, STEP_RECORD
+
+    Meteor.autosubscribe ->
+      user = Meteor.user()
+      step = user?.step
+      stage = Session.get "stage"
+      lastStep = user?.lastStep
+      if STEP_RECORD and ((step < PROCESS.firstForStages[stage]) or (lastStep is step and PROCESS.step(step).stage < stage))
+        playSound "next"
+        STEP_RECORD.moveOn(yes)
+      
+nextStep = ->
+  beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
+  #console.log "beforeFinish", beforeFinish
+  if beforeFinish
+    beforeFinish (error, result) ->
+      #console.log "beforeFinish done", error, result
+      if !error
+        #console.log "NextStep"
+        STEP_RECORD.finish()
+      else
+        #console.log error
+        Session.set "error", error.reason
+  else
+    #console.log "NextStep direct"
+    STEP_RECORD.finish()
+
 if (Handlebars?) 
+  #a simple handlebars function that lets you render a page based a reactive var
+  Handlebars.registerHelper 'renderWith', (name, text) ->
+    if Template[name]
+      new Handlebars.SafeString Template[name]
+        text: text
+    else
+      new Handlebars.SafeString "<!--missing #{ name } template-->"
+      
   Handlebars.registerHelper "eid", ->
     Meteor.user()?.eid
     
@@ -49,8 +96,13 @@ if (Handlebars?)
     losers.splice outcome.winner, 1
     ((e.scen().candInfo loser, faction, outcome.counts[loser]) for loser in losers)
     
+  Handlebars.registerHelper 'stepCompletedNum', ->
+    Session.get 'stepCompletedNum'
+    
   Handlebars.registerHelper 'stepWaiting', ->
-    Session.get 'stepWaitingForStage'
+    step = Session.get "step"
+    lastStep = Session.get "lastStep"
+    return (step is lastStep)
     
   Handlebars.registerHelper 'scenarioName', ->
     e = Session.get 'election'
@@ -70,6 +122,9 @@ if (Handlebars?)
     console.log "scenCandInfo", Session.get 'faction', (Session.get 'scenario'), result
     result
     
+  Handlebars.registerHelper 'scenNumVoters', ->
+    (Session.get 'scenario').numVoters()
+    
   Handlebars.registerHelper 'surveyQuestions', ->
     setupSurvey()
     _.values(question)[0] for question in SURVEY.questions
@@ -77,6 +132,10 @@ if (Handlebars?)
   Handlebars.registerHelper 'stage', ->
     console.log 'stage'
     return Session.get 'stage'
+    
+  Handlebars.registerHelper 'nextStage', ->
+    console.log 'helper nextStage'
+    return (Session.get 'stage') + 1
     
   Handlebars.registerHelper "steps", ->
     steps = []  

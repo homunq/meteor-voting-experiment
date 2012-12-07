@@ -1,13 +1,17 @@
 
 <template name="nextStep">
 	{{#if stepWaiting}}<a href="#" onclick="alert('Waiting for others');return false;" id="nextStep" title="Waiting" class="btn btn-primary btn-large">
-	Waiting for other voters </a>
+	Waiting for other voters ({{stepCompletedNum}}/{{scenNumVoters}} or {{{countdownToStage nextStage "hunh"}}})</a>
 	{{else}}
-	<a href="#" onclick="NextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
-	Next </a>
+	<a href="#" onclick="nextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
+	{{text}} </a>
 	{{/if}}
 </template>
 
+
+<template name="hunh">
+	hunh!<!--you should never see this-->
+</template>
 
 <template name="countdownWithSound">
 	
@@ -17,7 +21,7 @@
             Your browser does not support HTML5 audio.
         </audio>
 
-	{{{countdown}}}
+	{{{countdownToStage 1 "countdownDone"}}}
 </template>
 
 <template name="countdownClock">
@@ -25,9 +29,9 @@
 </template>
 
 <template name="countdownDone">
-	{{{call "playSound"}}}
+	{{{call "playSoundOnce"}}}
 	<div>Countdown is done!</div>
-	{{{render "nextStep"}}}
+	{{{renderWith "nextStep" "Consent and next"}}}
 </template>
 
 
@@ -36,7 +40,7 @@
 		<tr><td rowspan="2">Voter faction</td><td rowspan="2">Number of voters in faction</td><td colspan="3">Payment if winner is site:</td></tr>
 		<tr>{{#each scen.candNames}}<td >{{this}}</td>{{/each}}</tr>
 	{{#with scenMyPayoffs}}
-		<tr><td>YOU:{{factName}}</td><td>{{factSize}}</td>
+		<tr><td>{{factName}}</td><td>{{factSize}} (including you)</td>
 			{{#each payoffs}}<td>{{bonus this}}</td>{{/each}}
 		</tr>
 	{{/with}}

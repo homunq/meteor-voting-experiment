@@ -4,6 +4,7 @@ class @MyRouter extends ReactiveRouter
     'election/:eid': 'inElection'
     'elections/clear/all': 'clearAll'
     'elections/makeOne/:scenario/:method': 'makeElection'
+    'elections/makeOne/:scenario/:method/:delay': 'makeElection'
     
   watchElection: ->
     console.log 'watch'
@@ -26,12 +27,13 @@ class @MyRouter extends ReactiveRouter
     console.log "clear all"
     Election.clearAll()
     
-  makeElection: (scenario, method) ->
-    console.log "makeElection", scenario, method
+  makeElection: (scenario, method, delay=100) ->
+    console.log "makeElection", scenario, method, delay
+    delay = parseInt delay
     Election.make(
       scenario: scenario
       method: method
-    , true)
+    , true, delay)
     Meteor.logout()
 
 global = @

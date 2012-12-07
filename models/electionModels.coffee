@@ -7,7 +7,7 @@ echo "echo", echo
 
 Votes = new Meteor.Collection 'votes'
 
-class @Vote extends StamperInstance
+class @Vote extends VersionedInstance
   collection: Votes
   
   @fields
@@ -28,7 +28,23 @@ if Meteor.is_server && !MainElection.findOne()
     eid: null
   #console.log "...setting up MainElection..."
 
-class @Election extends StamperInstance
+backToHour = (aTime) ->
+  aTime.setMinutes(0) #rounded back to on-the-hour
+  aTime.setSeconds(0) #rounded back to on-the-hour
+  aTime.setMilliseconds(0) #rounded back to on-the-hour
+  aTime
+  
+minutesFromNow = (mins) ->
+  later = new Date
+  later.setMinutes(later.getMinutes() + mins)
+  later
+  
+nullOrAfterNow = (ms) ->
+  if not ms
+    return true
+  return ((new Date).getTime() - ms) < 0
+
+class @Election extends VersionedInstance
   collection: Elections
   
   @fields
@@ -43,11 +59,7 @@ class @Election extends StamperInstance
     stage: 0
     sTimes: ->
       now = new Date
-      later = new Date
-      later.setMinutes(now.getMinutes() + 100) #plus 1:40
-      later.setMinutes(0) #rounded back to on-the-hour
-      later.setSeconds(0) #rounded back to on-the-hour
-      later.setMilliseconds(0) #rounded back to on-the-hour
+      later = backToHour minutesFromNow 100
       [now.getTime(), later.getTime()]
       
     seed: ->
@@ -62,10 +74,14 @@ class @Election extends StamperInstance
     
     
   @register
-    make: @static (options, promote)->
+    make: @static (options, promote, delay)->
       #console.log "new election", options 
       options ?= {}
       options = _(options).pick "scenario", "method"
+      delay ?= 0
+      later = minutesFromNow delay
+      if delay > 10
+        later = backToHour later
       
       _(options).defaults
         scenario: 'chicken'
@@ -73,6 +89,7 @@ class @Election extends StamperInstance
         watchers: []
         voters: []
         factions: []
+        sTimes: [(new Date).getTime(), later.getTime()]
         
       e = new Election options
       if Meteor.is_server
@@ -215,6 +232,8 @@ class @Election extends StamperInstance
       tiebreakerGen = new MersenneTwister(@seed + stage)
       tiebreakers = (tiebreakerGen.random() for cand in _.range @scen().numCands())
       best = -1
+      if winners.length is 0
+        winners.push 0
       for oneWinner in winners
         if tiebreakers[oneWinner] > best
           winner = oneWinner
@@ -231,6 +250,31 @@ class @Election extends StamperInstance
       @winners[stage] = winner
       @outcomes[stage] = outcome._id
       @save()
+      
+    nextStage: ->
+      console.log "election.nextStage"
+      @stage += 1
+      if Meteor.is_server 
+        if nullOrAfterNow(@sTimes[@stage])
+          now = (new Date).getTime()
+          @sTimes[@stage] = now
+          delay = PROCESS.minsForStage(@stage) * 60 * 1000
+        if not @sTimes[@stage + 1]
+          console.log "setting stage timeout", delay, @stage, now, now + delay
+          @sTimes[@stage + 1] = now + delay
+          sT = (ms, fn) ->
+            Meteor.setTimeout fn, ms
+          sT delay, =>
+            console.log "Stage timeout! Advancing stage\n!\n!\n!", @_id, @stage + 1
+            Elections.update
+              _id: @_id
+              stage: @stage #only if stage is still the same
+            ,
+              $set:
+                stage: @stage + 1
+            ,
+              multi: false
+      
   
   #local (non-registered) methods
       
@@ -272,7 +316,7 @@ echo 'Election', Election
   
 Outcomes = new Meteor.Collection 'outcomes', null
 
-class @Outcome extends StamperInstance
+class @Outcome extends VersionedInstance
   collection: Outcomes
   
   @fields
@@ -324,27 +368,40 @@ else if Meteor.is_client
 
   OLD_ELECTION = undefined
   OLD_USER = undefined
+  OLD_STEP_COMPLETED_NUM = undefined
   Meteor.autosubscribe ->
     user = Meteor.user()
+    if user?.faction isnt OLD_USER?.faction
+      Session.set 'faction', user.faction
+    if user?.lastStep isnt OLD_USER?.lastStep
+      Session.set 'lastStep', user.lastStep
+    if user?.step isnt OLD_USER?.step
+      Session.set 'step', user.step
+    OLD_USER = user
+    
+    
     eid = user?.eid
-    #console.log "election (re)loading", eid
+    console.log "election (re)loading", eid
     if eid
       e = Elections.findOne
         _id: eid
-      #console.log "really (re)loading",Meteor.user().eid,  e
+      console.log "really (re)loading",Meteor.user().eid,  e
       election = new Election e
       Session.set 'election', election
       Session.set 'stage', election.stage
+      stepCompletedNum = election.stepsDoneBy[user?.step] ? 0
+      if stepCompletedNum isnt OLD_STEP_COMPLETED_NUM
+        Session.set "stepCompletedNum", stepCompletedNum
+        OLD_STEP_COMPLETED_NUM = stepCompletedNum
+        
+        votersLeft = election.scen().numVoters - stepCompletedNum 
+        if votersLeft <= election.scen().hurryNumber and (user.step isnt user.lastStep)
+          playSound "hurry"
       if eid isnt OLD_ELECTION?._id #don't obsessively reload stable values
         if election.scen() isnt OLD_ELECTION?.scen()            
           Session.set 'scenario', election.scen()
         if election.meth() isnt OLD_ELECTION?.meth()            
           Session.set 'method', election.meth()
         OLD_ELECTION = election
-        #console.log "really (re)loaded ",Meteor.user().eid,  e
-    if user?.faction isnt OLD_USER?.faction
-      Session.set 'faction', user.faction
-    if user?.step isnt OLD_USER?.step
-      Session.set 'step', user.step
-      
-    OLD_USER = user
+              
+        console.log "fully (re)loaded ",Meteor.user().eid,  e

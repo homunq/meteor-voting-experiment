@@ -63,7 +63,11 @@ class Section extends Question
 
 SurveyResponses = new Meteor.Collection 'surveyResponses', null
 
-class SurveyResponse extends StamperInstance
+SurveyResponses.allow
+  insert: (uid, doc) ->
+    true
+
+class SurveyResponse extends VersionedInstance
   
   collection: SurveyResponses
   

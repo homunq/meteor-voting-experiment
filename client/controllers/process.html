@@ -1,5 +1,16 @@
 
 <template name="whichStep">
+	
+    <audio id="next" hidden="true">
+        <source src="/audio/next.ogg" type="audio/ogg" />
+        <source src="/audio/next.mp3" type="audio/mpeg" />
+        Your browser does not support HTML5 audio.
+    </audio>
+    <audio id="hurry" hidden="true">
+        <source src="/audio/hurry.ogg" type="audio/ogg" />
+        <source src="/audio/hurry.mp3" type="audio/mpeg" />
+        Your browser does not support HTML5 audio.
+    </audio>
 	<div class="navbar">
 	  <div class="navbar-inner">
         <ul class="nav">
@@ -10,7 +21,9 @@
 </template>
 
 <template name="oneStep">
-	<li {{#if thisStep}}class="active"{{/if}}><a href="#" class="hasPopover">{{num}}: {{name}}{{#if popover}}<span class="popover">{{{stepPopover name}}}</span>{{/if}}</a></li>
+	<li {{#if thisStep}}class="active"{{/if}}><a href="#" class="hasPopover">{{num}}:
+		{{name}}{{#if popover}}<span class="popover">{{{stepPopover name}}}</span>{{/if}}{{#if false}}
+			{{/if}}{{#if thisStep}}<div class="underbar">{{stepCompletedNum}}/{{scenNumVoters}}</div>{{/if}}</a></li>
 </template>
 
 <template name="scenario_popover">
@@ -25,40 +38,45 @@
 		</tr>
 </template>
 	
-<template name="consent">
+<template name="overview">
 
 	<h2>Voting Experiment</h2>
-	<p>This is an experiment on voting. 18 human voters, divided into three groups, will
+	<p>This is an experiment on voting. 18 voters like you, divided into three groups, will
 	decide between three options. Depending on the winning option, participants will 
-	earn a bonus, so that average total pay will be between
-	{{minAverage}}
-	and
-	{{maxAverage}}, and depending on your luck and skill you may earn up to {{maxPay}}
-	in total.
+	earn extra pay of up to
+	{{bonus 6}} (paid within hours as a "bonus" in AMT). The average pay for all participants will be at least
+	{{minAverage}}, and depending on your luck and skill you may earn up to 
+	{{maxPay}} in total.
 	We will be running this experiment several times, using
 	different voting systems, but you may only participate once.</p>
 	<p>In order to ensure enough simultaneous participants, we will be starting this
-		experiment at a defined time, shown in the countdown below. If you leave this
-		window open, when the countdown completes, a beep will sound and an "consent
+		experiment at a defined time. Until the countdown finishes,
+		you can only view steps 0 (this screen) and 1 (consent form). Press "next" below to see the consent
+		form and countdown. If you leave this
+		window open, when the countdown completes, a sound will play ("voting experiment starting")
+		and an "consent
 		and join" button will appear. The first 18 people to press that button
-		will be admitted into the experiment. It does not matter if you "accept" 
-		this HIT via Amazon
-		beforehand. We ask that you only "accept" <b>after</b> you are allowed into
-		the experiment. However, we have made more than 18 HITs available so that people
-		who can't follow instructions won't dry up the supply for the actual
-		participants. <b>Only the 18 workers allowed in will be paid for each run of 
+		will be admitted into the experiment. We ask that you only "accept" the HIT with Amazon
+		<b>after</b> you are allowed into
+		the experiment. (But we have made more than 18 HITs available for idiot-proofing.)
+		<b>Only the 18 workers allowed in will be paid for each run of 
 		the experiment.</b></p>
 	<h2>Process</h2>
 	<table class="table">
 		<tr><td width="5%">Step</td><td width="25%">Name</td><td width="60%">Explanation</td><td width="10%">Time</td></tr>
 		{{stepExplanations}}
 	</table>
+	<p>Press the button below to see the consent form and wait for the experiment to start.</p>
+	{{{renderWith "nextStep" "Next"}}}
+</template>
+	
+<template name="consent">
 	<h2>Consent statement</h2>
 	<p>The following is an experiment in voting behavior. Should you choose to participate,
 the experiment will take under 25 minutes total, and you will be paid a base rate of 
 {{baseRate}}.
 You will also have 2 opportunities to gain a reward of up to 
-{{bonus}}. 
+{{bonus 3}}. 
 The average total payment of participants will be somewhere from 
 {{minAverage}}
 to
@@ -100,7 +118,6 @@ Cambridge, MA 02140</p>
 If you have questions about your rights in this research, or for questions, concerns,
 suggestions, or complaints that are not being addressed by the research team, or
 in case of research-related harm, please contact Committee on the Use of Human
-
 Subjects in Research at Harvard University, 1414 Mass. Ave., Second Floor,
 Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.png"/></p>
 
@@ -109,36 +126,37 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 </template>
 
 <template name="scenario">
-	<div><img src="/images/{{mapImg}}.png"></div>
-	<div><p>Imagine that you live in the town at left, in one of the houses inside the 
+	<div class="span3">
+      <img src="/images/{{mapImg}}.png">
+    </div>
+    <div class="span9"><p>Imagine that you live in the town at left, in one of the houses inside the 
 	dashed circle. You and the other inhabitants of this town are voting on where
 	to build a new firehouse. You would like the firehouse to be as close to your
 	own house as possible. The three candidate sites X, Y, and Z are marked on
 	the map with flags.</p>
 	<p>In actuality, you and the other participants in this experiment will be voting
 		three times. The first time will be for practice, and to familiarize yourself
-		with the the voting system used (explained in the followint screen). The next 
+		with the voting system used (explained in the followint screen). The next 
 		two times, you will get a bonus payment (real money, paid within 24 hours)
 		depending on the result of the election. The payoffs for you and for the other
 		groups of voters are as follows:</p>
+      <!--Body content-->
+    </div>
+	<div>
 			{{{render "scenarioTable"}}}
 	</div>
-	{{{render "nextStep"}}}
-</template>
-
-<template name="method">
-	{{{meth_blurb}}}
-	{{{render "nextStep"}}}
+	{{{renderWith "nextStep" "Next"}}}
 </template>
 
 <template name="practice">
 	<h2>Practice voting</h2>
+	{{{meth_blurb}}}
 	<p>Vote using the ballot below. This is a practice election only; you will not be paid any bonus based on 
 		this, so you should simply vote however you honestly feel about the candidates. After all participants
 		vote, and you have a chance to see the results of this election, you will move on to voting in two
 		"real" elections, with a bonus paid based on results.</p>
 	{{{render "ballot"}}}
-	{{{render "nextStep"}}}
+	{{{renderWith "nextStep" "Next"}}}
 </template>
 
 <template name="results">
@@ -150,7 +168,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	{{{render "outcomes"}}}
 	<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
 		not necessarily lead to the same winner.</p>
-	{{{render "nextStep"}}}
+	{{{renderWith "nextStep" "Next"}}}
 </template>
 
 <template name="voting">
@@ -159,7 +177,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 		the other voters. There are a total of 2 paying repetitions of this election, so you may earn up to two 
 		separate bonuses.</p>
 	{{{render "ballot"}}}
-	{{{render "nextStep"}}}
+	{{{renderWith "nextStep" "Next"}}}
 </template>
 
 <template name="payouts">
@@ -168,7 +186,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	{{{render "outcomes"}}}
 	<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
 		not necessarily lead to the same winner.</p>
-	{{{render "nextStep"}}}
+	{{{renderWith "nextStep" "Next"}}}
 </template>
 
 <template name="survey">
@@ -178,7 +196,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	{{#each surveyQuestions}}
 		{{{ this.html }}}
 	{{/each}}
-	{{{render "nextStep"}}}
+	{{{renderWith "nextStep" "Next"}}}
 </template>
 
 <template name="debrief">

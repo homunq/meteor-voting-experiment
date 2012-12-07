@@ -23,11 +23,15 @@ inTenSeconds = ->
 do ->
   intervaller = null
   intervalDone = no
-  Handlebars.registerHelper "countdown", ->
+  intervalStage = null
+  Handlebars.registerHelper "countdownToStage", (stage, after) ->
+    if intervalStage isnt stage and intervaller
+      clearInterval intervaller
+      intervaller = null
     election = Session.get "election"
     if election?
-      #untilTime = election.sTimes[1]
-      untilTime = inTenSeconds()
+      untilTime = election.sTimes[stage]
+      #untilTime = inTenSeconds()
       if not intervaller and not intervalDone
         sI = (ms, fn) ->
           setInterval fn, ms
@@ -47,19 +51,25 @@ do ->
         return Template["countdownClock"] 
           displayCount: seconds2time displayCount/1000
       else if displayCount?
-        return Template["countdownDone"]()
+        return Template[after]()
     else
       return "No experiment currently pending"
           
 Handlebars.registerHelper "call", (funcName, data) ->
   window[funcName] data
   
-playSound = ->
+playSound = (whichSound) ->
   sT = (ms, fn) ->
     setTimeout fn, ms
   sT 1000, ->
-    document.getElementById('starting').play()
+    document.getElementById(whichSound).play()
   
+playSoundOnce = ->
+  window.SOUNDED ?= false
+  if not SOUNDED
+    playSound "starting"
+    window.SOUNDED = true
+    
 VOTE = null  
 ballotSetup = ->
   step = Session.get('step')
@@ -74,3 +84,5 @@ ballotSetup = ->
 voteFor = (cand, grade) ->
   console.log "voteFor", cand, grade
   VOTE.vote[cand] = grade
+
+#

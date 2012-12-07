@@ -5,14 +5,58 @@
 		<p><strong>The ballot will ask you to approve or disapprove of each
 		candidate.</strong> You may approve of any number of candidates. If you approve of all candidates or
 		no candidates, your ballot will not affect the election.</p>
-		<h4>Sample</h4>
-		<p>This is <strong>only a sample ballot</strong>. It does <strong>nothing</strong>. You will have an 
-			opportunity to practice using this ballot and see the results in the following step.</p>
-		{{{render "ballot"}}}
 		<h3>Counting</h3>
 		<p>The winner will be the site with the most approvals</p>
 </template>
 
+<template name="CMJ_blurb">
+		<h2>Election Method: Continuous Majority Judgment</h2>
+		<h3>Ballot</h3>
+		<p><strong>The ballot will ask you to grade each
+		candidate</strong> on a scale from A (best) to F (worst). You may give two candidates the
+		same grade if you wish. Any candidate whom you do not explicitly grade will get an F from you.</p>
+		<h3>Counting</h3>
+		<p>The winner will be the candidate who gets the highest grade from at least half the voters
+		(median grade). So a candidate that got the grades A, A, B, D, F would have a median of B (3.0)
+		because at least half of the voters gave them B or better. In order to prevent ties, the 
+		median is adjusted by up to 0.5 up or down using the formula:
+		<table><tr><td rowspan="2">MedianGrade -</td><td>NumVotesAboveMedian - NumVotesBelowMedian</td></tr>
+			                                     <tr><td>2 * NumVotesAtMedian</td></tr>
+		</table></p>
+		<p>For instance, a candidate that got the grades A, A, B, B, C would have a score of
+		<table><tr><td rowspan="2">3 -</td><td>2 - 1</td><tr><td rowspan="2">= 3.25</td></tr>
+			                       <tr><td>2 * 2</td></tr></table>
+		This formula is most affected by the voters in the middle, not by those at the extremes. 
+		For instance, the candidate above would still get the same score if their lowest grade were
+		changed from a "C" to an "F".
+			</p>
+			<p>The candidate with the highest adjusted ("continuous") median score wins.</p>
+</template>
+
+<template name="IRV_blurb">
+		<h2>Election Method: Instant Runoff Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>The ballot will ask you to rank the candidates in order of preference.</strong> 
+		So you would rank the candidate you wish to help the most as 1, the next as 2, and so on.
+		Any candidate whom you do not explicitly rank will not get your vote, as if you ranked
+		them last.</p>
+		<h3>Counting</h3>
+		<p>Votes will be assigned to the candidate they rank first. If no candidate gets more than half
+			the votes, then the votes assigned to the candidate with the fewest votes will be reassigned
+			to the candidate they rank next, if any. Any of these votes which do not include a next choice will
+			be counted as "exhausted". This process will repeat until one candidate has more than half
+			of the non-exhausted votes.</p>
+			<p>The first candidate to get more than half of the remaining votes wins.</p>
+</template>
+
+
+<template name="plurality_blurb">
+		<h2>Election Method: Plurality Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>You may vote for exactly one candidate.</strong> </p>
+		<h3>Counting</h3>
+			<p>The candidate with the most votes wins.</p>
+</template>
 
 <template name="ballot">
 	{{call "ballotSetup" step}}
@@ -33,10 +77,54 @@
 	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
 </template>
 
+<template name="CMJ_ballotLine">
+	<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},4);">A
+	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},3);">B
+	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},2);">C
+	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},1);">D
+	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},0);">F
+</template>
+
+<template name="IRV_ballotLine">
+	{{#each candOrdinals}}
+	<input type="radio" name="cand{{ord}}" value="{{../num}}" onclick="exclusiveVoteFor({{../num}},{{ord}},true);">{{ord}}
+	{{/each}}
+</template>
+
+
+<template name="plurality_ballotLine">
+	<input type="radio" name="vote" value="{{num}}" onclick="exclusiveVoteFor({{num}},1);">
+</template>
 
 <template name="approval_resultHead">
 	<td>Count</td>
 </template>
 <template name="approval_resultLine">
+	<td>{{count}}</td>
+</template>
+
+<template name="CMJ_resultHead">
+	<td>Score</td>
+</template>
+<template name="CMJ_resultLine">
+	<td>{{count}}</td>
+</template>
+
+<template name="IRV_resultHead">
+	<td>Result</td>
+</template>
+<template name="IRV_resultLine">
+	<td>{{#if count.length}}
+		{{count.length}} votes (in final count)
+	{{else}}
+		Eliminated in round {{count}}
+	{{/if}}</td>
+</template>
+
+
+<template name="plurality_resultHead">
+	<td>Count</td>
+</template>
+<template name="plurality_resultLine">
 	<td>{{count}}</td>
 </template>

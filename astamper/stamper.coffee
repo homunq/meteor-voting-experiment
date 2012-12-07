@@ -32,7 +32,10 @@ class StamperInstance
     _.extend this, props
   
   @fields: (_fields) ->
-    @::_fields ?= {}
+    if @::_fields?
+      @::_fields = _.clone @::_fields #copy from superclass to class.
+    else
+      @::_fields = {} #start with no fields
     
     for fname, f of _fields
       if not (f instanceof Field)

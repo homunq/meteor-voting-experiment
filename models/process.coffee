@@ -14,7 +14,7 @@ class Step
 class Process
   constructor: (@name, steps...) ->
     @steps = []
-    @firstInStages = []
+    @firstForStages = [0]
     priorStage = 0
     @suggestedMins = @maxMins = 0
     for step in steps
@@ -24,8 +24,8 @@ class Process
           
         @steps.push new Step(name, @steps.length, options)
         
-        if options.stage > priorStage
-          @firstInStages[options.stage] = @steps.length - 1
+        if options.prereqForNextStage
+          @firstForStages[options.stage + 1] = @steps.length #@steps.length is the number of the NEXT step
         priorStage = options.stage
         
         @suggestedMins += options.suggestedMins
@@ -33,13 +33,29 @@ class Process
   
   step: (num) ->
     @steps[num]
+    
+  minsForStage: (stage) ->
+    console.log "minsForStage", stage
+    mins = 0
+    stepToTime = @firstForStages[stage]
+    while @steps[stepToTime] and @steps[stepToTime].stage <= stage
+      mins += @steps[stepToTime].maxMins
+      stepToTime += 1
+    mins
 
 PROCESS = new Process "Base",
+  overview:
+    suggestedMins: 0
+    maxMins: 0
+    stage: 0
+    longName: "Overview"
+    blurb: "See an outline of the experiment, and wait for the countdown to end and the experiment to begin."
+,
   consent:
     suggestedMins: 0
     maxMins: 60
     stage: 0
-    longName: "Outline, countdown, and consent"
+    longName: "Consent"
     blurb: "See an outline of the experiment, and wait for the countdown to end and the experiment to begin."
     prereqForNextStage: true
     beforeFinish: (cb) ->
@@ -50,24 +66,17 @@ PROCESS = new Process "Base",
     suggestedMins: 2 
     maxMins: 3
     stage: 0
-    longName: "Scenario (Candidates, voters, and payouts)"
+    longName: "Scenario"
     blurb: "Understand how much you and other voters will earn depending on which of the virtual candidates wins."
     popover: true
-, 
-  method:
-    suggestedMins: 2
-    maxMins: 3
-    stage: 0
-    longName: "Election method (ballots and counting)"
-    blurb: "Understand the voting system which will be used: how to fill out your ballot, and how ballots will be counted to find a winner."
 , 
   practice:
     suggestedMins: 1
     maxMins: 4
     stage: 1
     prereqForNextStage: true
-    longName: "Practice voting (round 0)"
-    blurb: "Vote once for practice (no payout)."
+    longName: "Election method practice"
+    blurb: "Learn and practice the election method to be used"
     beforeFinish: (cb) ->
       election = Session.get 'election'
       election.addVote VOTE.raw(), cb
@@ -76,7 +85,7 @@ PROCESS = new Process "Base",
     suggestedMins: 1
     maxMins: 2
     stage: 2
-    longName: "Practice results (round 0)"
+    longName: "Practice results"
     blurb: "See results of the practice election: the winner and how much you would have been paid."
 , 
   voting:
@@ -198,9 +207,9 @@ class StepRecord extends StamperInstance
               (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
           
           #console.log "save StepRecord 4"
-          election.stage += 1
+          election.nextStage()
           
-          #if Meteor.is_server
+          
           #  #move along everyone else who was waiting for that.
           #  stepToPromote = PROCESS.firstInStages[election.stage] - 1
           #  #console.log "save StepRecord 4.5", @election, stepToPromote, StepRecords.find({election: @election}).fetch()
@@ -220,25 +229,30 @@ class StepRecord extends StamperInstance
           #        multi: false
      
       #console.log "save StepRecord 6", election
-      election.save() 
+      if Meteor.is_server
+        console.log "wtf???", election.stage
+        election.save() 
         
       #move along if we can
-      [thisStage, nextStage] = [PROCESS.step(@step).stage, PROCESS.step(@step + 1).stage]
+      nextStage = PROCESS.step(@step + 1).stage
       if election.stage >= nextStage
         
         #console.log "save StepRecord 7"
-        @moveOn()
+        @moveOn(yes)
           
       else
-        Session.set "stepWaitingForStage", nextStage
+        
+        console.log "Time to wait...", election.stage, nextStage, @step, PROCESS.step(@step), PROCESS.step(@step + 1)
+        @moveOn(no)
           
-    moveOn: ->
+    moveOn: (really) ->
       #console.log "moving on to step ",@step + 1
       Meteor.users.update
         _id: @voter
       ,
         $set:
-          step: @step + 1
+          step: @step + (if really then 1 else 0)
+          lastStep: @step
       ,
         multi: false
               
@@ -260,40 +274,7 @@ class StepRecord extends StamperInstance
           
   canFinish: ->
     PROCESS.step(@step).canFinish @
-            
-@stepRecord = undefined
   
 #
 
-Meteor.startup ->
-  ##console.log _.keys Meteor
-  if Meteor.is_client
-    Meteor.autosubscribe ->
-      step = Session.get "step"
-      if step? and step != stepRecord?.step
-        #console.log "New step"
-        window.stepRecord = new StepRecord()
-
-    Meteor.autosubscribe ->
-      stepWaitingForStage = Session.get "stepWaitingForStage"
-      if stepWaitingForStage
-        stage = Session.get "stage"
-        if stage is stepWaitingForStage
-          Session.set "stepWaitingForStage", no
-          stepRecord.moveOn()
           
-NextStep = ->
-  beforeFinish = PROCESS.step(stepRecord.step).beforeFinish
-  #console.log "beforeFinish", beforeFinish
-  if beforeFinish
-    beforeFinish (error, result) ->
-      #console.log "beforeFinish done", error, result
-      if !error
-        #console.log "NextStep"
-        stepRecord.finish()
-      else
-        #console.log error
-        Session.set "error", error.reason
-  else
-    #console.log "NextStep direct"
-    stepRecord.finish()

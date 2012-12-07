@@ -18,6 +18,10 @@ class Scenario
     @factNames.length.should.equal(@factSizes.length)
     @factColors.length.should.equal(@factSizes.length)
     @factPngs.length.should.equal(@factSizes.length)
+    if @numVoters() > 2
+      @hurryNumber = 2
+    else
+      @hurryNumber = @numVoters() - 1
     
   numVoters: ->
     numVoters = _.reduce @factSizes, (sum, addend) -> 
@@ -67,7 +71,7 @@ class Scenario
     factSizes: [4, 2, 3]
     factNames: ['X', 'Y', 'Z']
     factColors: ["#D40000", "#00D400", "#0000D4"]
-    factPngs: ["4voters", "#2voters", "3voters"]
+    factPngs: ["4voters", "2voters", "3voters"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0, 0],
@@ -77,7 +81,7 @@ class Scenario
     factSizes: [8, 4, 6]
     factNames: ['X', 'Y', 'Z']
     factColors: ["#D40000", "#00D400", "#0000D4"]
-    factPngs: ["4voters", "#2voters", "3voters"]
+    factPngs: ["4voters", "2voters", "3voters"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0, 0],
@@ -87,7 +91,7 @@ class Scenario
     factSizes: [2, 1]
     factNames: ['X', 'Y']
     factColors: ["#D40000", "#00D400"]
-    factPngs: ["4voters", "#2voters"]
+    factPngs: ["4voters", "2voters"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0],
@@ -97,7 +101,7 @@ class Scenario
     factSizes: [1, 1]
     factNames: ['X', 'Y']
     factColors: ["#D40000", "#00D400"]
-    factPngs: ["4voters", "#2voters"]
+    factPngs: ["4voters", "2voters"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0],
