@@ -57,6 +57,7 @@ do ->
           
 Handlebars.registerHelper "call", (funcName, data) ->
   window[funcName] data
+  ""
   
 playSound = (whichSound) ->
   sT = (ms, fn) ->
@@ -85,4 +86,13 @@ voteFor = (cand, grade) ->
   console.log "voteFor", cand, grade
   VOTE.vote[cand] = grade
 
-#
+exclusiveVoteFor = (cand, rank, clearUI) ->
+  console.log "exclusiveVoteFor", cand, rank
+  VOTE.vote[cand] = rank
+  for otherCand in [0..VOTE.vote.length - 1].splice(cand,1)
+    if VOTE.vote[otherCand] is rank
+      VOTE.vote[otherCand] = undefined
+      if clearUI
+        $("#cand#{ otherCand }rank#{ rank }").prop('checked', false)
+      
+  

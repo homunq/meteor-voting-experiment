@@ -20,12 +20,12 @@
 		(median grade). So a candidate that got the grades A, A, B, D, F would have a median of B (3.0)
 		because at least half of the voters gave them B or better. In order to prevent ties, the 
 		median is adjusted by up to 0.5 up or down using the formula:
-		<table><tr><td rowspan="2">MedianGrade -</td><td>NumVotesAboveMedian - NumVotesBelowMedian</td></tr>
-			                                     <tr><td>2 * NumVotesAtMedian</td></tr>
+		<table><tr><td rowspan="2">MedianGrade +</td><td style="text-align:center;border-bottom: solid 1px black;">NumVotesAboveMedian - NumVotesBelowMedian</td></tr>
+			                                     <tr><td style="text-align:center;"><p align="center">2 * NumVotesAtMedian</p></td></tr>
 		</table></p>
 		<p>For instance, a candidate that got the grades A, A, B, B, C would have a score of
-		<table><tr><td rowspan="2">3 -</td><td>2 - 1</td><tr><td rowspan="2">= 3.25</td></tr>
-			                       <tr><td>2 * 2</td></tr></table>
+		<table><tr><td rowspan="2">3 +</td><td style="text-align:center;border-bottom: solid 1px black;">2 - 1</td><td rowspan="2">= 3.25</td></tr>
+			                           <tr><td>2 * 2</td></tr></table>
 		This formula is most affected by the voters in the middle, not by those at the extremes. 
 		For instance, the candidate above would still get the same score if their lowest grade were
 		changed from a "C" to an "F".
@@ -86,14 +86,14 @@
 </template>
 
 <template name="IRV_ballotLine">
-	{{#each candOrdinals}}
-	<input type="radio" name="cand{{ord}}" value="{{../num}}" onclick="exclusiveVoteFor({{../num}},{{ord}},true);">{{ord}}
+	{{#each candRanks}}
+	<input type="radio" id="cand{{../num}}rank{{rank}}" name="rank{{rank}}" onclick="exclusiveVoteFor({{../num}},{{rank}},true);">{{ord}}
 	{{/each}}
 </template>
 
 
 <template name="plurality_ballotLine">
-	<input type="radio" name="vote" value="{{num}}" onclick="exclusiveVoteFor({{num}},1);">
+	<input type="radio" id="cand{{num}}rank1" name="vote" onclick="exclusiveVoteFor({{num}},1);">
 </template>
 
 <template name="approval_resultHead">

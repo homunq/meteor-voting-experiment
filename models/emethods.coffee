@@ -9,8 +9,9 @@ class Method
       if (not _.isFunction action) or action.nobind
         @[actname] = action
       else
-        @[actname] = ->
-          action.apply @, arguments
+        do (action) =>
+          @[actname] = =>
+            action.apply @, arguments
   
 makeMethods = (methods) ->
   madeMethods = {}
@@ -43,7 +44,6 @@ Methods = makeMethods
           else if count is winningVotes
             winners.push cand
         [winners, counts]
-        
         
   CMJ:
     actions:
@@ -97,7 +97,7 @@ Methods = makeMethods
           return false
         if vote.length isnt (_.uniq vote).length
           return false
-        for cand in vote:
+        for cand in vote
           if not (0 <= cand < numCands)
             return false
         true
@@ -114,7 +114,7 @@ Methods = makeMethods
           losingScore = winningScore = numVotes/2
           for pile, cand in piles
             if _.isArray pile
-              if pile.length = 0
+              if pile.length is 0
                 piles[cand] = 0
               else
                 if pile.length > winningScore
@@ -122,9 +122,12 @@ Methods = makeMethods
                 if pile.length < losingScore
                   losingScore = pile.length
                   losers = [cand]
-                if pile.length = losingScore
+                if pile.length is losingScore
                   losers.push cand
-          if winner isnt null
+          if winner is null
+            if losers.length is 0
+              console.log "IRV fuckup, everybody wins", piles, numVotes, round
+              return [(cand for cand in [0..numCands - 1]), piles]
             loser = losers[Math.floor(Math.random() * losers.length)]
             resort = piles[loser]
             piles[loser] = round
@@ -139,9 +142,8 @@ Methods = makeMethods
       sortAndElim: (votes, piles) ->
         elims = 0
         for vote in votes
-          while vote.length
-            if not _.isArray piles[vote[0]]
-              vote = vote.slice 1
+          while vote.length and (not _.isArray piles[vote[0]])
+            vote = vote.slice 1
           if vote.length
             piles[vote[0]].push vote
           else

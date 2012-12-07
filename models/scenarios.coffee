@@ -62,7 +62,7 @@ class Scenario
     num: candNum
     name: @candNames[candNum]
     color: @candColors[candNum]
-    myPayoff: @payoffs[candNum][faction]
+    myPayoff: @candNames[candNum] and @payoffs[candNum][faction]
     count: count
     
     

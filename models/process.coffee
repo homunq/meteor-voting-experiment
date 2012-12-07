@@ -206,31 +206,12 @@ class StepRecord extends StamperInstance
         if (stepDoneBy >= election.scen().numVoters() or #full scenario
               (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
           
-          #console.log "save StepRecord 4"
+          console.log "save StepRecord nextStage"
           election.nextStage()
           
-          
-          #  #move along everyone else who was waiting for that.
-          #  stepToPromote = PROCESS.firstInStages[election.stage] - 1
-          #  #console.log "save StepRecord 4.5", @election, stepToPromote, StepRecords.find({election: @election}).fetch()
-          #  StepRecords.find(
-          #    election: @election
-          #    step: stepToPromote
-          #  ).forEach (record) ->
-          #    
-          #    #console.log "save StepRecord 5"
-          #    if record.voter != @voter #that case is done below
-          #      Meteor.users.update
-          #        _id: record.voter
-          #      ,
-          #        $set:
-          #          step: stepToPromote + 1
-          #      ,
-          #        multi: false
-     
+         
       #console.log "save StepRecord 6", election
       if Meteor.is_server
-        console.log "wtf???", election.stage
         election.save() 
         
       #move along if we can
@@ -246,7 +227,7 @@ class StepRecord extends StamperInstance
         @moveOn(no)
           
     moveOn: (really) ->
-      #console.log "moving on to step ",@step + 1
+      console.log "moving on ",@step, really
       Meteor.users.update
         _id: @voter
       ,
