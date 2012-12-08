@@ -24,7 +24,7 @@ do ->
   intervaller = null
   intervalDone = no
   intervalStage = null
-  Handlebars.registerHelper "countdownToStage", (stage, after) ->
+  Handlebars.registerHelper "countdownToStage", (stage, before, after) ->
     if intervalStage isnt stage and intervaller
       clearInterval intervaller
       intervaller = null
@@ -46,10 +46,12 @@ do ->
             intervaller = null
             intervalDone = yes
       displayCount = Session.get "countDown"
+      displayAbsoluteTime = (sTimeHere untilTime).toLocaleTimeString()
       #console.log "displayCount", displayCount
       if displayCount >= 0
-        return Template["countdownClock"] 
+        return Template[before] 
           displayCount: seconds2time displayCount/1000
+          displayAbsoluteTime: displayAbsoluteTime
       else if displayCount?
         return Template[after]()
     else
@@ -88,11 +90,18 @@ voteFor = (cand, grade) ->
 
 exclusiveVoteFor = (cand, rank, clearUI) ->
   console.log "exclusiveVoteFor", cand, rank
-  VOTE.vote[cand] = rank
-  for otherCand in [0..VOTE.vote.length - 1].splice(cand,1)
-    if VOTE.vote[otherCand] is rank
+  oldRank = VOTE.vote[cand]
+  if 0 > oldRank
+    $("#cand#{ cand }rank#{ -oldRank }").prop('checked', false)
+  VOTE.vote[cand] = -rank
+  otherCands = [0..VOTE.vote.length - 1]
+  otherCands.splice(cand,1)
+  for otherCand in otherCands
+    if VOTE.vote[otherCand] is -rank
       VOTE.vote[otherCand] = undefined
-      if clearUI
-        $("#cand#{ otherCand }rank#{ rank }").prop('checked', false)
+        
       
+pluralityVoteFor = (cand) ->
+  console.log "pluralityVoteFor", cand
+  VOTE.vote = cand
   

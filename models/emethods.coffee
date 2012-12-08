@@ -47,17 +47,17 @@ Methods = makeMethods
         
   CMJ:
     actions:
-      numGrades: 5
+      grades: ['F', 'D', 'C', 'B', 'A', 'AA']
     
       validVote: (numCands, vote) ->
         if vote.length > numCands then return false
         
-        if (_(vote).without undefined, (_.range @numGrades)...) isnt [] then return false
+        if (_(vote).without undefined, (_.range @grades.length)...) isnt [] then return false
         true
         
       resolveVotes: (numCands, votes) ->
         console.log "resolveVotes", numCands, votes
-        nullVote = (0 for score in [1..@numGrades])
+        nullVote = (0 for score in [1..@grades.length])
         voteTallies = for vote in votes
           for score in vote
             score ?= 0
@@ -95,19 +95,24 @@ Methods = makeMethods
       validVote: (numCands, vote) ->
         if vote.length > numCands 
           return false
-        if vote.length isnt (_.uniq vote).length
+        if (_.compact vote).length isnt (_.uniq _.compact vote).length
           return false
-        for cand in vote
-          if not (0 <= cand < numCands)
+        for rank in vote
+          if not (0 > rank >= -numCands)
             return false
         true
         
       resolveVotes: (numCands, votes) ->
         console.log "resolveVotes", numCands, votes
+        ballots = for vote in votes
+          ballot = []
+          for rank, cand in vote
+            ballot[rank] = cand
+          ballot
         piles = ([] for cand in [1..numCands])
         winner = null
         numVotes = votes.length
-        numVotes -= @sortAndElim votes, piles
+        numVotes -= @sortAndElim ballots, piles
         round = 1
         while winner is null and numVotes
           losers = []

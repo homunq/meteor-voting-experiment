@@ -32,9 +32,9 @@
 
 <template name="oneStepExplanation">
 		<tr><td><h4>{{num}}</h4></td>
-			<td><h4>{{longName}}</h4></td>
-			<td>{{blurb}}</td>
+			<td><h4><span class="hasPopover">{{longName}}<span class="popover">{{blurb}}</span></span></h4></td>
 			<td>{{suggestedMins}}-{{maxMins}} mins</td>
+			<td>{{payout}}</td>
 		</tr>
 </template>
 	
@@ -62,12 +62,14 @@
 		<b>Only the 18 workers allowed in will be paid for each run of 
 		the experiment.</b></p>
 	<h2>Process</h2>
-	<table class="table">
-		<tr><td width="5%">Step</td><td width="25%">Name</td><td width="60%">Explanation</td><td width="10%">Time</td></tr>
+	<div class="span2"></div><div class="span8">
+	<table class="table" width="60%" align="center">
+		<tr><td width="15%">Step</td><td width="35%">Name<br/>(hover for blurb)</td><td width="25%">Time</td><td width="25%">Payout</td></tr>
 		{{stepExplanations}}
-	</table>
+	</table></div><div class="span2"></div>
+	<div class="span12">
 	<p>Press the button below to see the consent form and wait for the experiment to start.</p>
-	{{{renderWith "nextStep" "Next"}}}
+	{{{renderWith "nextStep" "Next"}}}</div>
 </template>
 	
 <template name="consent">
@@ -126,12 +128,12 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 </template>
 
 <template name="scenario">
-	<div class="span3">
+	<div class="span4">
       <img src="/images/{{mapImg}}.png">
     </div>
-    <div class="span7"><p>Imagine that you live in one of the houses inside the dashed circle in the town at left. 
-    	You and the other inhabitants of this town are voting on where to build a new firehouse. 
-    	You would like the firehouse to be as close to your own house as possible.
+    <div class="span8"><p>Imagine that you live in one of the houses inside the dashed circle in the town at left. 
+    	You and the other inhabitants of this town are voting on where to build a new library. 
+    	You would like the library to be as close to your own house as possible.
     	 Three candidate sites X, Y, and Z are marked on the map with flags.</p>
 	<p>You and the other participants in this experiment will be voting three times using a voting 
 		system that will be explained next. Your first vote will be for practice, 
@@ -145,12 +147,11 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 </template>
 
 <template name="practice">
-	{{{meth_blurb}}}
+	{{{meth_subtemplate "blurb"}}}
 	<h2>Practice voting</h2>
-	<p>Vote using the ballot below. This is a practice election only; you will not be paid any bonus based on 
-		this, so you should simply vote however you honestly feel about the candidates. After all participants
-		vote, and you have a chance to see the results of this election, you will move on to voting in two
-		"real" elections, with a bonus paid based on results.</p>
+	<p>Vote using the ballot below. This is a practice election with no cash bonuses based on the results.  
+		After all participants vote, and you have a chance to see the results of this election, 
+		you will move on to voting in two more elections with bonuses.</p>
 	{{{render "ballot"}}}
 	{{{renderWith "nextStep" "Next"}}}
 </template>
@@ -169,9 +170,8 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 
 <template name="voting">
 	<h2>Voting</h2>
-	<p>Please vote. You will be paid a bonus of $0 to {{bonus}}, depending on the results of this election among you and
-		the other voters. There are a total of 2 paying repetitions of this election, so you may earn up to two 
-		separate bonuses.</p>
+	<p>Please vote. You will be paid a bonus of $0 to {{bonus 3}}, depending on the results of this election among you and
+		the other voters.</p>
 	{{{render "ballot"}}}
 	{{{renderWith "nextStep" "Next"}}}
 </template>

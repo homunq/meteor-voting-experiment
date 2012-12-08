@@ -1,7 +1,7 @@
 
 <template name="nextStep">
 	{{#if stepWaiting}}<a href="#" onclick="alert('Waiting for others');return false;" id="nextStep" title="Waiting" class="btn btn-primary btn-large">
-	Waiting for other voters ({{stepCompletedNum}}/{{scenNumVoters}} or {{{countdownToStage nextStage "hunh"}}})</a>
+	Waiting for other voters ({{stepCompletedNum}}/{{scenNumVoters}} or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}})</a>
 	{{else}}
 	<a href="#" onclick="nextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
 	{{text}} </a>
@@ -10,7 +10,7 @@
 
 
 <template name="hunh">
-	hunh!<!--you should never see this-->
+	(no time limit)<!--you should never see this-->
 </template>
 
 <template name="countdownWithSound">
@@ -21,11 +21,15 @@
             Your browser does not support HTML5 audio.
         </audio>
 
-	{{{countdownToStage 1 "countdownDone"}}}
+	{{{countdownToStage 1 "countdownClock" "countdownDone"}}}
 </template>
 
 <template name="countdownClock">
-	{{{displayCount}}}
+	<h1>{{{displayAbsoluteTime}}} (in {{{displayCount}}})</h1>
+</template>
+
+<template name="miniCountdownClock">
+	{{{displayAbsoluteTime}}} (in {{{displayCount}}})
 </template>
 
 <template name="countdownDone">
@@ -54,12 +58,12 @@
 
 <template name="outcomes">
 	<table class="table">
-		<tr><td>Candidate</td>{{{meth_resultHead}}}<td>Result</td><td>Bonus payment</td></tr>
+		<tr><td>Candidate</td>{{{meth_subtemplate "resultHead"}}}<td>Result</td><td>Your bonus payment</td></tr>
 	{{#with winner}}
-		<tr><td>{{name}}</td>{{{meth_resultLine this}}}<td>WINNER</td><td>{{bonus myPayoff}} - to be paid</td></tr>
+		<tr><td>{{name}}</td>{{{meth_subtemplate "resultLine" this}}}<td>WINNER</td><td>{{bonus myPayoff}} - to be paid</td></tr>
 	{{/with}}
 	{{#each losers}}{{#with this}}
-		<tr><td>{{name}}</td>{{{meth_resultLine this}}}<td>LOSER</td><td><small>({{bonus myPayoff}} - if they had won)</small></td></tr>
+		<tr><td>{{name}}</td>{{{meth_subtemplate "resultLine" this}}}<td>LOSER</td><td><small>({{bonus myPayoff}} - if they had won)</small></td></tr>
 	{{/with}}{{/each}}
 	</table>
 </template>

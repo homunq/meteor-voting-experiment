@@ -1,13 +1,13 @@
 
-a.hasPopover {position:relative}
+.hasPopover {position:relative}
 
-a span.popover{display: none}
+.hasPopover span.popover{display: none}
 
-a:hover span.popover
+.hasPopover:hover span.popover
 {
     display:block;
     position:absolute;
     top:2em; left:2em; width:10em;
     border:1px solid #0cf;
-    background-color:#fff; color:#fff;
+    background-color:#fff;
 }

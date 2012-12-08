@@ -102,9 +102,10 @@ if (Handlebars?)
     steps = []  
     thisStep = Session.get 'step'
     for step, stepNum in PROCESS.steps
-      steps.push  Template.oneStep _(
-        thisStep: stepNum == thisStep
-      ).extend step
+      if not step.hide
+        steps.push  Template.oneStep _(
+          thisStep: stepNum == thisStep
+        ).extend step
     new Handlebars.SafeString steps.join ""
     
   Handlebars.registerHelper 'stepPopover', (stepName) ->
@@ -114,13 +115,15 @@ if (Handlebars?)
   Handlebars.registerHelper "stepExplanations", ->
     steps = []  
     for step, stepNum in PROCESS.steps
-      steps.push  Template.oneStepExplanation step
+      if not step.hide
+        steps.push  Template.oneStepExplanation step
         
     steps.push Template.oneStepExplanation
       num: "Total"
       blurb: "The total time will mostly depend on how quick the other turkers in the experiment are."
       suggestedMins: PROCESS.suggestedMins
       maxMins: PROCESS.maxMins - 60
+      payout: "$1.00-$3.16"
     new Handlebars.SafeString steps.join ""
     
     

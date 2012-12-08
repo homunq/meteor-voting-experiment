@@ -28,8 +28,9 @@ class Process
           @firstForStages[options.stage + 1] = @steps.length #@steps.length is the number of the NEXT step
         priorStage = options.stage
         
-        @suggestedMins += options.suggestedMins
-        @maxMins += options.maxMins
+        if not options.hide
+          @suggestedMins += options.suggestedMins
+          @maxMins += options.maxMins
   
   step: (num) ->
     @steps[num]
@@ -103,6 +104,7 @@ PROCESS = new Process "Base",
     suggestedMins: 1
     maxMins: 2
     stage: 3
+    payout: "$0-$1.08"
     longName: "Payout round 1"
     blurb: "See results of the round 1 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
@@ -121,6 +123,7 @@ PROCESS = new Process "Base",
     suggestedMins: 1
     maxMins: 2
     stage: 4
+    payout: "$0-$1.08"
     prereq: -1 #a full set of voters must be through the step 1 earlier before anyone starts this step
     longName: "Payout round 2"
     blurb: "See results of the round 2 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
@@ -129,6 +132,7 @@ PROCESS = new Process "Base",
     suggestedMins: 2
     maxMins: 7
     stage: 4
+    payout: "$1.00"
     prereqForNextStage: false
     longName: "Survey"
     blurb: "4-5 simple questions each about:<ul><li>you (gender, country, etc)</li><li>the voting system you used (on a 0-7 scale)</li><li>your general comments about the experiment</li></ul>"
@@ -142,6 +146,14 @@ PROCESS = new Process "Base",
     prereqForNextStage: true
     longName: "Debrief"
     blurb: "Thanks for participating, and a simple explanation of what we hope to learn from this study. Submit job and receive base pay."
+,
+  finished:
+    suggestedMins: 999999
+    maxMins: 999999
+    stage: 5
+    hide: true 
+    longName: "Oops. You shouldn't see this..."
+    blurb: "Lorem ipsum dolor sit amet."
 
     
     

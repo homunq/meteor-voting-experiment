@@ -69,7 +69,7 @@ class Scenario
 @Scenarios =
   chicken: new Scenario
     factSizes: [4, 2, 3]
-    factNames: ['X', 'Y', 'Z']
+    factNames: ['Red', 'Green', 'Blue']
     factColors: ["#D40000", "#00D400", "#0000D4"]
     factPngs: ["4voters", "2voters", "3voters"]
     candNames: ['X', 'Y', 'Z']
@@ -79,7 +79,7 @@ class Scenario
               [0, 2, 3]]
   doubleChicken: new Scenario
     factSizes: [8, 4, 6]
-    factNames: ['X', 'Y', 'Z']
+    factNames: ['Red', 'Green', 'Blue']
     factColors: ["#D40000", "#00D400", "#0000D4"]
     factPngs: ["4voters", "2voters", "3voters"]
     candNames: ['X', 'Y', 'Z']
@@ -89,7 +89,7 @@ class Scenario
               [0, 2, 3]]
   simple: new Scenario
     factSizes: [2, 1]
-    factNames: ['X', 'Y']
+    factNames: ['Red', 'Blue']
     factColors: ["#D40000", "#00D400"]
     factPngs: ["4voters", "2voters"]
     candNames: ['X', 'Y', 'Z']
@@ -99,7 +99,7 @@ class Scenario
               [0, 3]]
   mini: new Scenario
     factSizes: [1, 1]
-    factNames: ['', 'Y']
+    factNames: ['Red', 'Green']
     factColors: ["#D40000", "#00D400"]
     factPngs: ["4voters", "2voters"]
     candNames: ['X', 'Y', 'Z']
@@ -109,7 +109,7 @@ class Scenario
               [0, 3]]
   one: new Scenario
     factSizes: [1]
-    factNames: ['Xfact']
+    factNames: ['Red']
     factColors: ["#D40000"]
     factPngs: ["4voters"]
     candNames: ['Xc', 'Yc', 'Zc']
