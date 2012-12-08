@@ -63,22 +63,22 @@ if (Handlebars?)
     (Session.get "method").name
     
   Handlebars.registerHelper 'meth_subtemplate', (sub) ->
-    new Handlebars.SafeString Template["#{ (Session.get 'method').name }_#{ sub }"]()
+    new Handlebars.SafeString Template["#{ (Session.get 'method')?.name }_#{ sub }"]()
     
   Handlebars.registerHelper 'dmeth_subtemplate', (sub) ->
-    new Handlebars.SafeString "#{ (Session.get 'method').name }_#{ method }" + ': ' + Template["#{ (Session.get 'method').name }_#{ sub }"]()
+    new Handlebars.SafeString "#{ (Session.get 'method')?.name }_#{ method }" + ': ' + Template["#{ (Session.get 'method').name }_#{ sub }"]()
     
   Handlebars.registerHelper 'meth_blurb', ->
-    new Handlebars.SafeString Template["#{ (Session.get "method").name }_blurb"]()
+    new Handlebars.SafeString Template["#{ (Session.get "method")?.name }_blurb"]()
     
   Handlebars.registerHelper 'meth_ballotLine', (candInfos) ->
-    new Handlebars.SafeString Template["#{ (Session.get "method").name }_ballotLine"](candInfos)
+    new Handlebars.SafeString Template["#{ (Session.get "method")?.name }_ballotLine"](candInfos)
     
   Handlebars.registerHelper 'meth_resultHead', ->
-    new Handlebars.SafeString Template["#{ (Session.get "method").name }_resultHead"]()
+    new Handlebars.SafeString Template["#{ (Session.get "method")?.name }_resultHead"]()
     
   Handlebars.registerHelper 'meth_resultLine', (candResult) ->
-    new Handlebars.SafeString Template["#{ (Session.get "method").name }_resultLine"](candResult)
+    new Handlebars.SafeString Template["#{ (Session.get "method")?.name }_resultLine"](candResult)
     
   Handlebars.registerHelper 'winner', ->
     e = Session.get 'election'

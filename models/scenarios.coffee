@@ -99,7 +99,7 @@ class Scenario
               [0, 3]]
   mini: new Scenario
     factSizes: [1, 1]
-    factNames: ['X', 'Y']
+    factNames: ['', 'Y']
     factColors: ["#D40000", "#00D400"]
     factPngs: ["4voters", "2voters"]
     candNames: ['X', 'Y', 'Z']
