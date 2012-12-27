@@ -6,21 +6,22 @@ Meteor.startup ->
   ##console.log _.keys Meteor
   if Meteor.is_client
     Meteor.autosubscribe ->
-      step = Session.get "step"
-      if step? and step != STEP_RECORD?.step
-        #console.log "New step"
-        window.STEP_RECORD = new StepRecord()
-      else
-        console.log "not making STEP_RECORD", step, STEP_RECORD
+      if (Session.get 'router')?.current_page() is 'loggedIn'
+        step = Session.get "step"
+        if step? and step != STEP_RECORD?.step
+          #console.log "New step"
+          window.STEP_RECORD = new StepRecord()
+        else
+          console.log "not making STEP_RECORD", step, STEP_RECORD
 
     Meteor.autosubscribe ->
-      user = Meteor.user()
-      step = user?.step
-      stage = Session.get "stage"
-      lastStep = user?.lastStep
-      if STEP_RECORD and ((step < PROCESS.firstForStages[stage]) or (lastStep is step and PROCESS.step(step).stage < stage))
-        playSound "next"
-        STEP_RECORD.moveOn(yes)
+      if (Session.get 'router')?.current_page() is 'loggedIn'
+        stage = Session.get "stage"
+        [step, lastStep] = Session.get "stepLastStep"
+        console.log "stepLastStep", step, lastStep, stage
+        if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
+          playSound "next"
+          STEP_RECORD.moveOn(yes)
       
 nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
@@ -54,7 +55,7 @@ if (Handlebars?)
     Session.get 'election'
     
   Handlebars.registerHelper "user", ->
-    Meteor.user()?._id
+    Meteor.user() or {}
     
   Handlebars.registerHelper 'step', ->
     Session.get 'step'
@@ -67,7 +68,7 @@ if (Handlebars?)
     faction = Session.get 'faction'
     outcome = new Outcome Outcomes.findOne
       _id: e.outcomes[e.stage - 1]
-    e.scen().candInfo outcome.winner, faction, outcome.counts[outcome.winner]
+    e.scen().candInfo outcome.winner, faction, outcome.counts, e.scen(), outcome.factionCounts
     
   Handlebars.registerHelper 'losers', ->
     e = Session.get 'election'
@@ -76,7 +77,8 @@ if (Handlebars?)
       _id: e.outcomes[e.stage - 1]
     losers = _.range e.scen().numCands()
     losers.splice outcome.winner, 1
-    ((e.scen().candInfo loser, faction, outcome.counts[loser]) for loser in losers)
+    for loser in losers
+      e.scen().candInfo loser, faction, outcome.counts, e.scen(), outcome.factionCounts
     
   Handlebars.registerHelper 'stepCompletedNum', ->
     Session.get 'stepCompletedNum'
@@ -85,6 +87,10 @@ if (Handlebars?)
     step = Session.get "step"
     lastStep = Session.get "lastStep"
     return (step is lastStep)
+    
+  Handlebars.registerHelper 'isLastStep', ->
+    step = Session.get "step"
+    return (step >= PROCESS.steps.length - 2)
     
   Handlebars.registerHelper 'surveyQuestions', ->
     setupSurvey()
@@ -145,4 +151,25 @@ if (Handlebars?)
 
   Handlebars.registerHelper 'error', ->
     Session.get 'error'
-      
+    
+  
+  Handlebars.registerHelper 'hitPremature', ->
+    step = Session.get "step"
+    if step? and not PROCESS.steps[step].hit
+      user= Meteor.user()
+      return user.workerId
+    false
+    
+  Handlebars.registerHelper 'hitLate', ->
+    step = Session.get "step"
+    if step? and PROCESS.steps[step].hit
+      user= Meteor.user()
+      return not user.workerId
+    false
+    
+  Handlebars.registerHelper 'noRoomForMe', ->
+    faction = Session.get "faction"
+    if faction
+      return false
+    election = session.get "election"
+    election.isFull()

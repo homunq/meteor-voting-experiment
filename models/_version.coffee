@@ -1,4 +1,4 @@
-VERSION = 0.91
+VERSION = 0.92
 
 class VersionedInstance extends StamperInstance
   @fields

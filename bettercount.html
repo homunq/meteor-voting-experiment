@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	
+	<div id="loading"><h1>Loading...</h1></div>
   <div id="main">
   	<!-- {{currentPage}} -->
 		{{{render currentPage}}}
@@ -19,7 +19,22 @@
 	{{{render "whichStep"}}}
 	<div class="container">
 		<div class="row"><div class="span1"></div><div class="span10"><div class="row-fluid">
-	{{{render stepName}}}
+			{{#if user.nonunique}}
+				<h2>Sorry, you cannot do this experiment twice.</h2> 
+				<div>Please return the HIT so that someone else can participate in this experiment.</div>
+			{{else}}{{#if hitPremature}}
+				<h2>You took this HIT too soon.</h2> 
+				<div>Please return the HIT and accept it after the countdown has run down and you have clicked "Consent and next".</div>
+			{{else}}{{#if hitLate}}
+				{{#if isLastStep}}
+					<h2>Thank you. Your results have been submitted and, once they've been checked, you'll be paid {{formatCents centsDue}}.</h2>
+				{{else}}
+					<h2>You are in the experiment. Please accept the HIT to continue.</h2>
+				{{/if}}
+			{{else}}
+				{{{render stepName}}}
+			{{/if}}{{/if}}{{/if}}
+			{{{error}}}
 		</div></div></div>
 	</div>
 </template>

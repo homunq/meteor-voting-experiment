@@ -4,7 +4,11 @@
 </template>
 
 <template name="questionWrapper">
-	<li>{{{text}}}</li>
+	<li>{{{text}}}</li><br/><br/>
+</template>
+
+<template name="nullWrapper">
+	<br/>{{{text}}}<br/>
 </template>
 
 <template name="answerText">
@@ -16,9 +20,11 @@
 </template>
 
 <template name="answerRadio">
+	{{lowEnd}} &nbsp;&nbsp;
 	{{#each this.optionInfos}}
-	<input type="radio" name="{{../qName}}" onclick="surveyAnswer('{{../qName}}',{{this.num}});">{{this.text}} &nbsp;
+	<input type="radio" name="{{../qName}}" onclick="surveyAnswer('{{../qName}}',{{this.num}});">&nbsp;{{this.text}} &nbsp;&nbsp;
 	{{/each}}
+	{{highEnd}}
 </template>
 
 <template name="surveySection">

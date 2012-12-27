@@ -2,7 +2,7 @@ if (Handlebars?)
 
   Handlebars.registerHelper 'meth_subtemplate', (sub, data) ->
     template =  Template["#{ (Session.get 'method')?.name }_#{ sub }"]
-    console.log "meth_subtemplate", template, "#{ (Session.get 'method')?.name }_#{ sub }"
+    console.log "meth_subtemplate", "#{ (Session.get 'method')?.name }_#{ sub }"
     if template
       new Handlebars.SafeString template(data)
     else
@@ -31,6 +31,9 @@ if (Handlebars?)
     
   Handlebars.registerHelper 'scen', ->
     (Session.get 'scenario')
+    
+  Handlebars.registerHelper 'factions', ->
+    (Session.get 'scenario').factionsAttrs Meteor.user()?.faction
     
   Handlebars.registerHelper 'scenMyPayoffs', ->
     scenario = Session.get 'scenario'
@@ -62,4 +65,5 @@ if (Handlebars?)
         rank: rank
         ord: ''+ rank + (if rank <= 3 then ['st','nd','rd'][rank-1] else 'th')
     
+  
   

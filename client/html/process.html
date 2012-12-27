@@ -22,7 +22,7 @@
 
 <template name="oneStep">
 	<li {{#if thisStep}}class="active"{{/if}}><a href="#" class="hasPopover">{{num}}:
-		{{name}}{{#if popover}}<span class="popover">{{{stepPopover name}}}</span>{{/if}}{{#if false}}
+		{{name}}{{#if popover}}<br/><span style="font-size: 80%">hover for pic</span><span class="popover">{{{stepPopover name}}}</span>{{/if}}{{#if false}}
 			{{/if}}{{#if thisStep}}<div class="underbar">{{stepCompletedNum}}/{{scenNumVoters}} done</div>{{/if}}</a></li>
 </template>
 

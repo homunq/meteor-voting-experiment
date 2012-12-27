@@ -1,4 +1,4 @@
-seconds2time = (seconds) ->
+seconds2time = (seconds, hideSeconds) ->
   hours = Math.floor(seconds / 3600)
   minutes = Math.floor((seconds - (hours * 3600)) / 60)
   seconds = Math.floor(seconds - (hours * 3600) - (minutes * 60))
@@ -6,11 +6,12 @@ seconds2time = (seconds) ->
   time = hours + ":"  unless hours is 0
   if minutes isnt 0 or time isnt ""
     minutes = (if (minutes < 10 and time isnt "") then "0" + minutes else String(minutes))
-    time += minutes + ":"
-  if time is ""
-    time = seconds + "s"
-  else
-    time += (if (seconds < 10) then "0" + seconds else String(seconds))
+    time += minutes + ""
+  if not hideSeconds
+    if time is ""
+      time = seconds + "s"
+    else
+      time += (if (seconds < 10) then ":0" + seconds else ":" + seconds)
   time
 
 inTenSeconds = ->
@@ -25,14 +26,20 @@ do ->
   intervalDone = no
   intervalStage = null
   Handlebars.registerHelper "countdownToStage", (stage, before, after) ->
+    #console.log "countdownToStage", stage, intervalStage, intervalDone, intervaller
     if intervalStage isnt stage and intervaller
+      console.log "intervalStage"
       clearInterval intervaller
       intervaller = null
+      intervalDone = no
+      intervalStage = stage
     election = Session.get "election"
     if election?
       untilTime = election.sTimes[stage]
+      #console.log "untilTime", untilTime, stage, election.sTimes
       #untilTime = inTenSeconds()
       if not intervaller and not intervalDone
+        Session.set "countDown", no
         sI = (ms, fn) ->
           setInterval fn, ms
         intervaller = sI 1000, ->
@@ -46,20 +53,28 @@ do ->
             intervaller = null
             intervalDone = yes
       displayCount = Session.get "countDown"
-      displayAbsoluteTime = (sTimeHere untilTime).toLocaleTimeString()
-      #console.log "displayCount", displayCount
-      if displayCount >= 0
-        return Template[before] 
-          displayCount: seconds2time displayCount/1000
-          displayAbsoluteTime: displayAbsoluteTime
-      else if displayCount?
-        return Template[after]()
+      if displayCount isnt no
+        #console.log "displayCount", displayCount, seconds2time displayCount/1000
+        
+        displayAbsoluteTime = (sTimeHere untilTime).toLocaleTimeString()
+        displayAbsoluteTime = displayAbsoluteTime.substr(0, displayAbsoluteTime.length - 3)
+        #console.log "displayCount", displayCount
+        if displayCount >= 0
+          return Template[before] 
+            displayCount: seconds2time displayCount/1000
+            displayAbsoluteTime: displayAbsoluteTime
+        else if displayCount?
+          return Template[after]
+            displayCount: seconds2time displayCount/1000
+            displayAbsoluteTime: displayAbsoluteTime
     else
       return "No experiment currently pending"
           
 Handlebars.registerHelper "call", (funcName, data) ->
   window[funcName] data
   ""
+Handlebars.registerHelper "debugger", (data, outerdata) ->
+  debugger
   
 playSound = (whichSound) ->
   sT = (ms, fn) ->
@@ -105,3 +120,7 @@ pluralityVoteFor = (cand) ->
   console.log "pluralityVoteFor", cand
   VOTE.vote = cand
   
+
+
+Handlebars.registerHelper "Session", (what) ->
+  Session.get what

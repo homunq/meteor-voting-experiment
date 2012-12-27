@@ -14,3 +14,13 @@ if (Handlebars?)
     accounting.formatMoney(($baseRate + ($bonusUnit * 2 * 16 / 9)) / 100)
   Handlebars.registerHelper "maxPay", ->
     accounting.formatMoney(($baseRate + ($bonusUnit * 2 * 3)) / 100)
+  Handlebars.registerHelper "formatCents", (cents) ->
+    accounting.formatMoney(cents / 100)
+  Handlebars.registerHelper "centsDue", ->
+    centsDue = Session.get "centsDue"
+    if centsDue
+      return centsDue
+    user = new User Meteor.user()
+    user.serverCentsDue (error, result) ->
+      Session.set "centsDue", result
+    user.centsDue()

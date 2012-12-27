@@ -4,13 +4,17 @@
 	Waiting for other voters ({{stepCompletedNum}}/{{scenNumVoters}} or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}})</a>
 	{{else}}
 	<a href="#" onclick="nextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
-	{{text}} </a>
+	{{text}} </a> {{{countdownToStage nextStage "miniCountdownClock" "timeDone"}}}
 	{{/if}}
 </template>
 
 
 <template name="hunh">
 	(no time limit)<!--you should never see this-->
+</template>
+
+<template name="timeDone">
+	(done)<!--you should never see this-->
 </template>
 
 <template name="countdownWithSound">
@@ -25,16 +29,16 @@
 </template>
 
 <template name="countdownClock">
-	<h1>{{{displayAbsoluteTime}}} (in {{{displayCount}}})</h1>
+	<h1>at {{{displayAbsoluteTime}}} (in {{{displayCount}}})</h1>
 </template>
 
 <template name="miniCountdownClock">
-	{{{displayAbsoluteTime}}} (in {{{displayCount}}})
+	at {{{displayAbsoluteTime}}} (in {{{displayCount}}})
 </template>
 
 <template name="countdownDone">
 	{{{call "playSoundOnce"}}}
-	<div>Countdown is done!</div>
+	<div>Experiment is now running! {{stepCompletedNum}}/{{scenNumVoters}} slots taken.</div>
 	{{{renderWith "nextStep" "Consent and next"}}}
 </template>
 
@@ -58,12 +62,44 @@
 
 <template name="outcomes">
 	<table class="table">
-		<tr><td>Candidate</td>{{{meth_subtemplate "resultHead"}}}<td>Result</td><td>Your bonus payment</td></tr>
+		<tr><td>Candidate</td>{{{meth_subtemplate "resultHead"}}}<td>Result</td><td>Your bonus payment</td>{{{render "factionResultHead"}}}</tr>
 	{{#with winner}}
-		<tr><td>{{name}}</td>{{{meth_subtemplate "resultLine" this}}}<td>WINNER</td><td>{{bonus myPayoff}} - to be paid</td></tr>
+		<tr><td>{{name}}</td><td>{{{meth_subtemplate "result" this}}}</td><td>WINNER</td><td>{{bonus myPayoff}} - to be paid</td>
+			{{#each this.factionCounts}}
+				<td><span style="color: {{color}}">{{{meth_subtemplate "result" this}}}</span> </td>
+			{{/each}}</tr>
 	{{/with}}
 	{{#each losers}}{{#with this}}
-		<tr><td>{{name}}</td>{{{meth_subtemplate "resultLine" this}}}<td>LOSER</td><td><small>({{bonus myPayoff}} - if they had won)</small></td></tr>
+		<tr><td>{{name}}</td><td>{{{meth_subtemplate "result" this}}}</td><td>LOSER</td><td><small>({{bonus myPayoff}} - if they had won)</small></td>
+			{{#each this.factionCounts}}
+				<td><span style="color: {{color}}">{{{meth_subtemplate "result" this}}}</span></td>
+			{{/each}}</tr>
+		</tr>
 	{{/with}}{{/each}}
 	</table>
+</template>
+
+
+
+<template name="factionResultHead">
+	{{#each factions}}<td><span style="color: {{color}}">{{name}}<br/>subtotal</span></td>{{/each}}
+</template>
+
+
+
+<template name="AmazonSubmit">
+	<form action="{{user.turkSubmitTo}}/mturk/externalSubmit" >
+		<input type="hidden" name="workerId" value="{{user.workerId}}">
+		<input type="hidden" name="assignmentId" value="{{user.assignmentId}}">
+		<input type="hidden" name="hitId" value="{{user.hitId}}">
+		<input type="hidden" name="voterId" value="{{user._id}}">
+		<input id="submitButton" type="submit" name="Submit" value="Submit" class="btn btn-primary btn-large">
+	</form>
+</template>
+
+
+<template name="madeElection">
+	Made your election.
+	{{Session "madeEid"}}
+	haha
 </template>

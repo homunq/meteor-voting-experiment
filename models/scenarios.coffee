@@ -34,6 +34,20 @@ class Scenario
   numCands: ->
     @payoffs.length
     
+  factions: (faction)->
+    factions = _.range @factSizes.length
+    if faction
+      factions.splice faction, 1
+      factions.splice 0,0,faction
+    factions
+    
+  factionsAttrs: (myFaction) ->
+    for faction in (@factions myFaction)
+      mine: (faction is myFaction)
+      name: @factNames[faction]
+      size: @factSizes[faction]
+      color: @factColors[faction]
+    
   vFactions: (skim) ->
     _.flatten(num for val in _.range(factSize - skim) for factSize, num in @factSizes)
     
@@ -54,16 +68,24 @@ class Scenario
     factSize: @factSizes[faction]
     payoffs: (payoff[faction] for payoff in @payoffs)
     
+  payoffCents: (winner, faction) ->
+    @payoffs[winner][faction] * $bonusUnit
+    
   candInfos: (faction, count) ->
     for candName, candNum in @candNames
       @candInfo candNum, faction, count
       
-  candInfo: (candNum, faction, count) ->
+  candInfo: (candNum, faction, count, scen, factionCounts) ->
     num: candNum
     name: @candNames[candNum]
     color: @candColors[candNum]
     myPayoff: @candNames[candNum] and @payoffs[candNum][faction]
-    count: count
+    count: count?[candNum]
+    factionCounts: for faction in (scen?.factions(faction) or [])
+      count: factionCounts?[faction][candNum]
+      faction: faction
+      color: scen?.factColors[faction]
+      name: scen?.factNames[faction]
     
     
 @Scenarios =

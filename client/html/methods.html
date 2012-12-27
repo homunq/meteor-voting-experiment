@@ -112,32 +112,34 @@
 <template name="approval_resultHead">
 	<td>Count</td>
 </template>
-<template name="approval_resultLine">
-	<td>{{count}}</td>
+<template name="approval_result">
+	{{count}}
 </template>
 
 <template name="CMJ_resultHead">
 	<td>Score</td>
 </template>
-<template name="CMJ_resultLine">
-	<td>{{gradeOf count}} ({{count}})</td>
+<template name="CMJ_result">
+	{{gradeOf count}} ({{count}})
 </template>
 
 <template name="IRV_resultHead">
 	<td>Result</td>
 </template>
-<template name="IRV_resultLine">
-	<td>{{#if count.length}}
+<template name="IRV_result">
+	{{#if count.length}}
 		{{count.length}} votes (in final count)
-	{{else}}
+	{{else}}{{#if count}}
 		Eliminated in round {{count}}
-	{{/if}}</td>
+	{{else}}
+		0
+	{{/if}}{{/if}}
 </template>
 
 
 <template name="plurality_resultHead">
 	<td>Count</td>
 </template>
-<template name="plurality_resultLine">
-	<td>{{count}}</td>
+<template name="plurality_result">
+	{{count}}
 </template>

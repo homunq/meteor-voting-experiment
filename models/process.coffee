@@ -43,38 +43,45 @@ class Process
       mins += @steps[stepToTime].maxMins
       stepToTime += 1
     mins
+    
+  shouldMoveOn: (step, lastStep, stage) ->
+    step >= @firstForStages[1] and ((step < @firstForStages[stage]) or (lastStep is step and @step(step).stage < stage))
 
 PROCESS = new Process "Base",
   overview:
     suggestedMins: 0
     maxMins: 0
     stage: 0
+    hit: off
     longName: "Overview"
-    blurb: "See an outline of the experiment, and wait for the countdown to end and the experiment to begin."
+    blurb: "See an outline of the experiment (this stage)."
 ,
   consent:
     suggestedMins: 0
     maxMins: 60
     stage: 0
+    hit: off
     longName: "Consent"
-    blurb: "See an outline of the experiment, and wait for the countdown to end and the experiment to begin."
+    blurb: "Understand your rights and consent, and wait for the countdown to end and the experiment to begin."
     prereqForNextStage: true
     beforeFinish: (cb) ->
       election = Session.get 'election'
       election.addVoterAndSave Meteor.user()._id, cb
 , 
   scenario:
-    suggestedMins: 2 
-    maxMins: 3
+    suggestedMins: 1 
+    maxMins: 2
     stage: 0
+    hit: on
     longName: "Scenario"
     blurb: "Understand how much you and other voters will earn depending on which of the virtual candidates wins."
     popover: true
 , 
   practice:
     suggestedMins: 1
-    maxMins: 4
+    maxMins: 2
     stage: 1
+    hit: on
     prereqForNextStage: true
     longName: "Election method practice"
     blurb: "Learn and practice the election method to be used"
@@ -84,15 +91,17 @@ PROCESS = new Process "Base",
 , 
   results:
     suggestedMins: 1
-    maxMins: 2
+    maxMins: 1.5
     stage: 2
+    hit: on
     longName: "Practice results"
     blurb: "See results of the practice election: the winner and how much you would have been paid."
 , 
   voting:
     suggestedMins: 0.5
-    maxMins: 2
+    maxMins: 1.5
     stage: 2
+    hit: on
     prereqForNextStage: true
     longName: "Voting round 1"
     blurb: "Vote. You will be paid based on results."
@@ -102,16 +111,18 @@ PROCESS = new Process "Base",
 , 
   payouts:
     suggestedMins: 1
-    maxMins: 2
+    maxMins: 1.5
     stage: 3
+    hit: on
     payout: "$0-$1.08"
     longName: "Payout round 1"
     blurb: "See results of the round 1 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
   voting:
     suggestedMins: 0.5
-    maxMins: 2
+    maxMins: 1.5
     stage: 3
+    hit: on
     prereqForNextStage: true
     longName: "Voting round 2"
     blurb: "Vote. You will be paid again based on results."
@@ -120,18 +131,20 @@ PROCESS = new Process "Base",
       election.addVote VOTE.raw(), cb
 , 
   payouts:
-    suggestedMins: 1
-    maxMins: 2
+    suggestedMins: 0.5
+    maxMins: 1
     stage: 4
+    hit: on
     payout: "$0-$1.08"
     prereq: -1 #a full set of voters must be through the step 1 earlier before anyone starts this step
     longName: "Payout round 2"
     blurb: "See results of the round 2 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
   survey:
-    suggestedMins: 2
-    maxMins: 7
+    suggestedMins: 1
+    maxMins: 4
     stage: 4
+    hit: on
     payout: "$1.00"
     prereqForNextStage: false
     longName: "Survey"
@@ -141,8 +154,9 @@ PROCESS = new Process "Base",
 , 
   debrief:
     suggestedMins: 1
-    maxMins: 3
+    maxMins: 1
     stage: 4
+    hit: on
     prereqForNextStage: true
     longName: "Debrief"
     blurb: "Thanks for participating, and a simple explanation of what we hope to learn from this study. Submit job and receive base pay."
@@ -151,6 +165,7 @@ PROCESS = new Process "Base",
     suggestedMins: 999999
     maxMins: 999999
     stage: 5
+    hit: on
     hide: true 
     longName: "Oops. You shouldn't see this..."
     blurb: "Lorem ipsum dolor sit amet."
@@ -168,9 +183,10 @@ if Meteor.is_server
       true
 else  
   Meteor.autosubscribe ->
-    user = Meteor.user()
-    if user?
-      Meteor.subscribe 'stepRecords', user._id
+    if (Session.get 'router')?.current_page() is 'loggedIn'
+      user = Meteor.user()
+      if user?
+        Meteor.subscribe 'stepRecords', user._id
 
 class StepRecord extends StamperInstance
   
@@ -219,7 +235,7 @@ class StepRecord extends StamperInstance
               (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
           
           console.log "save StepRecord nextStage"
-          election.nextStage()
+          election.nextStage(true)
           
          
       #console.log "save StepRecord 6", election
@@ -231,24 +247,31 @@ class StepRecord extends StamperInstance
       if election.stage >= nextStage
         
         #console.log "save StepRecord 7"
-        @moveOn(yes)
+        @.constructor._moveOnServer(@step, @voter, yes)
           
       else
         
         console.log "Time to wait...", election.stage, nextStage, @step, PROCESS.step(@step), PROCESS.step(@step + 1)
-        @moveOn(no)
+        @.constructor._moveOnServer(@step, @voter, no)
           
-    moveOn: (really) ->
-      console.log "moving on ",@step, really
-      Meteor.users.update
-        _id: @voter
-      ,
-        $set:
-          step: @step + (if really then 1 else 0)
-          lastStep: @step
-      ,
-        multi: false
+    
+    _moveOnServer: @static (step, voter, really) ->
+      console.log "moving on ", step, really, voter
+      newStep = step + (if really then 1 else 0)
+      if Meteor.is_client
+        Session.set "step", newStep
+      else
+        Meteor.users.update
+          _id: voter
+        ,
+          $set:
+            step: newStep
+            lastStep: step
+        ,
+          multi: false
               
+  moveOn: (really) ->
+    @.constructor._moveOnServer @step, @voter, really
               
   finish: ->
     if @canFinish()

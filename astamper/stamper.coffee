@@ -4,6 +4,8 @@ class Field
       @default = default_val
     else
       @default = ->
+        if default_val is undefined
+          return undefined
         JSON.parse(JSON.stringify(default_val)) #lazy deep copy, without needing type checks.
       
   invalid: (val) ->
@@ -17,13 +19,16 @@ field = -> #just some sugar to save typing "new".
   
 class StamperInstance
   #todo: getters/setters; hide actual values in _raw object
-  constructor: (props) ->
+  constructor: (props, strict=false) -> #=Meteor.is_client) ->
     props ?= {}
     if @_fields
       for pname, prop of props
         if pname isnt "_id"
           if not @_fields[pname]?
-            throw new Error "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
+            err = "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
+            console.log "ERROR: ", err
+            if strict
+              throw new Error err
           else if @_fields[pname].invalid()
             throw new Error "Invalid property val: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
       for fname, f of @_fields
@@ -68,9 +73,11 @@ class StamperInstance
           servermethods[smname] = (id, obj, args...) ->
             console.log "server calling ", smname
             if Meteor.is_server
-              cur_instance = new self self.prototype.collection.findOne
+              cur_instance = self.prototype.collection.findOne
                 _id: id
              
+              if cur_instance
+                cur_instance = new self cur_instance
               console.log "server method on", id #, cur_instance
               #console.log self.prototype.collection.find().fetch()
             else
@@ -83,7 +90,7 @@ class StamperInstance
             cur_instance[smname].apply cur_instance, args
         else #static
           servermethods[smname] = (args...) ->
-            console.log "server calling static ", smname
+            console.log "server calling static ", smname, self
             self.userId = =>
               @userId() #sneak in a method for current userId
             #console.log "Crashy?", smname
@@ -114,15 +121,17 @@ class StamperInstance
     
   raw: ->
     if @_fields
-      return _.pick(@, _.keys @_fields)
+      return _.pick(@, ['_id'].concat _.keys @_fields)
     @
      
   save: (cb) ->
     console.log "save: " + @_id
     if @_id
+      raw = @raw()
+      console.log "resave raw: ", raw
       @collection.update
         _id: @_id
-      , @raw(), cb
+      , raw, cb
       return @_id
     else
       x = @raw()
