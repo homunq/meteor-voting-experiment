@@ -1,0 +1,77 @@
+
+<template name="electionsReport">
+	{{#each elections}}
+		<div>
+			xxx
+			{{renderWith "electionReport" this}}
+			yyy
+			{{renderWith "electionVoters" this}}
+		</div>
+	{{/each}}
+</template>
+
+
+<template name="electionReport">
+	<table style="padding: 4px"><tr>
+		<td style="padding: 4px; border:1px solid black">id</td>
+		<td style="padding: 4px; border:1px solid black">scenario</td>
+		<td style="padding: 4px; border:1px solid black">method</td>
+		<td style="padding: 4px; border:1px solid black">numwatchers</td>
+		<td style="padding: 4px; border:1px solid black">numvoters</td>
+		<td style="padding: 4px; border:1px solid black">r0</td>
+		<td style="padding: 4px; border:1px solid black">r1</td>
+		<td style="padding: 4px; border:1px solid black">r2</td>
+		<td style="padding: 4px; border:1px solid black">s0</td>
+		<td style="padding: 4px; border:1px solid black">s1</td>
+		<td style="padding: 4px; border:1px solid black">s2</td>
+	</tr><tr>
+		<td style="padding: 4px; border:1px solid black">{{text._id}}</td>
+		<td style="padding: 4px; border:1px solid black">{{text.scenario}}</td>
+		<td style="padding: 4px; border:1px solid black">{{text.method}}</td>
+		<td style="padding: 4px; border:1px solid black">{{text.watchers.length}}</td>
+		<td style="padding: 4px; border:1px solid black">{{text.voters.length}}</td>
+		<td style="padding: 4px; border:1px solid black">r0</td>
+		<td style="padding: 4px; border:1px solid black">r1</td>
+		<td style="padding: 4px; border:1px solid black">r2</td>
+		<td style="padding: 4px; border:1px solid black">{{text.stimes.[0]}}</td>
+		<td style="padding: 4px; border:1px solid black">{{text.stimes.[1]}}</td>
+		<td style="padding: 4px; border:1px solid black">{{text.stimes.[2]}}</td>
+	</tr></table>
+</template>
+
+
+<template name="electionVoters">
+	<table style="padding: 4px; border:1px solid black"><tr>
+		<td style="padding: 4px; border:1px solid black">id</td>
+		<td style="padding: 4px; border:1px solid black">username</td>
+		<td style="padding: 4px; border:1px solid black">watcher</td>
+		<td style="padding: 4px; border:1px solid black">step</td>
+		<td style="padding: 4px; border:1px solid black">lastStep</td>
+		<td style="padding: 4px; border:1px solid black">faction</td>
+		<td style="padding: 4px; border:1px solid black">turkSubmitTo</td>
+		<td style="padding: 4px; border:1px solid black">workerId</td>
+		<td style="padding: 4px; border:1px solid black">assignmentId</td>
+		<td style="padding: 4px; border:1px solid black">hitId</td>
+		<td style="padding: 4px; border:1px solid black">nonunique</td>
+		<td style="padding: 4px; border:1px solid black">_wasntMe</td>
+		<td style="padding: 4px; border:1px solid black">_paid</td>
+	</tr>
+	{{#each voters text}}
+	<tr>
+		<td style="padding: 4px; border:1px solid black">{{_id}}</td>
+		<td style="padding: 4px; border:1px solid black">{{username}}</td>
+		<td style="padding: 4px; border:1px solid black">{{watcher}}</td>
+		<td style="padding: 4px; border:1px solid black">{{this.step}}</td>
+		<td style="padding: 4px; border:1px solid black">{{this.lastStep}}</td>
+		<td style="padding: 4px; border:1px solid black">{{this.faction}}</td>
+		<td style="padding: 4px; border:1px solid black">{{turkSubmitTo}}</td>
+		<td style="padding: 4px; border:1px solid black">{{workerId}}</td>
+		<td style="padding: 4px; border:1px solid black">{{assignmentId}}</td>
+		<td style="padding: 4px; border:1px solid black">{{hitId}}</td>
+		<td style="padding: 4px; border:1px solid black">{{this.nonunique}}</td>
+		<td style="padding: 4px; border:1px solid black">{{_wasntMe}}</td>
+		<td style="padding: 4px; border:1px solid black">{{_paid}}</td>
+	</tr>
+	{{/each}}
+	</table>
+</template>
