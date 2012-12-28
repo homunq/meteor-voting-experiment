@@ -80,13 +80,12 @@ if (Handlebars?)
     for loser in losers
       e.scen().candInfo loser, faction, outcome.counts, e.scen(), outcome.factionCounts
     
-  Handlebars.registerHelper 'stepCompletedNum', ->
-    Session.get 'stepCompletedNum'
+  Handlebars.registerHelper 'stepCompletedNum', (num) ->
+    (Session.get 'stepCompletedNums')?[num] ? 0
     
   Handlebars.registerHelper 'stepWaiting', ->
-    step = Session.get "step"
-    lastStep = Session.get "lastStep"
-    return (step is lastStep)
+    stepLastStep = Session.get "stepLastStep"
+    return (stepLastStep[0] is stepLastStep[1])
     
   Handlebars.registerHelper 'isLastStep', ->
     step = Session.get "step"
@@ -104,12 +103,12 @@ if (Handlebars?)
     console.log 'helper nextStage'
     return (Session.get 'stage') + 1
     
-  Handlebars.registerHelper "steps", ->
+  Handlebars.registerHelper "steps", (subTemplate) ->
     steps = []  
     thisStep = Session.get 'step'
     for step, stepNum in PROCESS.steps
       if not step.hide
-        steps.push  Template.oneStep _(
+        steps.push  Template[subTemplate] _(
           thisStep: stepNum == thisStep
         ).extend step
     new Handlebars.SafeString steps.join ""
@@ -169,7 +168,7 @@ if (Handlebars?)
     
   Handlebars.registerHelper 'noRoomForMe', ->
     faction = Session.get "faction"
-    if faction
+    if faction?
       return false
-    election = session.get "election"
-    election.isFull()
+    election = Session.get "election"
+    election?.isFull()

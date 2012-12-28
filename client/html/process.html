@@ -14,7 +14,7 @@
 	<div class="navbar">
 	  <div class="navbar-inner">
         <ul class="nav">
-        	{{steps}}
+        	{{steps "oneStep"}}
         </ul>
       </div>
 	</div>
@@ -22,8 +22,8 @@
 
 <template name="oneStep">
 	<li {{#if thisStep}}class="active"{{/if}}><a href="#" class="hasPopover">{{num}}:
-		{{name}}{{#if popover}}<br/><span style="font-size: 80%">hover for pic</span><span class="popover">{{{stepPopover name}}}</span>{{/if}}{{#if false}}
-			{{/if}}{{#if thisStep}}<div class="underbar">{{stepCompletedNum}}/{{scenNumVoters}} done</div>{{/if}}</a></li>
+		{{name}}{{#if 1}}<div class="underbar">{{stepCompletedNum num}}/{{scenNumVoters}} done</div>{{/if}}{{#if false}}
+			{{/if}}{{#if popover}}<span style="font-size: 80%">hover for pic</span><span class="popover">{{{stepPopover name}}}</span>{{/if}}</a></li>
 </template>
 
 <template name="scenario_popover">

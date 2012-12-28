@@ -90,6 +90,8 @@ class @MyRouter extends ReactiveRouter
     'elections/clear/all': 'clearAll'
     'elections/makeOne/:scenario/:method': 'makeElection'
     'elections/makeOne/:scenario/:method/:delay': 'makeElection'
+    'elections/makeOne/:scenario/:method/:delay/:roundBackTo': 'makeElection'
+    'admin/elections/:password': 'electionsReport'
     
   watchElection: (params) ->
     console.log 'watch'
@@ -117,18 +119,23 @@ class @MyRouter extends ReactiveRouter
     console.log "clear all"
     Election.clearAll()
     
-  makeElection: (scenario, method, delay=100) ->
-    console.log "makeElection", scenario, method, delay
+  makeElection: (scenario, method, delay=100, roundBackTo=-1) ->
+    console.log "makeElection", scenario, method, delay, roundBackTo
     delay = parseInt delay
+    roundBackTo = parseInt roundBackTo
     Election.make
       scenario: scenario
       method: method
-    , true, delay, (result, error) =>
+    , true, delay, roundBackTo, (result, error) =>
       Session.set "madeEid", result
       @goto 'madeElection' #use that template
       
     @goto 'madeElection' #use that template
     Meteor.logout()
+    
+  electionsReport: (password) ->
+    Session.set 'password', password
+    @goto 'electionsReport'
 
 global = @
 

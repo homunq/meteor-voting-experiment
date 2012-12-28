@@ -1,3 +1,8 @@
+#TODO: static methods that can be inherited
+
+@console ?=
+  log: ->
+
 class Field
   constructor: (default_val, @validator) ->
     if (_ default_val).isFunction() 

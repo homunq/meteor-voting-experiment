@@ -35,10 +35,11 @@ if Meteor.is_server && !MainElection.findOne()
     eid: null
   #console.log "...setting up MainElection..."
 
-backToHour = (aTime) ->
-  aTime.setMinutes(0) #rounded back to on-the-hour
-  aTime.setSeconds(0) #rounded back to on-the-hour
-  aTime.setMilliseconds(0) #rounded back to on-the-hour
+backToHour = (aTime, roundBackTo) ->
+  console.log "backToHour", aTime, roundBackTo
+  aTime.setMinutes(aTime.getMinutes() - roundBackTo)
+  aTime.setMinutes(0,0,0) #rounded back to on-the-hour
+  aTime.setMinutes(aTime.getMinutes() + roundBackTo)
   aTime
   
 minutesFromNow = (mins) ->
@@ -85,14 +86,14 @@ class @Election extends VersionedInstance
     
     
   @register
-    make: @static (options, promote, delay)->
+    make: @static (options, promote, delay, roundBackTo)->
       #console.log "new election", options 
       options ?= {}
       options = _(options).pick "scenario", "method"
       delay ?= 0
       later = minutesFromNow delay
-      if delay > 10
-        later = backToHour later
+      if roundBackTo >= 0
+        later = backToHour later, roundBackTo
       #evenLater = later.getTime() + PROCESS.minsForStage(1) * 60 * 1000
       
       _(options).defaults
@@ -354,7 +355,9 @@ class @Election extends VersionedInstance
     fullVotes = vCursor.fetch()
     #console.log "votesForStage", stage, fullVotes
     v.vote for v in fullVotes
-    
+  
+  isFull: ->
+    @voters.length >= @scen().numVoters()
     
     
 #debugger
@@ -446,9 +449,9 @@ else if Meteor.is_client
         election = new Election e
         Session.set 'election', election
         Session.set 'stage', election.stage
+        Session.set "stepCompletedNums", election.stepsDoneBy
         stepCompletedNum = election.stepsDoneBy[user?.step] ? 0
         if stepCompletedNum isnt OLD_STEP_COMPLETED_NUM
-          Session.set "stepCompletedNum", stepCompletedNum
           OLD_STEP_COMPLETED_NUM = stepCompletedNum
           
           votersLeft = election.scen().numVoters - stepCompletedNum 

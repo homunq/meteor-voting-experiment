@@ -1,3 +1,6 @@
+
+@USERS = Meteor.users
+
 class @User extends VersionedInstance
   collection: Meteor.users
   
@@ -30,8 +33,8 @@ class @User extends VersionedInstance
       if params.workerId
         nonunique = Meteor.users.findOne
           workerId: @workerId
-        @nonunique = !! nonunique
-        if @_wasntMe or nonunique._wasntMe
+        @nonunique = false #!! nonunique
+        if @_wasntMe or nonunique?._wasntMe
           @_wasntMe = true
           @nonunique = false
         if @nonunique and @eid
