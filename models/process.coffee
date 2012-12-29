@@ -174,19 +174,21 @@ PROCESS = new Process "Base",
     
 StepRecords = new Meteor.Collection 'stepRecords', null
 
-if Meteor.is_server
-  Meteor.publish 'stepRecords', (uid) ->
-    StepRecords.find
-      user: uid
-  StepRecords.allow
-    insert: ->
-      true
-else  
-  Meteor.autosubscribe ->
-    if (Session.get 'router')?.current_page() is 'loggedIn'
-      user = Meteor.user()
-      if user?
-        Meteor.subscribe 'stepRecords', user._id
+if false ###############################
+  if Meteor.is_server
+    Meteor.publish 'stepRecords', (uid) ->
+      StepRecords.find
+        user: uid
+    StepRecords.allow
+      insert: ->
+        true
+  else  
+    Meteor.autosubscribe ->
+      if (Session.get 'router')?.current_page() is 'loggedIn'
+        user = Meteor.user()
+        if user?
+          Meteor.subscribe 'stepRecords', user._id
+          ############################
 
 class StepRecord extends StamperInstance
   
@@ -213,35 +215,36 @@ class StepRecord extends StamperInstance
     
   @register
     finished: ->
-      #console.log "save StepRecord 1"
-      stepDoneBy = StepRecords.find(
-            step: @step
-            election: @election
-          ).count()
-          
-      
-      if Meteor.is_client and OPTIMIZE? #faster but harder to debug
-        election = Session.get "election"
-      else
-        election = new Election Elections.findOne
-          _id: @election
-      #console.log "save StepRecord 2", @, election, PROCESS.step(@step)#, _(@).pairs()
-      election.stepsDoneBy[@step] = stepDoneBy
-      
-      if PROCESS.step(@step).prereqForNextStage
-        #console.log "save StepRecord 3"
-        election.stage.should.equal PROCESS.step(@step).stage
-        if (stepDoneBy >= election.scen().numVoters() or #full scenario
-              (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
-          
-          console.log "save StepRecord nextStage"
-          election.nextStage(true)
-          
-         
-      #console.log "save StepRecord 6", election
       if Meteor.is_server
-        election.save() 
+        #console.log "save StepRecord 1"
+        stepDoneBy = StepRecords.find(
+              step: @step
+              election: @election
+            ).count()
+            
         
+        if Meteor.is_client and OPTIMIZE? #faster but harder to debug
+          election = Session.get "election"
+        else
+          election = new Election Elections.findOne
+            _id: @election
+        #console.log "save StepRecord 2", @, election, PROCESS.step(@step)#, _(@).pairs()
+        election.stepsDoneBy[@step] = stepDoneBy
+        
+        if PROCESS.step(@step).prereqForNextStage
+          #console.log "save StepRecord 3"
+          election.stage.should.equal PROCESS.step(@step).stage
+          if (stepDoneBy >= election.scen().numVoters() or #full scenario
+                (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
+            
+            console.log "save StepRecord nextStage"
+            election.nextStage(true)
+            
+           
+        #console.log "save StepRecord 6", election
+        if Meteor.is_server
+          election.save() 
+          
       #move along if we can
       nextStage = PROCESS.step(@step + 1).stage
       if election.stage >= nextStage

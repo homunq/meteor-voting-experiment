@@ -10,6 +10,7 @@ if Meteor.is_client
   Meteor.startup ->
     d = new Date()
     Meteor.call 'timeOffset', d.getTime(), (error, result) ->
+      console.log "timeOffset", result
       timeOffset = result
     
 untilSTime = (sTime) ->

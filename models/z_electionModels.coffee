@@ -416,14 +416,6 @@ if Meteor.is_server
 
 else if Meteor.is_client
   Meteor.subscribe 'elections'
-  Meteor.autosubscribe ->
-    if (Session.get 'router')?.current_page() is 'loggedIn'
-      eid = Meteor.user()?.eid
-      if eid
-        Meteor.subscribe 'done_votes', eid, ->
-          #console.log "done_votes (re)loaded"
-        Meteor.subscribe 'outcomes', eid, ->
-          #console.log "outcomes (re)loaded"
 
   OLD_ELECTION = undefined
   OLD_USER = undefined
@@ -458,6 +450,13 @@ else if Meteor.is_client
           if votersLeft <= election.scen().hurryNumber and (user.step isnt user.lastStep)
             playSound "hurry"
         if eid isnt OLD_ELECTION?._id #don't obsessively reload stable values
+          #subscribe
+          Meteor.subscribe 'done_votes', eid, ->
+            #console.log "done_votes (re)loaded"
+          Meteor.subscribe 'outcomes', eid, ->
+            #console.log "outcomes (re)loaded"
+            
+          #set session vars  
           if election.scen() isnt OLD_ELECTION?.scen()            
             Session.set 'scenario', election.scen()
           if election.meth() isnt OLD_ELECTION?.meth()            

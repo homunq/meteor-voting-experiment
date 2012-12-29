@@ -12,6 +12,7 @@ class @User extends VersionedInstance
     lastStep: undefined
     faction: undefined
     turkSubmitTo: undefined
+    stickyWorkerId: undefined
     workerId: undefined
     assignmentId: undefined
     hitId: undefined
@@ -32,14 +33,15 @@ class @User extends VersionedInstance
       
       if params.workerId
         nonunique = Meteor.users.findOne
-          workerId: @workerId
-        @nonunique = false #!! nonunique
+          stickyWorkerId: params.workerId
+        @nonunique = false #(nonunique and (nonunique._id isnt @_id))
         if @_wasntMe or nonunique?._wasntMe
           @_wasntMe = true
           @nonunique = false
         if @nonunique and @eid
           @election().userNonunique @id
             
+        @stickyWorkerId = params.workerId
       @workerId = params.workerId
       @assignmentId = params.assignmentId
       @hitId = params.hitId

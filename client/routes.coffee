@@ -91,7 +91,7 @@ class @MyRouter extends ReactiveRouter
     'elections/makeOne/:scenario/:method': 'makeElection'
     'elections/makeOne/:scenario/:method/:delay': 'makeElection'
     'elections/makeOne/:scenario/:method/:delay/:roundBackTo': 'makeElection'
-    'admin/elections/:password': 'electionsReport'
+    'admin/elections/:password/:fromVersion': 'electionsReport'
     
   watchElection: (params) ->
     console.log 'watch'
@@ -133,8 +133,9 @@ class @MyRouter extends ReactiveRouter
     @goto 'madeElection' #use that template
     Meteor.logout()
     
-  electionsReport: (password) ->
+  electionsReport: (password, fromVersion) ->
     Session.set 'password', password
+    Session.set 'fromVersion', (parseFloat fromVersion) or 0.93
     @goto 'electionsReport'
 
 global = @
