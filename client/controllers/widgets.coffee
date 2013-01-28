@@ -25,7 +25,7 @@ do ->
   intervaller = null
   intervalDone = no
   intervalStage = null
-  Handlebars.registerHelper "countdownToStage", (stage, before, after) ->
+  Handlebars.registerHelper 'countdownToStage', (stage, before, after) ->
     #console.log "countdownToStage", stage, intervalStage, intervalDone, intervaller
     if intervalStage isnt stage and intervaller
       console.log "intervalStage"
@@ -33,26 +33,26 @@ do ->
       intervaller = null
       intervalDone = no
       intervalStage = stage
-    election = Session.get "election"
+    election = (Session.get 'election') and ELECTION
     if election?
       untilTime = election.sTimes[stage]
       #console.log "untilTime", untilTime, stage, election.sTimes
       #untilTime = inTenSeconds()
       if not intervaller and not intervalDone
-        Session.set "countDown", no
+        Session.set 'countDown', no
         sI = (ms, fn) ->
           setInterval fn, ms
         intervaller = sI 1000, ->
           countDown = untilSTime untilTime
           #console.log "countDown", countDown
           if countDown >= 0
-            Session.set "countDown", countDown
+            Session.set 'countDown', countDown
           else
-            Session.set "countDown", countDown
+            Session.set 'countDown', countDown
             clearInterval intervaller
             intervaller = null
             intervalDone = yes
-      displayCount = Session.get "countDown"
+      displayCount = Session.get 'countDown'
       if displayCount isnt no
         #console.log "displayCount", displayCount, seconds2time displayCount/1000
         
@@ -70,10 +70,10 @@ do ->
     else
       return "No experiment currently pending"
           
-Handlebars.registerHelper "call", (funcName, data) ->
+Handlebars.registerHelper 'call', (funcName, data) ->
   window[funcName] data
   ""
-Handlebars.registerHelper "debugger", (data, outerdata) ->
+Handlebars.registerHelper 'debugger', (data, outerdata) ->
   debugger
   
 playSound = (whichSound) ->
@@ -85,7 +85,7 @@ playSound = (whichSound) ->
 playSoundOnce = ->
   window.SOUNDED ?= false
   if not SOUNDED
-    playSound "starting"
+    playSound 'starting'
     window.SOUNDED = true
     
 VOTE = null  
@@ -122,5 +122,5 @@ pluralityVoteFor = (cand) ->
   
 
 
-Handlebars.registerHelper "Session", (what) ->
+Handlebars.registerHelper 'Session', (what) ->
   Session.get what

@@ -1,4 +1,4 @@
-nobind = (f) ->
+Snobind = (f) ->
   f.nobind = true
   f
   
@@ -37,10 +37,13 @@ class Process
     
   minsForStage: (stage) ->
     console.log "minsForStage", stage
+    if stage >= @firstForStages.length - 2
+      return -1
     mins = 0
     stepToTime = @firstForStages[stage]
     while @steps[stepToTime] and @steps[stepToTime].stage <= stage
-      mins += @steps[stepToTime].maxMins
+      maxMins = @steps[stepToTime].realMaxMins ? @steps[stepToTime].maxMins
+      mins += maxMins
       stepToTime += 1
     mins
     
@@ -62,10 +65,10 @@ PROCESS = new Process "Base",
     stage: 0
     hit: off
     longName: "Consent"
-    blurb: "Understand your rights and consent, and wait for the countdown to end and the experiment to begin."
+    blurb: "Understand your rights, wait for the countdown to end and the experiment to begin, and informed consent."
     prereqForNextStage: true
     beforeFinish: (cb) ->
-      election = Session.get 'election'
+      election = (Session.get 'election') and ELECTION
       election.addVoterAndSave Meteor.user()._id, cb
 , 
   scenario:
@@ -84,9 +87,9 @@ PROCESS = new Process "Base",
     hit: on
     prereqForNextStage: true
     longName: "Election method practice"
-    blurb: "Learn and practice the election method to be used"
+    blurb: "Learn and practice the election method to be used."
     beforeFinish: (cb) ->
-      election = Session.get 'election'
+      election = (Session.get 'election') and ELECTION
       election.addVote VOTE.raw(), cb
 , 
   results:
@@ -106,11 +109,11 @@ PROCESS = new Process "Base",
     longName: "Voting round 1"
     blurb: "Vote. You will be paid based on results."
     beforeFinish: (cb) ->
-      election = Session.get 'election'
+      election = (Session.get 'election') and ELECTION
       election.addVote VOTE.raw(), cb
 , 
   payouts:
-    suggestedMins: 1
+    suggestedMins: 0.5
     maxMins: 1.5
     stage: 3
     hit: on
@@ -120,14 +123,14 @@ PROCESS = new Process "Base",
 , 
   voting:
     suggestedMins: 0.5
-    maxMins: 1.5
+    maxMins: 1
     stage: 3
     hit: on
     prereqForNextStage: true
     longName: "Voting round 2"
     blurb: "Vote. You will be paid again based on results."
     beforeFinish: (cb) ->
-      election = Session.get 'election'
+      election = (Session.get 'election') and ELECTION
       election.addVote VOTE.raw(), cb
 , 
   payouts:
@@ -141,7 +144,7 @@ PROCESS = new Process "Base",
     blurb: "See results of the round 2 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
   survey:
-    suggestedMins: 1
+    suggestedMins: 2
     maxMins: 4
     stage: 4
     hit: on
@@ -153,8 +156,8 @@ PROCESS = new Process "Base",
       sendSurvey cb
 , 
   debrief:
-    suggestedMins: 1
-    maxMins: 1
+    suggestedMins: 0
+    maxMins: 0.5
     stage: 4
     hit: on
     prereqForNextStage: true
@@ -174,8 +177,12 @@ PROCESS = new Process "Base",
     
 StepRecords = new Meteor.Collection 'stepRecords', null
 
+StepRecords.allow
+  insert: ->
+    yes
+
 if false ###############################
-  if Meteor.is_server
+  if Meteor.isServer
     Meteor.publish 'stepRecords', (uid) ->
       StepRecords.find
         user: uid
@@ -184,7 +191,7 @@ if false ###############################
         true
   else  
     Meteor.autosubscribe ->
-      if (Session.get 'router')?.current_page() is 'loggedIn'
+      if (Session.get 'router') and router?.current_page() is 'loggedIn'
         user = Meteor.user()
         if user?
           Meteor.subscribe 'stepRecords', user._id
@@ -215,24 +222,26 @@ class StepRecord extends StamperInstance
     
   @register
     finished: ->
-      if Meteor.is_server
-        #console.log "save StepRecord 1"
+      console.log "finished StepRecord 1"
+      if Meteor.isClient and OPTIMIZE? #faster but harder to debug
+        election = (Session.get 'election') and ELECTION
+      else
+        election = new Election Elections.findOne
+          _id: @election
+          
+      if Meteor.isServer
+        console.log "save StepRecord 1"
         stepDoneBy = StepRecords.find(
               step: @step
               election: @election
             ).count()
             
         
-        if Meteor.is_client and OPTIMIZE? #faster but harder to debug
-          election = Session.get "election"
-        else
-          election = new Election Elections.findOne
-            _id: @election
-        #console.log "save StepRecord 2", @, election, PROCESS.step(@step)#, _(@).pairs()
+        console.log "save StepRecord 2" #, @, election, PROCESS.step(@step)#, _(@).pairs()
         election.stepsDoneBy[@step] = stepDoneBy
         
         if PROCESS.step(@step).prereqForNextStage
-          #console.log "save StepRecord 3"
+          console.log "save StepRecord 3"
           election.stage.should.equal PROCESS.step(@step).stage
           if (stepDoneBy >= election.scen().numVoters() or #full scenario
                 (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
@@ -242,26 +251,26 @@ class StepRecord extends StamperInstance
             
            
         #console.log "save StepRecord 6", election
-        if Meteor.is_server
+        if Meteor.isServer
           election.save() 
           
       #move along if we can
-      nextStage = PROCESS.step(@step + 1).stage
-      if election.stage >= nextStage
+      stageForNextStep = PROCESS.step(@step + 1).stage
+      if election.stage >= stageForNextStep
         
-        #console.log "save StepRecord 7"
+        console.log "stageForNextStep"
         @.constructor._moveOnServer(@step, @voter, yes)
           
       else
         
-        console.log "Time to wait...", election.stage, nextStage, @step, PROCESS.step(@step), PROCESS.step(@step + 1)
+        console.log "Time to wait...", election.stage, @step
         @.constructor._moveOnServer(@step, @voter, no)
           
     
     _moveOnServer: @static (step, voter, really) ->
       console.log "moving on ", step, really, voter
       newStep = step + (if really then 1 else 0)
-      if Meteor.is_client
+      if Meteor.isClient
         Session.set "step", newStep
       else
         Meteor.users.update
@@ -281,7 +290,7 @@ class StepRecord extends StamperInstance
       now = new Date
       @done = now.getTime()
       @save =>
-        #console.log "finished:", @
+        console.log "finished::::::::::::::::"#, @
         @finished()
         @after()
     else #can't finish

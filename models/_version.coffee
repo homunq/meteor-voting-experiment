@@ -8,7 +8,7 @@ class VersionedInstance extends StamperInstance
     
   @register
     getAllFor: @static (query, password, collection) ->
-      if Meteor.is_server and password is PASSWORD
+      if Meteor.isServer and password is PASSWORD
         console.log "getAllFor", collection, query
         cursor = global[collection].find query
         r = cursor.fetch()

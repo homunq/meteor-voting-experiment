@@ -1,12 +1,12 @@
 if (Handlebars?) 
 
   Handlebars.registerHelper 'meth_subtemplate', (sub, data) ->
-    template =  Template["#{ (Session.get 'method')?.name }_#{ sub }"]
-    console.log "meth_subtemplate", "#{ (Session.get 'method')?.name }_#{ sub }"
+    template =  Template["#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"]
+    console.log "meth_subtemplate", "#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"
     if template
       new Handlebars.SafeString template(data)
     else
-      new Handlebars.SafeString "<!--#{ (Session.get 'method')?.name }_#{ sub }-->"
+      new Handlebars.SafeString "<!--#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }-->"
       
   Handlebars.registerHelper 'gradeOf', (cmj) ->
     
@@ -26,39 +26,39 @@ if (Handlebars?)
      
       
   Handlebars.registerHelper 'scenarioName', ->
-    e = Session.get 'election'
+    e = (Session.get 'election') and ELECTION
     e.scenario
     
   Handlebars.registerHelper 'scen', ->
-    (Session.get 'scenario')
+    ((Session.get 'scenario') and SCENARIO)?
     
   Handlebars.registerHelper 'factions', ->
-    (Session.get 'scenario').factionsAttrs Meteor.user()?.faction
+    ((Session.get 'scenario') and SCENARIO)?.factionsAttrs Meteor.user()?.faction
     
   Handlebars.registerHelper 'scenMyPayoffs', ->
-    scenario = Session.get 'scenario'
+    scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       scenario.payoffsForFaction Session.get 'faction'
     
   Handlebars.registerHelper 'scenOtherPayoffs', ->
-    scenario = Session.get 'scenario'
+    scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       scenario.payoffsExceptFaction Session.get 'faction'
     
   Handlebars.registerHelper 'scenCandInfo', ->
-    scenario = Session.get 'scenario'
+    scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       result = scenario.candInfos Session.get 'faction'
-    console.log "scenCandInfo", Session.get 'faction', (Session.get 'scenario'), result
+    console.log "scenCandInfo", Session.get 'faction', (((Session.get 'scenario') and SCENARIO)), result
     result
     
   Handlebars.registerHelper 'scenNumVoters', ->
-    scenario = Session.get 'scenario'
+    scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       scenario.numVoters()
     
   Handlebars.registerHelper 'candRanks', ->
-    scenario = Session.get 'scenario'
+    scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       numCands = scenario.numCands()
       for rank in [1..numCands]

@@ -10,18 +10,42 @@
 		<p>The winner will be the site with the most approvals</p>
 </template>
 
-<template name="CMJ_blurb">
-		<h2>Election Method: Continuous Majority Judgment</h2>
+<template name="GMJ_blurb">
+		<h2>Election Method: Graduated Majority Judgment</h2>
 		<h3>Ballot</h3>
 		<p><strong>The ballot will ask you to grade each
-		candidate</strong> on a scale from AA (excellent) to F (unacceptable). You may give two candidates the
+		candidate</strong> (site) on a scale from A (excellent) to F (unacceptable). You may give two candidates the
 		same grade if you wish. Any candidate whom you do not explicitly grade will get an F from you.</p>
 		<h3>Counting</h3>
-		<p><strong>The winner will be the candidate who gets the highest middle (median) grade.</strong>
+		<p>To find the winner, first the "A" votes for each candidate are counted. If no
+		candidate gets over 50% of the voters, the "B" votes are added to the count, then "C"
+		votes, etc. <strong>The first candidate to get over 50% is the winner.</strong>
+		If two candidates would reach 50% at the same
+		grade, each candidate's votes for that grade are added gradually, 
+		and the winner is the one who needs the smallest portion of those votes 
+		to reach 50%.</p>
+		
+		<p>This gradual process can be stated as a "graduated score" for each candidate. If
+		a candidate reaches 50% using 8/10 of their "C" votes (along with all their A and B 
+		votes), then their
+		graduated score would be 1.7 (a C-). Another candidate who needed only 2/10 of their 
+		"C" votes to reach 50% would have a graduated score of 2.3 (a C+), so between those 
+		two candidates the second would be the winner.</p>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			stated as a numberThe winner will be the candidate who gets the highest middle (median) grade.</strong>
 			So a candidate that got the grades A, A, <strong>B</strong>, D, F would have a median of B (3.0)
 		because at least half of the voters gave them B or better. In order to prevent ties, the 
 		median is adjusted up or down (indicated as + or -) depending on whether there were more votes above or below
-		the median. Thus a candidate with A, <strong>A, B, B,</strong> C would beat one with 
+		the median, as if voters had voted along a continuum from A+ to F-. Thus a candidate with A, <strong>A, B, B,</strong> C would beat one with 
 		A, <strong>B, B, C,</strong> C. </p>
 		<p>This formula is most affected by the voters near the middle, not by those at the extremes.
 			Thus, A, <strong>A, B, C,</strong> F would beat A, <strong>B, B, C,</strong> C.</p>
@@ -61,7 +85,7 @@
 		<h3>Ballot</h3>
 		<p><strong>You may vote for exactly one candidate.</strong> </p>
 		<h3>Counting</h3>
-			<p>The candidate with the most votes wins.</p>
+			<p>The candidate site with the most votes wins.</p>
 </template>
 
 <template name="ballot">

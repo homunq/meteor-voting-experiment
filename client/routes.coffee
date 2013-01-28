@@ -101,6 +101,7 @@ class @MyRouter extends ReactiveRouter
     login_then =>
       user = new User Meteor.user()
       user.setParams params
+      console.log "About to watchMain", user._id
       Election.watchMain =>
         @goto 'loggedIn'
         #console.log 'qwpr' + JSON.stringify Meteor.user()
@@ -112,7 +113,6 @@ class @MyRouter extends ReactiveRouter
     login_then =>
       console.log "route: election; logged in"
       Election.watch eid, =>
-        #console.log 'asdt' + JSON.stringify Meteor.user()
         @goto 'loggedIn' #use that template
         
   clearAll: ->
@@ -142,8 +142,8 @@ global = @
 
 router = global.Router = new MyRouter()
 
-if Meteor.is_client
-  Session.set 'router', router
+if Meteor.isClient
+  Session.set 'router', true
 
 Meteor.startup ->
   console.log "I should maybe $('#loading').hide()"
@@ -152,7 +152,9 @@ Meteor.startup ->
   Backbone.history.start
      pushState: true
   Meteor.autosubscribe ->
-    console.log "should I??? $('#loading').hide()", (Session.get 'router'), (Session.get 'router')?.current_page()
-    if (Session.get 'router')?.current_page() is 'loggedIn'
+    console.log "should I??? $('#loading').hide()", router?.current_page()
+    if ((Session.get 'router') and router?.current_page()) is 'loggedIn'
       console.log "$('#loading').hide()"
       $('#loading').hide()
+    else
+      console.log "NOT     $('#loading').hide()"

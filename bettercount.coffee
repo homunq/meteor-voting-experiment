@@ -1,10 +1,10 @@
 
         
-if Meteor.is_client
+if Meteor.isClient
   console.log "client"
  
    
-if Meteor.is_server
+if Meteor.isServer
   Meteor.startup ->
 
 

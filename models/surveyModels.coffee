@@ -6,7 +6,7 @@ class Question extends Field
     super null, validator
     
   setName: (@name) ->
-    if Meteor.is_client
+    if Meteor.isClient
       @makeHtml()
     
   makeHtml: ->

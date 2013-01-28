@@ -1,11 +1,9 @@
 {
   "meteor": {
-    "branch": "auth"
+    "branch": "master",
+    , "git": "https://github.com/homunq/meteor"
   },
   "packages": {
-    "router": {
-      "git": "https://github.com/tmeasday/meteor-router.git"
-    }
     "deps-extensions": {
       "git": "https://github.com/tmeasday/meteor-deps-extensions.git"
     }

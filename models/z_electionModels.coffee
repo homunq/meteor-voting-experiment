@@ -29,7 +29,7 @@ class @Vote extends VersionedInstance
 Elections = new Meteor.Collection 'elections', null
 
 MainElection = new Meteor.Collection 'mainElection', null
-if Meteor.is_server && !MainElection.findOne()
+if Meteor.isServer && !MainElection.findOne()
   #console.log "setting up MainElection..."
   MainElection.insert
     eid: null
@@ -80,7 +80,7 @@ class @Election extends VersionedInstance
     winners: []
     outcomes: []
     
-  if Meteor.is_server
+  if Meteor.isServer
     @fields
       nonfactions: [] #[0, 0, 1, 1, ... 2, ...]
     
@@ -105,11 +105,10 @@ class @Election extends VersionedInstance
         sTimes: [(new Date).getTime(), later.getTime()] #, evenLater]
         
       e = new Election options
-      if Meteor.is_server
+      if Meteor.isServer
         e.nonfactions = e.scen().shuffledFactions()
       e.save()
       #console.log "EID IS ", e._id
-      #console.log "UID IS "+@userId()
       if promote
         e.promote()
       
@@ -126,19 +125,19 @@ class @Election extends VersionedInstance
         
     watchMain: @static ->
       #console.log 'watchMain '
-      if Meteor.is_server
+      if Meteor.isServer
         #console.log 'watchMain 2'
-        eid = MainElection.find().fetch()[0].eid
+        eid = MainElection.findOne()?.eid
         #console.log MainElection.find().fetch()
         if eid
           @watch eid
         else
-          #console.log 'no elections pending'
+          console.log 'no elections pending'
         
       
     watch: @static (eid) ->
-      #console.log 'watch ', eid
-      uid = @userId()
+      console.log 'watch ', eid, @userId
+      uid = @userId
       election = Elections.findOne
         _id: eid
       #console.log 'watch 2', eid
@@ -153,8 +152,8 @@ class @Election extends VersionedInstance
           
         
     addVote: (vote) ->
-      console.log "addVote", vote
-      uid = @userId()
+      console.log "addVote", vote, @userId
+      uid = @userId
       if @stage != vote.stage
         throw new Meteor.Error 403, "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
       if uid != vote.voter
@@ -191,10 +190,11 @@ class @Election extends VersionedInstance
       Elections.remove {}
       
     addWatcherAndSave: (vid) ->
-      #console.log "addWatcherAndSave "+vid + "     ;     "
+      console.log "addWatcherAndSave "+vid + "     ;     ", @_id
       if (_.indexOf @watchers, vid) == -1
         @watchers.push vid
       eid = @save()
+      console.log "eid", eid, vid
       Meteor.users.update
         _id: vid
       ,
@@ -204,11 +204,13 @@ class @Election extends VersionedInstance
           step: 0
       ,
         multi: false
+      console.log "user is: ", Meteor.users.findOne
+        _id: vid
       eid
       
     addVoterAndSave: (vid) ->
       #console.log "addVoterAndSave "+vid + "     ;     "
-      if Meteor.is_server
+      if Meteor.isServer
         #console.log @nonfactions, @factions
         if (_.indexOf @voters, vid) >= 0
           err = "Sorry, you cannot participate in this same election twice. (How did you do that?)"
@@ -241,7 +243,7 @@ class @Election extends VersionedInstance
       
     promote: ->
       #console.log "promote"
-      if Meteor.is_server
+      if Meteor.isServer
         mainElection = MainElection.findOne({})
         mainElection.eid = @._id
         MainElection.update
@@ -273,7 +275,10 @@ class @Election extends VersionedInstance
         stage: stage
         method: @method
         scenario: @scenario
+      console.log "My new outcome is", outcome
       outcome.save()
+      console.log "and I just saved it:", outcome._id, Outcomes.findOne
+        _id: outcome._id
       @winners[stage] = winner
       @outcomes[stage] = outcome._id
       @save()
@@ -281,21 +286,18 @@ class @Election extends VersionedInstance
     nextStage: (dontSave) ->
       console.log "election.nextStage"
       @stage += 1
-      if Meteor.is_server 
+      if Meteor.isServer 
         now = (new Date).getTime()
         delay = PROCESS.minsForStage(@stage) * 60 * 1000
         if nullOrAfterNow(@sTimes[@stage])
           @sTimes[@stage] = now
-        console.log "setting stage timeout??", @sTimes, @sTimes[@stage + 1], delay, @stage, now, now + delay
-        if not @sTimes[@stage + 1]
+        if (not @sTimes[@stage + 1]) and delay > 0
           console.log "setting stage timeout", delay, @stage, now, now + delay
           @sTimes[@stage + 1] = now + delay
           sT = (ms, fn) ->
             Meteor.setTimeout fn, ms
             
-          console.log "nextForTime", @, @::, @_id
           sT delay, =>
-            console.log "nextForTime", @, @.constructor, @_id
             @.constructor.nextForTime @_id, @stage
       if not dontSave
         @save()
@@ -315,7 +317,7 @@ class @Election extends VersionedInstance
       if voterIndex >= 0
         @voters.splice voterIndex, 1
         [faction] = @factions.splice voterIndex, 1
-        if Meteor.is_server
+        if Meteor.isServer
           @nonfactions.push faction
         @save()
         
@@ -389,7 +391,8 @@ class @Outcome extends VersionedInstance
   payFactionCents: (faction) ->
     @scen().payoffCents @winner, faction
 
-if Meteor.is_server
+global = @
+if Meteor.isServer
   Elections.r
   # publish all the non-full elections.
   Meteor.publish 'elections', ->
@@ -411,8 +414,22 @@ if Meteor.is_server
       #faction: 0 #do not hide this, even though it wouldn't be visible IRL
       
   Meteor.publish 'outcomes', (eid) ->
+    #JUST DEBUGGING - reactivity failing - DELETE WHEN DONE
+    Outcomes.find().fetch()
+    #---------------------
+    console.log "(re-)publishing outcomes", eid
     Outcomes.find
       election: eid
+      
+  console.log "gonna .autorun"
+  Meteor.autorun ->
+    Outcomes.find().fetch({},{reactive: true})
+    #---------------------
+    console.log "should be (re-)publishing outcomes"
+  
+  Outcomes.allow
+    insert: ->
+      yes
 
 else if Meteor.is_client
   Meteor.subscribe 'elections'
@@ -421,7 +438,7 @@ else if Meteor.is_client
   OLD_USER = undefined
   OLD_STEP_COMPLETED_NUM = undefined
   Meteor.autosubscribe ->
-    if (Session.get 'router')?.current_page() is 'loggedIn'
+    if (Session.get 'router') and router?.current_page() is 'loggedIn'
       user = Meteor.user()
       if user?.faction isnt OLD_USER?.faction
         Session.set 'faction', user.faction
@@ -438,29 +455,32 @@ else if Meteor.is_client
         e = Elections.findOne
           _id: eid
         console.log "really (re)loading",Meteor.user().eid,  e
-        election = new Election e
-        Session.set 'election', election
-        Session.set 'stage', election.stage
-        Session.set "stepCompletedNums", election.stepsDoneBy
-        stepCompletedNum = election.stepsDoneBy[user?.step] ? 0
+        global.ELECTION = new Election e
+        Session.set 'election', e
+        Session.set 'stage', ELECTION.stage
+        Session.set "stepCompletedNums", ELECTION.stepsDoneBy
+        stepCompletedNum = ELECTION.stepsDoneBy[user?.step] ? 0
         if stepCompletedNum isnt OLD_STEP_COMPLETED_NUM
           OLD_STEP_COMPLETED_NUM = stepCompletedNum
           
-          votersLeft = election.scen().numVoters - stepCompletedNum 
-          if votersLeft <= election.scen().hurryNumber and (user.step isnt user.lastStep)
+          votersLeft = ELECTION.scen().numVoters - stepCompletedNum 
+          if votersLeft <= ELECTION.scen().hurryNumber and (user.step isnt user.lastStep)
             playSound "hurry"
         if eid isnt OLD_ELECTION?._id #don't obsessively reload stable values
           #subscribe
           Meteor.subscribe 'done_votes', eid, ->
             #console.log "done_votes (re)loaded"
+          console.log "subscribing outcomes", eid
           Meteor.subscribe 'outcomes', eid, ->
             #console.log "outcomes (re)loaded"
             
           #set session vars  
-          if election.scen() isnt OLD_ELECTION?.scen()            
-            Session.set 'scenario', election.scen()
-          if election.meth() isnt OLD_ELECTION?.meth()            
-            Session.set 'method', election.meth()
-          OLD_ELECTION = election
+          if ELECTION.scen() isnt OLD_ELECTION?.scen()     
+            global.SCENARIO = ELECTION.scen()
+            Session.set 'scenario', ELECTION.scenario
+          if ELECTION.meth() isnt OLD_ELECTION?.meth()       
+            global.METHOD = ELECTION.meth()        
+            Session.set 'method', ELECTION.method
+          OLD_ELECTION = ELECTION
                 
           console.log "fully (re)loaded ",Meteor.user().eid,  e

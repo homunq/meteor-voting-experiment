@@ -24,16 +24,20 @@ field = -> #just some sugar to save typing "new".
   
 class StamperInstance
   #todo: getters/setters; hide actual values in _raw object
-  constructor: (props, strict=false) -> #=Meteor.is_client) ->
+  constructor: (props) -> #=Meteor.is_client) ->
     props ?= {}
+    if @_loose
+      @_looseFields = []
     if @_fields
       for pname, prop of props
         if pname isnt "_id"
           if not @_fields[pname]?
             err = "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
             console.log "ERROR: ", err
-            if strict
+            if @_strict
               throw new Error err
+            if @_loose #keep extra fields and use them when saving
+              @_looseFields.push pname
           else if @_fields[pname].invalid()
             throw new Error "Invalid property val: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
       for fname, f of @_fields
@@ -56,14 +60,6 @@ class StamperInstance
     fn.static = true
     fn
     
-  raw: ->
-    return _.pick @, (_.keys @_fields)...
-  #@from: (props) ->
-  #  props.
-    
-    
-    
-    
   @register: (methods) ->
     servermethods = {}
     self = this
@@ -76,28 +72,26 @@ class StamperInstance
         smname = self.name + "_" + mname
         if !method.static #instance
           servermethods[smname] = (id, obj, args...) ->
-            console.log "server calling ", smname
-            if Meteor.is_server
+            console.log "server calling ", smname, "userId", @userId, "isServer", Meteor.isServer
+            if Meteor.isServer
               cur_instance = self.prototype.collection.findOne
                 _id: id
              
               if cur_instance
                 cur_instance = new self cur_instance
-              console.log "server method on", id #, cur_instance
+              console.log "server method on", id, (cur_instance and "has cur_instance")
               #console.log self.prototype.collection.find().fetch()
             else
               cur_instance = obj
             if not cur_instance
               throw Meteor.Error 404, "No such object on #{ if Meteor.isServer then 'server'  else 'client' }"
               
-            cur_instance.userId = =>
-              @userId() #sneak in a method for current userId
+            cur_instance.userId = @userId #sneak in a method for current userId
             cur_instance[smname].apply cur_instance, args
         else #static
           servermethods[smname] = (args...) ->
-            console.log "server calling static ", smname, self
-            self.userId = =>
-              @userId() #sneak in a method for current userId
+            console.log "server calling static ", smname, "userid", @userId
+            self.userId = @userId #sneak in a method for current userId
             #console.log "Crashy?", smname
             #console.log self
             #console.log self.constructor
@@ -125,15 +119,22 @@ class StamperInstance
     Meteor.methods servermethods
     
   raw: ->
+    
+    fields = ['_id']
+    if @_looseFields
+      fields = fields.concat @._looseFields
     if @_fields
-      return _.pick(@, ['_id'].concat _.keys @_fields)
+      fields = fields.concat _.keys @_fields
+      return _.pick @, fields
     @
-     
+  #@from: (props) ->
+  #  props.
+    
   save: (cb) ->
     console.log "save: " + @_id
     if @_id
       raw = @raw()
-      console.log "resave raw: ", raw
+      #console.log "resave raw: ", raw
       @collection.update
         _id: @_id
       , raw, cb

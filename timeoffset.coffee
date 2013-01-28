@@ -6,7 +6,7 @@ Meteor.methods
     msServer = d.getTime()
     return msServer - msClient
     
-if Meteor.is_client
+if Meteor.isClient
   Meteor.startup ->
     d = new Date()
     Meteor.call 'timeOffset', d.getTime(), (error, result) ->

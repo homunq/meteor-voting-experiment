@@ -2,7 +2,10 @@
 @USERS = Meteor.users
 
 class @User extends VersionedInstance
+    
   collection: Meteor.users
+  
+  _loose: yes
   
   @fields
     username: undefined
@@ -34,7 +37,7 @@ class @User extends VersionedInstance
       if params.workerId
         nonunique = Meteor.users.findOne
           stickyWorkerId: params.workerId
-        @nonunique = false #(nonunique and (nonunique._id isnt @_id))
+        @nonunique = (nonunique and (nonunique._id isnt @_id))
         if @_wasntMe or nonunique?._wasntMe
           @_wasntMe = true
           @nonunique = false
@@ -48,7 +51,7 @@ class @User extends VersionedInstance
       @turkSubmitTo = params.turkSubmitTo
       
       @save =>
-        console.log "setParams complete", @
+        console.log "setParams complete"
   
     wasntMe: (yesItWas) ->
       console.log "Setting nonunique for testing.", !yesItWas
@@ -64,7 +67,7 @@ class @User extends VersionedInstance
           dupeWorker._wasntMe = true
           dupeWorker.save()
       @save()
-      if @eid and wasntUnique and (@step >= 2) and Meteor.is_server
+      if @eid and wasntUnique and (@step >= 2) and Meteor.isServer
         Election.join @eid
     
     setPaid: ->
@@ -104,6 +107,15 @@ class @User extends VersionedInstance
           outcome = new Outcome outcome
           cents += outcome.payFactionCents @faction
     cents
+    
                 
 wasntMe = ->
   (new User Meteor.user()).wasntMe()
+
+if Meteor.isServer
+  console.log "server publishing userData!"
+  Meteor.publish "userData", (uid) ->
+    console.log "someone subscribed to userData for", uid
+    Meteor.users.find 
+      _id: uid
+      
