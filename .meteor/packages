@@ -7,8 +7,7 @@ coffeescript
 accounts-ui
 backbone
 jquery
-router
 deps-extensions
-accounts
-accounts-passwords
 underscore
+accounts-password
+accounts-base
