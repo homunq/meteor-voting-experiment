@@ -131,7 +131,7 @@ class StamperInstance
   #  props.
     
   save: (cb) ->
-    console.log "save: " + @_id
+    console.log "save: ", @_id, @::, @collection._name
     if @_id
       raw = @raw()
       #console.log "resave raw: ", raw

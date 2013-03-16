@@ -432,6 +432,7 @@ if Meteor.isServer
       yes
 
 else if Meteor.is_client
+  console.log 'Autosubscribing...', OLD_ELECTION, OLD_USER
   Meteor.subscribe 'elections'
 
   OLD_ELECTION = undefined
@@ -466,13 +467,13 @@ else if Meteor.is_client
           votersLeft = ELECTION.scen().numVoters - stepCompletedNum 
           if votersLeft <= ELECTION.scen().hurryNumber and (user.step isnt user.lastStep)
             playSound "hurry"
+        #subscribe
+        Meteor.subscribe 'done_votes', eid, ->
+          #console.log "done_votes (re)loaded"
+        console.log "subscribing outcomes", eid
+        Meteor.subscribe 'outcomes', eid, ->
+          console.log "outcomes (re)loaded"
         if eid isnt OLD_ELECTION?._id #don't obsessively reload stable values
-          #subscribe
-          Meteor.subscribe 'done_votes', eid, ->
-            #console.log "done_votes (re)loaded"
-          console.log "subscribing outcomes", eid
-          Meteor.subscribe 'outcomes', eid, ->
-            #console.log "outcomes (re)loaded"
             
           #set session vars  
           if ELECTION.scen() isnt OLD_ELECTION?.scen()     

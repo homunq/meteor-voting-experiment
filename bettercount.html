@@ -7,6 +7,7 @@
 	<div id="loading"><h1>Loading...</h1></div>
   <div id="main">
   	<!-- {{currentPage}} -->
+	{{winner.name}}
 		{{{render currentPage}}}
   </div>
 </body>
@@ -29,7 +30,10 @@
 				<h2>Sorry, this experiment is currently full. Please check again later (in at least half an hour).</h2> 
 			{{else}}{{#if hitLate}}
 				{{#if isLastStep}}
-					<h2>Thank you. Your results have been submitted and, once they've been checked, you'll be paid {{formatCents centsDue}}.</h2>
+					<h2>Experiment complete.</h2>
+					<h4>Thank you. Your results have been submitted and, once they've been 
+						checked, you'll be paid the base pay of {{baseRate}} plus your bonus 
+						of {{formatCents centsDue}}.</h4>
 				{{else}}
 					<h2>You are in the experiment. Please accept the HIT to continue.</h2>
 				{{/if}}

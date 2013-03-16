@@ -82,7 +82,7 @@ class Scenario
     myPayoff: @candNames[candNum] and @payoffs[candNum][faction]
     count: count?[candNum]
     factionCounts: for faction in (scen?.factions(faction) or [])
-      count: factionCounts?[faction][candNum]
+      count: factionCounts?[faction][candNum] or 0
       faction: faction
       color: scen?.factColors[faction]
       name: scen?.factNames[faction]

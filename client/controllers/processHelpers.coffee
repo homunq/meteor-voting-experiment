@@ -65,17 +65,37 @@ if (Handlebars?)
     METHOD.name
     
   Handlebars.registerHelper 'winner', ->
+    console.log "getting winner"
     e = (Session.get 'election') and ELECTION
+    if not e
+      console.log "No election for outcome!!!"
+      return {}
     faction = Session.get 'faction'
-    outcome = new Outcome Outcomes.findOne
-      _id: e.outcomes[e.stage - 1]
+    outcome = Outcomes.findOne
+      election: e._id
+      stage: e.stage - 1
+    if not outcome
+      console.log "No outcome!!!"
+      return {}
+    console.log "Outcome", outcome
+    outcome = new Outcome outcome
     e.scen().candInfo outcome.winner, faction, outcome.counts, e.scen(), outcome.factionCounts
     
   Handlebars.registerHelper 'losers', ->
+    console.log "getting losers"
     e = (Session.get 'election') and ELECTION
+    if not e
+      console.log "No election for outcome!!!"
+      return {}
     faction = Session.get 'faction'
-    outcome = new Outcome Outcomes.findOne
-      _id: e.outcomes[e.stage - 1]
+    outcome = Outcomes.findOne
+      election: e._id
+      stage: e.stage - 1
+    if not outcome
+      console.log "No outcome!!!"
+      return {}
+    outcome = new Outcome outcome
+    console.log "Outcome", outcome
     losers = _.range e.scen().numCands()
     losers.splice outcome.winner, 1
     for loser in losers

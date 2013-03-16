@@ -92,8 +92,7 @@ class SurveyResponse extends VersionedInstance
       yes and bonusPay: (new ScaleQuestion "What do you think about the bonus payments ($0-$1.08) for participating in this experiment", "much too low to be a good motivator", "much higher than necessary")  
       yes and comments: new TextboxQuestion "Do you have any comments or suggestions? (problems you experienced, ideas how this experiment could work better, suggestions for further research, etc.)"  
       yes and notify: (new RadioQuestion "Do you wish to be notified (via Amazon Mechanical Turk) about the findings of this research?", ["yes","no"])  
-      yes and email: new TextQuestion "(beta testers ONLY; Mturkers should NOT see this question but if you somehow do don't fill it out) Please provide your email address."  
-    ]
+  ]
   
   questions: questions
     
