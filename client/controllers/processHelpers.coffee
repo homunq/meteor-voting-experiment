@@ -193,3 +193,7 @@ if (Handlebars?)
       return false
     election = (Session.get 'election') and ELECTION
     ELECTION?.isFull()
+    
+  Handlebars.registerHelper 'currentPageIsnt', (page) ->
+    currentPage = Router.current_page()
+    currentPage isnt page

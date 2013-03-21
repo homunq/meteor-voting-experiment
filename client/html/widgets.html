@@ -62,7 +62,7 @@
 
 <template name="outcomes">
 	<table class="table">
-		<tr><td>Candidate</td>{{{meth_subtemplate "resultHead"}}}<td>Result</td><td>Your bonus payment</td>{{{render "factionResultHead"}}}</tr>
+		<tr><td>Candidate</td>{{{meth_subtemplate "resultHead"}}}<td>Result</td><td>Your bonus payment</td>{{> factionResultHead}}</tr>
 	{{#with winner}}
 		<tr><td>{{name}}</td><td>{{{meth_subtemplate "result" this}}}</td><td>WINNER</td><td>{{bonus myPayoff}} - to be paid</td>
 			{{#each this.factionCounts}}

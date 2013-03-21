@@ -4,20 +4,25 @@
 </head>
 
 <body>
-	<div id="loading"><h1>Loading...</h1></div>
+	{{> loadingOrNot}}
   <div id="main">
   	<!-- {{currentPage}} -->
-	{{winner.name}}
 		{{{render currentPage}}}
   </div>
 </body>
+
+<template name="loadingOrNot">
+	{{#if currentPageIsnt "loggedIn"}}
+		<div id="loading"><h1>Loading...</h1></div>
+	{{/if}}
+</template>
 
 <template name="loggedIn">
 	{{#if error}}
 		<h1>{{{error}}}</h1>
 	{{/if}}
 	
-	{{{render "whichStep"}}}
+	{{> whichStep}}
 	<div class="container">
 		<div class="row"><div class="span1"></div><div class="span10"><div class="row-fluid">
 			{{#if user.nonunique}}

@@ -103,7 +103,7 @@ class Scenario
     factSizes: [8, 4, 6]
     factNames: ['Red', 'Green', 'Blue']
     factColors: ["#D40000", "#00D400", "#0000D4"]
-    factPngs: ["4voters", "2voters", "3voters"]
+    factPngs: ["4pairs", "2pairs", "3pairs"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0, 0],
@@ -123,7 +123,7 @@ class Scenario
     factSizes: [1, 1]
     factNames: ['Red', 'Green']
     factColors: ["#D40000", "#00D400"]
-    factPngs: ["4voters", "2voters"]
+    factPngs: ["4pairs", "2pairs"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0],
@@ -133,7 +133,7 @@ class Scenario
     factSizes: [1]
     factNames: ['Red']
     factColors: ["#D40000"]
-    factPngs: ["4voters"]
+    factPngs: ["4pairs"]
     candNames: ['Xc', 'Yc', 'Zc']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3],

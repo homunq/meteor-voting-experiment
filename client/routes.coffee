@@ -119,6 +119,13 @@ class @MyRouter extends ReactiveRouter
     console.log "clear all"
     Election.clearAll()
     
+  goto: (where) ->
+    console.log "going to", where
+    if where is 'loggedIn'
+      console.log "yes, going to", where, $('#loading').hide()
+      $('#loading').hide()
+    super arguments...
+    
   makeElection: (scenario, method, delay=100, roundBackTo=-1) ->
     console.log "makeElection", scenario, method, delay, roundBackTo
     delay = parseInt delay
@@ -151,10 +158,10 @@ Meteor.startup ->
   console.log "startup router"
   Backbone.history.start
      pushState: true
-  Meteor.autosubscribe ->
-    console.log "should I??? $('#loading').hide()", router?.current_page()
-    if ((Session.get 'router') and router?.current_page()) is 'loggedIn'
-      console.log "$('#loading').hide()"
-      $('#loading').hide()
-    else
-      console.log "NOT     $('#loading').hide()"
+  #Meteor.autosubscribe ->
+  #  console.log "should I??? $('#loading').hide()", router?.current_page()
+  #  if ((Session.get 'router') and router?.current_page()) is 'loggedIn'
+  #    console.log "$('#loading').hide()"
+  #    $('#loading').hide()
+  #  else
+  #    console.log "NOT     $('#loading').hide()", (Session.get 'router'), router?.current_page()

@@ -54,7 +54,7 @@
 		you can only view steps 0 (this screen) and 1 (consent form). Press "next" below to see the consent
 		form and countdown. If you leave this
 		window open, when the countdown completes, a sound will play ("voting experiment starting")
-		and an "consent
+		and a "consent
 		and join" button will appear. The first 18 people to press that button
 		will be admitted into the experiment. We ask that you only "accept" the HIT with Amazon
 		<b>after</b> you are allowed into
@@ -124,7 +124,7 @@ Subjects in Research at Harvard University, 1414 Mass. Ave., Second Floor,
 Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.png"/></p>
 
 
-	{{{render "countdownWithSound"}}}
+	{{> countdownWithSound}}
 </template>
 
 <template name="scenario">
@@ -141,7 +141,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 		get a bonus payment (real money, paid within 24 hours) depending on the result of the 
 		election. The payoffs for you and for the other voters are as follows</p>
       <!--Body content-->
-			{{{render "scenarioTable"}}}
+			{{> scenarioTable}}
 	</div>
 	{{{renderWith "nextStep" "Next"}}}
 </template>
@@ -152,7 +152,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	<p>Vote using the ballot below. This is a practice election with no cash bonuses based on the results.  
 		After all participants vote, and you have a chance to see the results of this election, 
 		you will move on to voting in two more elections with bonuses.</p>
-	{{{render "ballot"}}}
+	{{> ballot}}
 	{{{renderWith "nextStep" "Next"}}}
 </template>
 
@@ -162,7 +162,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 		this were not just the practice round. You will now vote for a real payout. You
 		may or may not decide to change your vote based on what happened this time. Remember that the other voters
 		also have this choice.</p>
-	{{{render "outcomes"}}}
+	{{> outcomes}}
 	<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
 		not necessarily lead to the same winner.</p>
 	{{{renderWith "nextStep" "Next"}}}
@@ -172,14 +172,14 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	<h2>Voting</h2>
 	<p>Please vote. You will be paid a bonus of $0 to {{bonus 3}}, depending on the results of this election among you and
 		the other voters.</p>
-	{{{render "ballot"}}}
+	{{> ballot}}
 	{{{renderWith "nextStep" "Next"}}}
 </template>
 
 <template name="payouts">
 	<h2>Results</h2>
 	<p>The table below shows the winning candidate, and the bonus payout you <strong>will</strong> receive.</p>
-	{{{render "outcomes"}}}
+	{{> outcomes}}
 	<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
 		not necessarily lead to the same winner.</p>
 	{{{renderWith "nextStep" "Next"}}}
@@ -214,5 +214,5 @@ ensured; and this is entirely at your option.</p>
 
 <p>Thank you. If you have any questions, please contact:</p>
 <p>Professor Luke Miratrix at lmiratrix@fas.harvard.edu</p>
-	{{{render "AmazonSubmit"}}}
+	{{> AmazonSubmit}}
 </template>
