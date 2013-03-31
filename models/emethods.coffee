@@ -35,6 +35,7 @@ Methods = makeMethods
             b ?= 0
             a + b
           , 0
+        console.log "resolveVotes2", counts
         winners = []
         winningVotes = 0
         for count, cand in counts

@@ -181,7 +181,7 @@ class @Election extends VersionedInstance
       Votes.insert vote
       
       #console.log "Vote added; stage done?:", done
-      if done then @finishStage @stage
+      if done then @finishStage() #@stage
       
       #console.log "newVote update"
       
@@ -251,8 +251,9 @@ class @Election extends VersionedInstance
         , mainElection
         #console.log mainElection, MainElection.findOne({})
         
-    finishStage: (stage) ->
-      console.log "finishStage"
+    finishStage: () ->
+      stage = @stage
+      console.log "finishStage", stage
       [winners, counts] = @meth().resolveVotes @scen().numCands(), @votesForStage stage
       tiebreakerGen = new MersenneTwister(@seed + stage)
       tiebreakers = (tiebreakerGen.random() for cand in _.range @scen().numCands())
@@ -265,8 +266,8 @@ class @Election extends VersionedInstance
           best = tiebreakers[oneWinner]
       console.log "winners, winner, tiebreakers: ", winners, winner, tiebreakers
       factionCounts = for faction in @scen().factions()
-        [winners, counts] = @meth().resolveVotes @scen().numCands(), @votesForStage stage, faction
-        counts
+        [fwinners, fcounts] = @meth().resolveVotes @scen().numCands(), @votesForStage stage, faction
+        fcounts
       outcome = new Outcome
         winner: winner
         counts: counts
@@ -306,7 +307,7 @@ class @Election extends VersionedInstance
       console.log "Stage timeout! Advancing stage\n!\n!\n!", eid, stage + 1
       election = new Election Elections.findOne
         _id: eid
-      if election.stage = stage
+      if election.stage is stage
         election.finishStage()
         election.nextStage()
 
@@ -355,7 +356,7 @@ class @Election extends VersionedInstance
       searchKey.faction = faction
     vCursor = Votes.find searchKey
     fullVotes = vCursor.fetch()
-    #console.log "votesForStage", stage, fullVotes
+    console.log "votesForStage", stage, fullVotes
     v.vote for v in fullVotes
   
   isFull: ->
@@ -444,7 +445,7 @@ else if Meteor.is_client
       if user?.faction isnt OLD_USER?.faction
         Session.set 'faction', user.faction
       if user?.step isnt OLD_USER?.step or user?.lastStep isnt OLD_USER?.lastStep
-        Session.set 'stepLastStep', [user.step, user.lastStep]
+        Session.set 'stepLastStep', [user.step, user.lastStep or -1]
       if user?.step isnt OLD_USER?.step
         Session.set 'step', user.step
       OLD_USER = user

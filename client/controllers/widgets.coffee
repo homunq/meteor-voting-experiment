@@ -26,8 +26,8 @@ do ->
   intervalDone = no
   intervalStage = null
   Handlebars.registerHelper 'countdownToStage', (stage, before, after) ->
-    #console.log "countdownToStage", stage, intervalStage, intervalDone, intervaller
-    if intervalStage isnt stage and intervaller
+    console.log "countdownToStage", stage, intervalStage, intervalDone, intervaller
+    if intervalStage isnt stage
       console.log "intervalStage"
       clearInterval intervaller
       intervaller = null

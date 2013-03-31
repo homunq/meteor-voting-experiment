@@ -14,8 +14,8 @@ class Step
 class Process
   constructor: (@name, steps...) ->
     @steps = []
-    @firstForStages = [0]
-    priorStage = 0
+    @firstForStages = [1]
+    priorStage = steps[0].stage
     @suggestedMins = @maxMins = 0
     for step in steps
       for name, options of step
@@ -48,13 +48,15 @@ class Process
     mins
     
   shouldMoveOn: (step, lastStep, stage) ->
-    step >= @firstForStages[1] and ((step < @firstForStages[stage]) or (lastStep is step and @step(step).stage < stage))
+    #step >= @firstForStages[1] and 
+    console.log step, @firstForStages[stage], @step(step).stage, stage
+    ((step < @firstForStages[stage]) or (lastStep is step and @step(step).stage < stage))
 
 PROCESS = new Process "Base",
   overview:
     suggestedMins: 0
     maxMins: 0
-    stage: 0
+    stage: -1
     hit: off
     longName: "Overview"
     blurb: "See an outline of the experiment (this stage)."

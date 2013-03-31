@@ -17,7 +17,7 @@ Meteor.startup ->
     Meteor.autosubscribe ->
       if (Session.get 'router') and router?.current_page() is 'loggedIn'
         stage = Session.get 'stage'
-        [step, lastStep] = (Session.get 'stepLastStep') or [0,0]
+        [step, lastStep] = (Session.get 'stepLastStep') or [0,-1]
         console.log "stepLastStep", step, lastStep, stage
         if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
           playSound 'next'
@@ -142,14 +142,16 @@ if (Handlebars?)
     steps = []  
     for step, stepNum in PROCESS.steps
       if not step.hide
-        steps.push  Template.oneStepExplanation step
+        steps.push Spark.labelBranch ("stepExplanations" + stepNum), ->
+          Template.oneStepExplanation step
         
-    steps.push Template.oneStepExplanation
-      num: "Total"
-      blurb: "The total time will mostly depend on how quick the other turkers in the experiment are."
-      suggestedMins: PROCESS.suggestedMins
-      maxMins: PROCESS.maxMins - 60
-      payout: "$1.00-$3.16"
+    steps.push Spark.labelBranch ("stepExplanationsTotal"), ->
+      Template.oneStepExplanation
+        num: "Total"
+        blurb: "The total time will mostly depend on how quick the other turkers in the experiment are."
+        suggestedMins: PROCESS.suggestedMins
+        maxMins: PROCESS.maxMins - 60
+        payout: "$1.00-$3.16"
     new Handlebars.SafeString steps.join ""
     
     
