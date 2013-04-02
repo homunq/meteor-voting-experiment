@@ -23,7 +23,7 @@
 <template name="oneStep">
 	<li {{#if thisStep}}class="active"{{/if}}><a href="#" class="hasPopover">{{num}}:
 		{{name}}{{#if 1}}<div class="underbar">{{stepCompletedNum num}}/{{scenNumVoters}} done</div>{{/if}}{{#if false}}
-			{{/if}}{{#if popover}}<span style="font-size: 80%">hover for pic</span><span class="popover">{{{stepPopover name}}}</span>{{/if}}</a></li>
+			{{/if}}{{#if popover}}<span style="font-size: 80%">hover for pic</span><span class="popover">{{stepPopover name}}</span>{{/if}}</a></li>
 </template>
 
 <template name="scenario_popover">
@@ -190,13 +190,13 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	<h2>Survey</h2>
 	<p>Please answer the following questions.</p>
 	{{#each surveyQuestions}}
-		{{{ this.html }}}
+		{{{ question this }}}
 	{{/each}}
 	{{{renderWith "nextStep" "Next"}}}
 </template>
 
 <template name="debrief">
-	<h1>Thank you. Now submit the HIT.</h1>
+	<h1>Thank you.  To finish, click the blue "submit" button below after reading the following.</h1>
 	
 <p>You have just participated in a study of voting systems. You learned about and participated in
 one of several single-winner voting systems.</p>

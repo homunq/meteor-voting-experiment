@@ -26,9 +26,9 @@ do ->
   intervalDone = no
   intervalStage = null
   Handlebars.registerHelper 'countdownToStage', (stage, before, after) ->
-    console.log "countdownToStage", stage, intervalStage, intervalDone, intervaller
+    #console.log "countdownToStage", stage, intervalStage, intervalDone, intervaller
     if intervalStage isnt stage
-      console.log "intervalStage"
+      #console.log "intervalStage"
       clearInterval intervaller
       intervaller = null
       intervalDone = no
@@ -59,15 +59,22 @@ do ->
         displayAbsoluteTime = (sTimeHere untilTime).toLocaleTimeString()
         displayAbsoluteTime = displayAbsoluteTime.substr(0, displayAbsoluteTime.length - 3)
         #console.log "displayCount", displayCount
-        if displayCount >= 0
-          return Template[before] 
+        if displayCount and displayCount >= 0
+          val = Template[before] 
             displayCount: seconds2time displayCount/1000
             displayAbsoluteTime: displayAbsoluteTime
-        else if displayCount?
-          return Template[after]
+          #console.log "before?:", val, displayCount
+          return val
+        else #if displayCount?
+          val = Template[after]
             displayCount: seconds2time displayCount/1000
             displayAbsoluteTime: displayAbsoluteTime
+          console.log "after?:", val
+          return val
+        #else
+        #  return "no displayCount???"
     else
+      console.log "No experiment currently pending"
       return "No experiment currently pending"
           
 Handlebars.registerHelper 'call', (funcName, data) ->

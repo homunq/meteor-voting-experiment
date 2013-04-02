@@ -32,26 +32,11 @@
 		"C" votes to reach 50% would have a graduated score of 2.3 (a C+), so between those 
 		two candidates the second would be the winner.</p>
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-			stated as a numberThe winner will be the candidate who gets the highest middle (median) grade.</strong>
-			So a candidate that got the grades A, A, <strong>B</strong>, D, F would have a median of B (3.0)
-		because at least half of the voters gave them B or better. In order to prevent ties, the 
-		median is adjusted up or down (indicated as + or -) depending on whether there were more votes above or below
-		the median, as if voters had voted along a continuum from A+ to F-. Thus a candidate with A, <strong>A, B, B,</strong> C would beat one with 
-		A, <strong>B, B, C,</strong> C. </p>
-		<p>This formula is most affected by the voters near the middle, not by those at the extremes.
+		<p>This <a href="#" class="hasPopover">formula<span class="popover">{{> GMJ_geeky}}</span></a> is most affected by the voters near the middle, not by those at the extremes.
 			Thus, A, <strong>A, B, C,</strong> F would beat A, <strong>B, B, C,</strong> C.</p>
 </template>
 
-<template name="CMJ_geeky">
+<template name="GMJ_geeky">
 	using the formula:
 		<table><tr><td rowspan="2">MedianGrade +</td><td style="text-align:center;border-bottom: solid 1px black;">NumVotesAboveMedian - NumVotesBelowMedian</td></tr>
 			                                     <tr><td style="text-align:center;"><p align="center">2 * NumVotesAtMedian</p></td></tr>
@@ -108,8 +93,7 @@
 	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
 </template>
 
-<template name="CMJ_ballotLine">
-	<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},5);">AA
+<template name="GMJ_ballotLine">
 	<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},4);">A
 	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},3);">B
 	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},2);">C
@@ -117,7 +101,7 @@
 	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},0);">F
 </template>
 
-<template name="CMJ_postBlurb">
+<template name="GMJ_postBlurb">
 	<p>AA:Excellent A:Very&nbsp;Good B:Good C:Fair D:Poor F:Unacceptable</p>
 </template>
 
@@ -140,10 +124,10 @@
 	{{count}}
 </template>
 
-<template name="CMJ_resultHead">
+<template name="GMJ_resultHead">
 	<td>Score</td>
 </template>
-<template name="CMJ_result">
+<template name="GMJ_result">
 	{{gradeOf count}} ({{count}})
 </template>
 

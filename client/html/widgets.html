@@ -1,10 +1,19 @@
 
 <template name="nextStep">
 	{{#if stepWaiting}}<a href="#" onclick="alert('Waiting for others');return false;" id="nextStep" title="Waiting" class="btn btn-primary btn-large">
-	Waiting for other voters ({{stepCompletedNum}}/{{scenNumVoters}} or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}})</a>
+	Waiting for {{stepIncompleteNum}} other voter{{plural stepIncompleteNum}}, or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}})</a>
 	{{else}}
 	<a href="#" onclick="nextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
 	{{text}} </a> {{{countdownToStage nextStage "miniCountdownClock" "timeDone"}}}
+	{{/if}}
+</template>
+
+<template name="nextStepConsent">
+	{{#if stepWaiting}}<a href="#" onclick="alert('Waiting for others');return false;" id="nextStep" title="Waiting" class="btn btn-primary btn-large">
+	Waiting for {{stepIncompleteNum}} other voter{{plural stepIncompleteNum}}, or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}})</a>
+	{{else}}
+	<a href="#" onclick="nextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
+	Consent and Next </a>
 	{{/if}}
 </template>
 
@@ -14,7 +23,7 @@
 </template>
 
 <template name="timeDone">
-	(done)<!--you should never see this-->
+	(No time limit)<!--you should never see this-->
 </template>
 
 <template name="countdownWithSound">
@@ -29,17 +38,17 @@
 </template>
 
 <template name="countdownClock">
-	<h1>at {{{displayAbsoluteTime}}} (in {{{displayCount}}})</h1>
+	<h1>{{{displayAbsoluteTime}}} (in {{{displayCount}}})</h1>
 </template>
 
 <template name="miniCountdownClock">
-	at {{{displayAbsoluteTime}}} (in {{{displayCount}}})
+	{{{displayAbsoluteTime}}} (in {{{displayCount}}})
 </template>
 
 <template name="countdownDone">
 	{{{call "playSoundOnce"}}}
 	<div>Experiment is now running! {{stepCompletedNum}}/{{scenNumVoters}} slots taken.</div>
-	{{{renderWith "nextStep" "Consent and next"}}}
+	{{> nextStepConsent}}
 </template>
 
 
@@ -82,7 +91,7 @@
 
 
 <template name="factionResultHead">
-	{{#each factions}}<td><span style="color: {{color}}">Score for<br/>{{name}} voters</span></td>{{/each}}
+	{{#each factions}}<td><span style="color: {{color}}">{{name}} votes{{#if mine}}<br/><small>(including yours)</small>{{/if}}</span></td>{{/each}}
 </template>
 
 

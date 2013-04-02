@@ -8,14 +8,18 @@ if (Handlebars?)
     else
       new Handlebars.SafeString "<!--#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }-->"
       
-  Handlebars.registerHelper 'gradeOf', (cmj) ->
+  Handlebars.registerHelper 'methName', ->
+    console.log "methName", (Session.get 'method')
+    return Methods[(Session.get 'method')]?.longName
     
-    medianInt = Math.round((cmj * 0.99) + 0.02)
-    leftover = cmj - medianInt
-    grade = Methods.CMJ.grades[medianInt]
+  Handlebars.registerHelper 'gradeOf', (gmj) ->
+    
+    medianInt = Math.round((gmj * 0.99) + 0.02)
+    leftover = gmj - medianInt
+    grade = Methods.GMJ.grades[medianInt]
     if leftover is 0.5
       return grade + "++"
-      #return "#{ Methods.CMJ.grades[medianInt + 1] }-/#{ Methods.CMJ.grades[medianInt] }+"
+      #return "#{ Methods.GMJ.grades[medianInt + 1] }-/#{ Methods.GMJ.grades[medianInt] }+"
     if leftover is -0.5
       return grade + "--"
     if leftover > 0

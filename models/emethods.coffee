@@ -5,6 +5,7 @@ nobind = (f) ->
 class Method
   constructor: (@name, options) ->
     #NOTE: all omethods are bound by default. I'm not sure that this is necessary but I'd sure rather debug the bugs from overdng this than from not doing it.
+    @longName = options.longName
     for actname, action of options.actions
       if (not _.isFunction action) or action.nobind
         @[actname] = action
@@ -21,6 +22,7 @@ makeMethods = (methods) ->
   
 Methods = makeMethods
   approval:
+    longName: "Approval Voting"
     actions:
       validVote: (numCands, vote) ->
         if vote.length > numCands then return false
@@ -46,7 +48,8 @@ Methods = makeMethods
             winners.push cand
         [winners, counts]
         
-  CMJ:
+  GMJ:
+    longName: "Graduated Majority Judgment"
     actions:
       grades: ['F', 'D', 'C', 'B', 'A', 'AA']
     
@@ -92,6 +95,7 @@ Methods = makeMethods
         [winners, scores]
 
   IRV:
+    longName: "Instant Runoff Voting"
     actions:
       validVote: (numCands, vote) ->
         if vote.length > numCands 
@@ -157,6 +161,7 @@ Methods = makeMethods
         elims    
         
   plurality:
+    longName: "Plurality Voting"
     actions:
       validVote: (numCands, vote) ->
         if not vote?

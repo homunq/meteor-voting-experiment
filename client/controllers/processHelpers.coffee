@@ -104,6 +104,17 @@ if (Handlebars?)
   Handlebars.registerHelper 'stepCompletedNum', (num) ->
     (Session.get 'stepCompletedNums')?[num] ? 0
     
+    
+  Handlebars.registerHelper 'stepIncompleteNum', ->
+    (Session.get 'stepCompletedNums')?[Session.get('step')] ? 0
+    
+  Handlebars.registerHelper 'plural', (num, plural, singular) ->
+    if num is 1
+      return singular or ''
+    else
+      return plural or 's'
+    
+    
   Handlebars.registerHelper 'stepWaiting', ->
     stepLastStep = Session.get 'stepLastStep'
     return (stepLastStep[0] is stepLastStep[1])
