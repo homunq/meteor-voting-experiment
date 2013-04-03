@@ -25,6 +25,8 @@ class @Vote extends VersionedInstance
     
   meth: ->
     Methods[@method]
+    
+Vote.admin()
 
 Elections = new Meteor.Collection 'elections', null
 
@@ -254,7 +256,8 @@ class @Election extends VersionedInstance
     finishStage: () ->
       stage = @stage
       console.log "finishStage", stage
-      [winners, counts] = @meth().resolveVotes @scen().numCands(), @votesForStage stage
+      [votesForStage, voters] = @votesForStage stage
+      [winners, counts] = @meth().resolveVotes @scen().numCands(), votesForStage
       tiebreakerGen = new MersenneTwister(@seed + stage)
       tiebreakers = (tiebreakerGen.random() for cand in _.range @scen().numCands())
       best = -1
@@ -266,7 +269,7 @@ class @Election extends VersionedInstance
           best = tiebreakers[oneWinner]
       console.log "winners, winner, tiebreakers: ", winners, winner, tiebreakers
       factionCounts = for faction in @scen().factions()
-        [fwinners, fcounts] = @meth().resolveVotes @scen().numCands(), @votesForStage stage, faction
+        [fwinners, fcounts] = @meth().resolveVotes @scen().numCands(), votesForStage, faction
         fcounts
       outcome = new Outcome
         winner: winner
@@ -276,6 +279,7 @@ class @Election extends VersionedInstance
         stage: stage
         method: @method
         scenario: @scenario
+        voters: voters
       console.log "My new outcome is", outcome
       outcome.save()
       console.log "and I just saved it:", outcome._id, Outcomes.findOne
@@ -357,11 +361,12 @@ class @Election extends VersionedInstance
     vCursor = Votes.find searchKey
     fullVotes = vCursor.fetch()
     console.log "votesForStage", stage, fullVotes
-    v.vote for v in fullVotes
+    [v.vote for v in fullVotes, v.voter for v in fullVotes]
   
   isFull: ->
     @voters.length >= @scen().numVoters()
     
+Election.admin()
     
 #debugger
 
@@ -381,6 +386,7 @@ class @Outcome extends VersionedInstance
     winner: null
     counts: []
     factionCounts: null
+    voters: []
     
   
   scen: ->
@@ -391,6 +397,8 @@ class @Outcome extends VersionedInstance
     
   payFactionCents: (faction) ->
     @scen().payoffCents @winner, faction
+
+Outcome.admin()
 
 global = @
 if Meteor.isServer

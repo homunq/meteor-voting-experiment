@@ -117,11 +117,26 @@ class SurveyResponse extends VersionedInstance
     
   questionObject = _.extend questions...
   
-  @fields questionObject
-  
   for qName, q of questionObject
     q.setName qName
+    
+  _.extend questionObject,
+    voter: ->
+      if Meteor.isClient
+        Meteor.user()._id
+    election: ->
+      if Meteor.isClient
+        Session.get("election")._id
+    method: ->
+      if Meteor.isClient
+        Session.get("method")
+    
+    
+  @fields questionObject
   
+  
+SurveyResponse.admin()
+
 console.log "creating @setupSurvey function"
 @setupSurvey = ->
   window.SURVEY = new SurveyResponse

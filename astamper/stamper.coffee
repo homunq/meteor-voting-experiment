@@ -117,6 +117,18 @@ class StamperInstance
           goesOn[mname] = method
         goesOn[smname] = method
     Meteor.methods servermethods
+  
+  @admin: ->
+    #console.log "Admin QQ ", @, @::collection
+    @::collection.adminSubscribe = (password) => 
+      if Meteor.isClient
+        Meteor.subscribe @::collection._name + "_admin", password
+    if Meteor.isServer
+      Meteor.publish @::collection._name + "_admin", (password) =>
+        console.log password, PASSWORD #@::collection.find().fetch()
+        if password is PASSWORD
+          @::collection.find()
+  
     
   raw: ->
     

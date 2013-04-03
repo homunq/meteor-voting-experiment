@@ -118,21 +118,33 @@
 </template>
 
 <template name="approval_resultHead">
-	<td>Count</td>
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="approval_resultHeadInner">
+	Votes
 </template>
 <template name="approval_result">
 	{{count}}
 </template>
 
 <template name="GMJ_resultHead">
-	<td>Score</td>
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="GMJ_resultHeadInner">
+	Score
 </template>
 <template name="GMJ_result">
 	{{gradeOf count}} ({{count}})
 </template>
 
 <template name="IRV_resultHead">
-	<td>Result</td>
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="IRV_resultHeadInner">
+	Outcome
+</template>
+<template name="IRV_hypothetical">
+	<small>(Hypothetical)</small><br/>
 </template>
 <template name="IRV_result">
 	{{#if count.length}}
@@ -146,7 +158,10 @@
 
 
 <template name="plurality_resultHead">
-	<td>Count</td>
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="plurality_resultHeadInner">
+	Votes
 </template>
 <template name="plurality_result">
 	{{count}}

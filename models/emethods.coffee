@@ -112,7 +112,8 @@ Methods = makeMethods
         ballots = for vote in votes
           ballot = []
           for rank, cand in vote
-            ballot[rank] = cand
+            ballot[-rank + 1] = cand
+            console.log "rc", rank, cand, ballot
           ballot
         piles = ([] for cand in [1..numCands])
         winner = null
@@ -134,6 +135,7 @@ Methods = makeMethods
                   losers = [cand]
                 if pile.length is losingScore
                   losers.push cand
+            console.log "pile cand", pile, cand, winningScore, losingScore, winner, losers
           if winner is null
             if losers.length is 0
               console.log "IRV fuckup, everybody wins", piles, numVotes, round
@@ -146,7 +148,7 @@ Methods = makeMethods
         if winner 
           winners = [winner]
         else
-          winners = (cand for cand in [0..(numCands - 1)])
+          winners = (cand for cand in [0..(numCands - 1)] when cand not in losers)
         [winners, piles]
         
       sortAndElim: (votes, piles) ->
@@ -158,6 +160,7 @@ Methods = makeMethods
             piles[vote[0]].push vote
           else
             elims += 1
+        console.log "sortAndElim", votes, piles
         elims    
         
   plurality:

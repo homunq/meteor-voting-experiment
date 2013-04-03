@@ -143,6 +143,7 @@ class @MyRouter extends ReactiveRouter
   electionsReport: (password, fromVersion) ->
     Session.set 'password', password
     Session.set 'fromVersion', (parseFloat fromVersion) or 0.93
+    console.log "going to elections report..."
     @goto 'electionsReport'
 
 global = @

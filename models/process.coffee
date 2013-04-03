@@ -305,6 +305,7 @@ class StepRecord extends StamperInstance
   canFinish: ->
     PROCESS.step(@step).canFinish @
   
+StepRecord.admin()
 #
 
           

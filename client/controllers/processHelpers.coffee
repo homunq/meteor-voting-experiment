@@ -81,6 +81,17 @@ if (Handlebars?)
     outcome = new Outcome outcome
     e.scen().candInfo outcome.winner, faction, outcome.counts, e.scen(), outcome.factionCounts
     
+  Handlebars.registerHelper 'userVoted', ->
+    console.log "getting userVoted"
+    e = (Session.get 'election') and ELECTION
+    if not e
+      console.log "No election for outcome!!!"
+      return {}
+    outcome = Outcomes.findOne
+      election: e._id
+      stage: e.stage - 1
+    return Meteor.user()._id in (outcome?.voters or [])
+    
   Handlebars.registerHelper 'losers', ->
     console.log "getting losers"
     e = (Session.get 'election') and ELECTION
