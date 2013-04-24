@@ -2,6 +2,7 @@
 @USERS = Meteor.users
 
 class @User extends VersionedInstance
+  __name__: "User"
     
   collection: Meteor.users
   
@@ -77,6 +78,13 @@ class @User extends VersionedInstance
     serverCentsDue: ->
       @centsDue()
       
+    forElection: @static (eid) ->
+      election = Elections.findOne
+        _id: eid
+      console.log "forElection", eid, election?.voters, Meteor.users.findOne({_id:election?.voters[0]})
+      if election
+        return (Meteor.users.findOne({_id:vid}) for vid in election.voters)
+      
         
   election: ->
     new Election Elections.findOne
@@ -107,7 +115,6 @@ class @User extends VersionedInstance
           outcome = new Outcome outcome
           cents += outcome.payFactionCents @faction
     cents
-    
                 
 wasntMe = ->
   (new User Meteor.user()).wasntMe()
@@ -115,7 +122,7 @@ wasntMe = ->
 if Meteor.isServer
   console.log "server publishing userData!"
   Meteor.publish "userData", (uid) ->
-    console.log "someone subscribed to userData for", uid
+    console.log "now someone subscribed to userData for", uid
     Meteor.users.find 
       _id: uid
       

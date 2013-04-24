@@ -1,3 +1,13 @@
+<template name="payments">
+	{{#each payments}}
+		<div>
+			workerId: {{workerId}}<br/>
+			faction: {{vfaction}}<br/>
+			votedRounds: {{vVotedRounds}}<br/>
+			paymentDue: {{vPaymentDue}}
+		</div>
+	{{/each}}
+</template>
 
 <template name="electionsReport">
 	{{#each elections}}

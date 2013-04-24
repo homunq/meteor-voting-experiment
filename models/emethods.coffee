@@ -112,7 +112,7 @@ Methods = makeMethods
         ballots = for vote in votes
           ballot = []
           for rank, cand in vote
-            ballot[-rank + 1] = cand
+            ballot[-rank - 1] = cand
             console.log "rc", rank, cand, ballot
           ballot
         piles = ([] for cand in [1..numCands])

@@ -92,6 +92,7 @@ class @MyRouter extends ReactiveRouter
     'elections/makeOne/:scenario/:method/:delay': 'makeElection'
     'elections/makeOne/:scenario/:method/:delay/:roundBackTo': 'makeElection'
     'admin/elections/:password/:fromVersion': 'electionsReport'
+    'admin/payments/:password/:eid': 'payments'
     
   watchElection: (params) ->
     console.log 'watch'
@@ -102,7 +103,10 @@ class @MyRouter extends ReactiveRouter
       user = new User Meteor.user()
       user.setParams params
       console.log "About to watchMain", user._id
-      Election.watchMain =>
+      Election.watchMain (error, result) =>
+        console.log "watchmain e=", error
+        console.log "watchmain r=", result
+        
         @goto 'loggedIn'
         #console.log 'qwpr' + JSON.stringify Meteor.user()
     #@navigate 'election/new',
@@ -145,6 +149,17 @@ class @MyRouter extends ReactiveRouter
     Session.set 'fromVersion', (parseFloat fromVersion) or 0.93
     console.log "going to elections report..."
     @goto 'electionsReport'
+    
+  payments: (password, eid) ->
+    console.log "payments"
+    if eid is "x"
+      latestElection = Elections.findOne {},
+        sort: [["sTimes.0", "desc"]]
+      eid = latestElection._id
+    Outcomes.adminSubscribe(password)
+    Session.set 'adminEid', eid
+    @goto 'payments'
+          
 
 global = @
 

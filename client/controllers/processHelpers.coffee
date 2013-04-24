@@ -22,6 +22,8 @@ Meteor.startup ->
         if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
           playSound 'next'
           STEP_RECORD.moveOn(yes)
+        if step is 0
+          nextStep()
       
 nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
@@ -117,13 +119,18 @@ if (Handlebars?)
     
     
   Handlebars.registerHelper 'stepIncompleteNum', ->
-    (Session.get 'stepCompletedNums')?[Session.get('step')] ? 0
+    completed = ((Session.get 'stepCompletedNums')?[Session.get('step')] ? 0)
+    scenario = ((Session.get 'scenario') and SCENARIO)
+    if scenario
+      total = scenario.numVoters()
+    else total = 999
+    return total - completed
     
   Handlebars.registerHelper 'plural', (num, plural, singular) ->
     if num is 1
       return singular or ''
     else
-      return plural or 's'
+      return ((_.isString plural) and plural) or 's'
     
     
   Handlebars.registerHelper 'stepWaiting', ->
@@ -181,7 +188,7 @@ if (Handlebars?)
     console.log 'stepName'
     step = Session.get 'step'
     console.log step
-    if step isnt undefined
+    if step?
       return PROCESS.steps[step].name
     "init"
     

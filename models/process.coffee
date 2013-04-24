@@ -48,9 +48,8 @@ class Process
     mins
     
   shouldMoveOn: (step, lastStep, stage) ->
-    #step >= @firstForStages[1] and 
-    console.log step, @firstForStages[stage], @step(step).stage, stage
-    ((step < @firstForStages[stage]) or (lastStep is step and @step(step).stage < stage))
+    #console.log "shouldMoveOn", step, @firstForStages[stage], @step(step).stage, stage
+    (step >= @firstForStages[1]) and ((step < @firstForStages[stage]) or (lastStep is step and @step(step).stage < stage))
 
 PROCESS = new Process "Base",
   overview:
@@ -199,7 +198,8 @@ if false ###############################
           Meteor.subscribe 'stepRecords', user._id
           ############################
 
-class StepRecord extends StamperInstance
+class StepRecord extends VersionedInstance
+  __name__: "StepRecord"
   
   collection: StepRecords
   

@@ -32,14 +32,14 @@ class StamperInstance
       for pname, prop of props
         if pname isnt "_id"
           if not @_fields[pname]?
-            err = "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
+            err = "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor::__name__ }"
             console.log "ERROR: ", err
             if @_strict
               throw new Error err
             if @_loose #keep extra fields and use them when saving
               @_looseFields.push pname
           else if @_fields[pname].invalid()
-            throw new Error "Invalid property val: #{ pname } (#{ prop }) when constructing a #{ @constructor.name }"
+            throw new Error "Invalid property val: #{ pname } (#{ prop }) when constructing a #{ @constructor::__name__ }"
       for fname, f of @_fields
         if not props[fname]?
           props[fname] = f.default(props)
@@ -69,7 +69,11 @@ class StamperInstance
             #This technique isn't threadsafe but that's OK, no threads on client.
         cur_instance = undefined
         
-        smname = self.name + "_" + mname
+        if not self::__name__
+          console.log ('Warning: Before you go into production, after "class '+self.name+
+            '" you should add: "  __name__: \'' + self.name + '\'"')
+            self::__name__ = self.name
+        smname = self::__name__ + "_" + mname
         if !method.static #instance
           servermethods[smname] = (id, obj, args...) ->
             console.log "server calling ", smname, "userId", @userId, "isServer", Meteor.isServer
@@ -106,9 +110,9 @@ class StamperInstance
           goesOn = self.prototype
         if Meteor.is_client 
           do (method, smname) ->
-            #console.log "adding method ", mname, " to ", goesOn, "!!!!!!!!!!!!!!!!!!!!!!!"
+            console.log "adding method ", mname, " to ", goesOn
             goesOn[mname] = (args...) ->
-              console.log "client calling ", smname
+              console.log "client calling ", smname, mname
               if method.static
                 Meteor.call smname, args...
               else
@@ -116,6 +120,7 @@ class StamperInstance
         else
           goesOn[mname] = method
         goesOn[smname] = method
+    console.log "registering methods:", servermethods
     Meteor.methods servermethods
   
   @admin: ->
@@ -204,7 +209,7 @@ class StamperCursor #extends Meteor.Collection.Cursor
       do (cb = cbs.added) ->
         cbs.added = (doc, before_ind) ->
           console.log "observe added inner"
-          console.log itype.name
+          console.log itype::__name__
           debugger
           #todo: client-side colletions.js lie 54: var doc = self._collection.findOne(msg.id);
           #this is called in a Meteor.Collection but doesn't get those updates in a StamperCollection right now... why not?'

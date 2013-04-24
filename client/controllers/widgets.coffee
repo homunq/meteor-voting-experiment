@@ -113,14 +113,15 @@ voteFor = (cand, grade) ->
 exclusiveVoteFor = (cand, rank, clearUI) ->
   console.log "exclusiveVoteFor", cand, rank
   oldRank = VOTE.vote[cand]
-  if 0 > oldRank
-    $("#cand#{ cand }rank#{ -oldRank }").prop('checked', false)
-  VOTE.vote[cand] = -rank
-  otherCands = [0..VOTE.vote.length - 1]
-  otherCands.splice(cand,1)
-  for otherCand in otherCands
-    if VOTE.vote[otherCand] is -rank
-      VOTE.vote[otherCand] = undefined
+  if -rank isnt oldRank
+    if 0 > oldRank
+      $("#cand#{ cand }rank#{ -oldRank }").prop('checked', false)
+    VOTE.vote[cand] = -rank
+    otherCands = [0..VOTE.vote.length - 1]
+    otherCands.splice(cand,1)
+    for otherCand in otherCands
+      if VOTE.vote[otherCand] is -rank
+        VOTE.vote[otherCand] = undefined
         
       
 pluralityVoteFor = (cand) ->

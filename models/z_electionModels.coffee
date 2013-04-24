@@ -8,6 +8,7 @@ echo "echo", echo
 Votes = new Meteor.Collection 'votes'
 
 class @Vote extends VersionedInstance
+  __name__: "Vote"
   collection: Votes
   
   @fields
@@ -55,6 +56,7 @@ nullOrAfterNow = (ms) ->
   return ((new Date).getTime() - ms) < 0
 
 class @Election extends VersionedInstance
+  __name__: "Election"
   collection: Elections
   
   @fields
@@ -126,15 +128,17 @@ class @Election extends VersionedInstance
         election.addVoterAndSave(uid)
         
     watchMain: @static ->
-      #console.log 'watchMain '
+      console.log 'watchMain '
       if Meteor.isServer
         #console.log 'watchMain 2'
         eid = MainElection.findOne()?.eid
-        #console.log MainElection.find().fetch()
+        console.log MainElection.find().fetch()
         if eid
           @watch eid
         else
           console.log 'no elections pending'
+      #return "yes you got watchMain babe"     
+     
         
       
     watch: @static (eid) ->
@@ -256,7 +260,7 @@ class @Election extends VersionedInstance
     finishStage: () ->
       stage = @stage
       console.log "finishStage", stage
-      [votesForStage, voters] = @votesForStage stage
+      [votesForStage, fullVotes] = @votesForStage stage
       [winners, counts] = @meth().resolveVotes @scen().numCands(), votesForStage
       tiebreakerGen = new MersenneTwister(@seed + stage)
       tiebreakers = (tiebreakerGen.random() for cand in _.range @scen().numCands())
@@ -269,7 +273,8 @@ class @Election extends VersionedInstance
           best = tiebreakers[oneWinner]
       console.log "winners, winner, tiebreakers: ", winners, winner, tiebreakers
       factionCounts = for faction in @scen().factions()
-        [fwinners, fcounts] = @meth().resolveVotes @scen().numCands(), votesForStage, faction
+        votesForFaction = (v.vote for v in fullVotes when v.faction is faction)
+        [fwinners, fcounts] = @meth().resolveVotes @scen().numCands(), votesForFaction
         fcounts
       outcome = new Outcome
         winner: winner
@@ -279,7 +284,7 @@ class @Election extends VersionedInstance
         stage: stage
         method: @method
         scenario: @scenario
-        voters: voters
+        voters: v.voter for v in fullVotes
       console.log "My new outcome is", outcome
       outcome.save()
       console.log "and I just saved it:", outcome._id, Outcomes.findOne
@@ -361,7 +366,7 @@ class @Election extends VersionedInstance
     vCursor = Votes.find searchKey
     fullVotes = vCursor.fetch()
     console.log "votesForStage", stage, fullVotes
-    [v.vote for v in fullVotes, v.voter for v in fullVotes]
+    [v.vote for v in fullVotes, fullVotes]
   
   isFull: ->
     @voters.length >= @scen().numVoters()
@@ -376,6 +381,7 @@ echo 'Election', Election
 Outcomes = new Meteor.Collection 'outcomes', null
 
 class @Outcome extends VersionedInstance
+  __name__: "Outcome"
   collection: Outcomes
   
   @fields

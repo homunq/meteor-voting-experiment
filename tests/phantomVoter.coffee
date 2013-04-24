@@ -4,9 +4,9 @@ hasNext = ->
 links = []
 casperFactory = require('casper')
 
-url = "http://bettercount.meteor.com/?asdt"
+url = "http://bettercount.rs.af.cm//?asdt"
 #url = "http://127.0.0.1:3000/?asdt"
-for x in [1..20] 
+for x in [1..25] 
   total = 1
   console.log "hi"
   casper = casperFactory.create()

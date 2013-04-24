@@ -52,3 +52,32 @@ Meteor.startup ->
       stepRecord: stepRecord
       created: (new Date stepRecord.created).toLocaleTimeString()
   
+  Handlebars.registerHelper 'payments', ->
+    console.log "payments helper"
+    eid = Session.get 'adminEid'
+    voters = Session.get "voters"
+    if voters is undefined
+      User.forElection eid, (error, result) ->
+        Session.set "voters", result
+      voters = []
+    paymentList = Session.get "paymentList"
+    if paymentList is undefined
+      paymentList = for voter in voters
+        brainyVoter = new User voter
+        do (i) ->
+          console.log "brainyVoter", i
+          brainyVoter.serverCentsDue (error, result) ->
+            console.log "brainyVoter reply", i, error, result
+            paymentList = (Session.get "paymentList") or ("xx" for voter in voters)
+            paymentList[i] = result
+            Session.set "paymentList", paymentList
+    payments = for voter, i in voters
+      {
+        workerId: voter.workerId
+        vFaction: voter.faction
+        vVotedRounds: "hahaha"
+        paymentDue: paymentList[i]
+      }
+    console.log "paymentList", payments, paymentList
+    payments
+        

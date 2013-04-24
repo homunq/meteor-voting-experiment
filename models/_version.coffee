@@ -1,8 +1,10 @@
-VERSION = 0.96
+VERSION = 0.97
 
 global = @
 
 class VersionedInstance extends StamperInstance
+  __name__: 'VersionedInstance'
+  
   @fields
     version: VERSION
     
