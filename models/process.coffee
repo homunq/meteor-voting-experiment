@@ -95,7 +95,7 @@ PROCESS = new Process "Base",
 , 
   results:
     suggestedMins: 1
-    maxMins: 1.5
+    maxMins: 1.25
     stage: 2
     hit: on
     longName: "Practice results"
@@ -115,7 +115,7 @@ PROCESS = new Process "Base",
 , 
   payouts:
     suggestedMins: 0.5
-    maxMins: 1
+    maxMins: 0.75
     stage: 3
     hit: on
     payout: "$0-$1.08"
