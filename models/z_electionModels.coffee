@@ -178,13 +178,14 @@ class @Election extends VersionedInstance
       console.log "@stagesDoneBy[@stage]", @stage, @stagesDoneBy, @stagesDoneBy[@stage],  @scen().numVoters()
       done = (@stagesDoneBy[@stage] >= @scen().numVoters())
   
-      _.extend vote,
-        election: @_id
-        faction: faction
-        method: @method
-        scenario: @scenario
-        
-      Votes.insert vote
+      if vote.vote.length #Don't add null votes, but do move on regardless
+        _.extend vote,
+          election: @_id
+          faction: faction
+          method: @method
+          scenario: @scenario
+          
+        Votes.insert vote
       
       #console.log "Vote added; stage done?:", done
       if done then @finishStage() #@stage

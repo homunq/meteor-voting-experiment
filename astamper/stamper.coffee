@@ -15,7 +15,7 @@ class Field
       
   invalid: (val) ->
     if @validator
-      return !@validator val
+      return not @validator val
     false
     
 #Don't worry about stomping this variable inside a function, you'll never need it outside of a class declaration.
@@ -135,8 +135,16 @@ class StamperInstance
           @::collection.find()
   
     
-  raw: ->
+  invalid: ->
+    badFields = []
+    for name, field of @_fields
+      if field.invalid @[name]
+        badFields.push field
+    if badFields.length
+      return badFields
+    return no
     
+  raw: ->
     fields = ['_id']
     if @_looseFields
       fields = fields.concat @._looseFields

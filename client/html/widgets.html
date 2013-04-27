@@ -1,7 +1,7 @@
 
 <template name="nextStep">
 	{{#if stepWaiting}}<a href="#" onclick="alert('Waiting for others');return false;" id="nextStep" title="Waiting" class="btn btn-primary btn-large">
-	Waiting for {{stepIncompleteNum}} other voter{{plural stepIncompleteNum}}, or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}})</a>
+	Waiting for {{stepIncompleteNum}} other voter{{plural stepIncompleteNum}}, or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}}</a>
 	{{else}}
 	<a href="#" onclick="nextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
 	{{text}} </a> {{{countdownToStage nextStage "miniCountdownClock" "timeDone"}}}
@@ -10,7 +10,7 @@
 
 <template name="nextStepConsent">
 	{{#if stepWaiting}}<a href="#" onclick="alert('Waiting for others');return false;" id="nextStep" title="Waiting" class="btn btn-primary btn-large">
-	Waiting for {{stepIncompleteNum}} other voter{{plural stepIncompleteNum}}, or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}})</a>
+	Waiting for {{stepIncompleteNum}} other voter{{plural stepIncompleteNum}}, or until {{{countdownToStage nextStage "miniCountdownClock" "hunh"}}}</a>
 	{{else}}
 	<a href="#" onclick="nextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
 	Consent and Next </a>
@@ -38,7 +38,7 @@
 </template>
 
 <template name="countdownClock">
-	<h1>{{{displayAbsoluteTime}}} (in {{{displayCount}}})</h1>
+	<h1>Experiment starts at {{{displayAbsoluteTime}}} by your clock (in {{{displayCount}}})</h1>
 </template>
 
 <template name="miniCountdownClock">

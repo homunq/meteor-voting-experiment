@@ -40,6 +40,7 @@ nextStep = ->
   else
     #console.log "NextStep direct"
     STEP_RECORD.finish()
+    Session.set 'error', undefined
 
 if (Handlebars?) 
   #a simple handlebars function that lets you render a page based a reactive var
@@ -141,9 +142,6 @@ if (Handlebars?)
     step = Session.get 'step'
     return (step >= PROCESS.steps.length - 2)
     
-  Handlebars.registerHelper 'surveyQuestions', ->
-    setupSurvey()
-    _.values(question)[0] for question in SURVEY.questions
     
   Handlebars.registerHelper 'stage', ->
     console.log 'stage'

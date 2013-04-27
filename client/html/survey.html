@@ -1,6 +1,6 @@
 
 <template name="questionText">
-	<p>{{{text}}}</p>
+	<p>{{#if options.invalid}}<b><font color="#880000">Required: {{/if}}{{{text}}}{{#if options.invalid}}</font></b>{{/if}}</p>
 </template>
 
 <template name="questionWrapper">
@@ -12,17 +12,17 @@
 </template>
 
 <template name="answerText">
-	<input type="text" name="{{qName}}" onchange="surveyAnswer('{{qName}}',this.value);"><br/>
+	<input type="text" name="{{qName}}" name="{{qName}}_text" onchange="surveyAnswer('{{qName}}',this.value);"><br/>
 </template>
 
 <template name="answerTextbox">
-	<textarea name="{{qName}}" onchange="surveyAnswer('{{qName}}',this.value);"/><br/>
+	<textarea name="{{qName}}" id="{{qName}}_box" onchange="surveyAnswer('{{qName}}',this.value);"/><br/>
 </template>
 
 <template name="answerRadio">
 	{{lowEnd}} &nbsp;&nbsp;
 	{{#each this.optionInfos}}
-	<input type="radio" name="{{../qName}}" onclick="surveyAnswer('{{../qName}}',{{this.num}});">&nbsp;{{this.text}} &nbsp;&nbsp;
+	<input type="radio" name="{{../qName}}" id="{{../qName}}{{this.num}}" onclick="surveyAnswer('{{../qName}}',{{this.num}});">&nbsp;{{this.text}} &nbsp;&nbsp;
 	{{/each}}
 	{{highEnd}}
 </template>

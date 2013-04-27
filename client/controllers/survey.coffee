@@ -5,3 +5,6 @@ if (Handlebars?)
   Handlebars.registerHelper 'question', (question) ->
     question.getHtml()
       
+  Handlebars.registerHelper 'surveyQuestions', ->
+    setupSurvey()
+    _.values(question)[0] for question in SURVEY.questions

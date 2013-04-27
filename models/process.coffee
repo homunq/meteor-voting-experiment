@@ -66,7 +66,7 @@ PROCESS = new Process "Base",
     stage: 0
     hit: off
     longName: "Consent"
-    blurb: "Understand your rights, wait for the countdown to end and the experiment to begin, and informed consent."
+    blurb: "Understand your rights, wait for the experiment to begin, and informed consent."
     prereqForNextStage: true
     beforeFinish: (cb) ->
       election = (Session.get 'election') and ELECTION
@@ -115,7 +115,7 @@ PROCESS = new Process "Base",
 , 
   payouts:
     suggestedMins: 0.5
-    maxMins: 1.5
+    maxMins: 1
     stage: 3
     hit: on
     payout: "$0-$1.08"
@@ -136,7 +136,7 @@ PROCESS = new Process "Base",
 , 
   payouts:
     suggestedMins: 0.5
-    maxMins: 1
+    maxMins: 0.5
     stage: 4
     hit: on
     payout: "$0-$1.08"
