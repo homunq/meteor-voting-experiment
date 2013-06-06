@@ -5,6 +5,14 @@ echo = (args...) ->
 
 echo "echo", echo
 
+ROBO_DEPTH = 50 #a robovote is chosen randomly from the first n real votes in similar circumstances.
+  #If there aren't enough, the random pool is padded with default votes for the system/faction.
+ROBO_SUB_DEPTH = 10 #if multiple robovotes are to be chosen, a block of ROBO_SUB_DEPTH contiguous votes
+  #are the pool, with replacements.
+
+randomTo = (roof) ->
+  Math.floor(Math.random() * roof)
+
 Votes = new Meteor.Collection 'votes'
 
 class @Vote extends VersionedInstance
@@ -17,6 +25,8 @@ class @Vote extends VersionedInstance
     election: null
     stage: null
     step: null
+    robo: no
+    prevWinner: null #winner of previous round; helps robot voters be more realistic
     vote: [] #higher is better
     method: null #'approval'
     scenario: null #'chicken'
@@ -84,20 +94,20 @@ class @Election extends VersionedInstance
     winners: []
     outcomes: []
     
-  if Meteor.isServer
-    @fields
-      nonfactions: [] #[0, 0, 1, 1, ... 2, ...]
     
     
   @register
     make: @static (options, promote, delay, roundBackTo)->
-      #console.log "new election", options 
+      console.log "new election", options 
       options ?= {}
       options = _(options).pick "scenario", "method"
-      delay ?= 0
-      later = minutesFromNow delay
-      if roundBackTo >= 0
-        later = backToHour later, roundBackTo
+      if delay
+        later = minutesFromNow delay
+        if roundBackTo >= 0
+          later = backToHour later, roundBackTo
+        later = later.getTime()
+      else
+        later = undefined
       #evenLater = later.getTime() + PROCESS.minsForStage(1) * 60 * 1000
       
       _(options).defaults
@@ -106,13 +116,13 @@ class @Election extends VersionedInstance
         watchers: []
         voters: []
         factions: []
-        sTimes: [(new Date).getTime(), later.getTime()] #, evenLater]
+        sTimes: [(new Date).getTime(), later] #, evenLater]
         
       e = new Election options
       if Meteor.isServer
-        e.nonfactions = e.scen().shuffledFactions()
+        e.factions = e.scen().shuffledFactions()
       e.save()
-      #console.log "EID IS ", e._id
+      console.log "new election 2", options 
       if promote
         e.promote()
       
@@ -151,9 +161,9 @@ class @Election extends VersionedInstance
         throw Meteor.Error 404, "no such election"
       election = new Election election
       #console.log election
-      if (_.indexOf election.watchers, uid) == -1
-        election.addWatcherAndSave(uid)
-      else
+      #if (_.indexOf election.watchers, uid) == -1
+      election.addWatcherAndSave(uid)
+      #else
         #console.log uid, " is already in ", election.watchers
           
         
@@ -172,15 +182,18 @@ class @Election extends VersionedInstance
         throw new Meteor.Error 403, "You've already voted"
       faction = @factionOf uid #throws error on failure
       
-      @stagesDoneBy[@stage] ?= 0
-      @stagesDoneBy[@stage] += 1
-      @save()
-      console.log "@stagesDoneBy[@stage]", @stage, @stagesDoneBy, @stagesDoneBy[@stage],  @scen().numVoters()
-      done = (@stagesDoneBy[@stage] >= @scen().numVoters())
+      #comment out the following non-atomic mess because it should be handled in process.coffee
+      #@stagesDoneBy[@stage] ?= 0
+      #@inc
+      #stagesDoneBy[@stage] += 1
+      #@save()
+      #console.log "@stagesDoneBy[@stage]", @stage, @stagesDoneBy, @stagesDoneBy[@stage],  @scen().numVoters()
+      #done = (@stagesDoneBy[@stage] >= @scen().numVoters())
   
       if vote.vote.length #Don't add null votes, but do move on regardless
         _.extend vote,
           election: @_id
+          prevWinner: @winners[@stage - 1]
           faction: faction
           method: @method
           scenario: @scenario
@@ -188,7 +201,7 @@ class @Election extends VersionedInstance
         Votes.insert vote
       
       #console.log "Vote added; stage done?:", done
-      if done then @finishStage() #@stage
+      #if done then @finishStage() #@stage
       
       #console.log "newVote update"
       
@@ -198,27 +211,54 @@ class @Election extends VersionedInstance
       
     addWatcherAndSave: (vid) ->
       console.log "addWatcherAndSave "+vid + "     ;     ", @_id
-      if (_.indexOf @watchers, vid) == -1
-        @watchers.push vid
-      eid = @save()
-      console.log "eid", eid, vid
-      Meteor.users.update
+      #if (_.indexOf @watchers, vid) == -1
+      #  @watchers.push vid
+      #eid = @save()
+      voter = Meteor.users.findOne
         _id: vid
-      ,
-        $set:
-          eid: eid
-          watcher: true
-          step: 0
-      ,
-        multi: false
-      console.log "user is: ", Meteor.users.findOne
-        _id: vid
-      eid
+      if voter.eid isnt @_id
+        console.log "eid", @_id, vid
+        Meteor.users.update
+          _id: vid
+        ,
+          $set:
+            eid: @_id
+            watcher: true
+            step: 0
+        ,
+          multi: false
+        @_id
       
+    findAndJoin: @static (eid, options) ->
+      console.log "findAndJoin "+@userId + "     ;     ", @_id
+      vid = @userId
+      
+      while true
+        console.log "findAndJoin 2 ", eid
+        try
+          if not eid?
+            eid = MainElection.findOne().eid
+          election = Elections.findOne
+            _id: eid
+          if election
+            election = new Election election
+            election.addVoterAndSave vid
+            return eid
+          else
+            console.log "findAndJoin can't find ", eid
+            throw new Meteor.Error 404, "null election"
+        catch e
+          console.log "addWatcherAndSave make new ", e
+          if e instanceof Meteor.Error
+            eid = undefined
+            @make(options, true, 0, false)
+          else
+            throw e
+            
     addVoterAndSave: (vid) ->
       #console.log "addVoterAndSave "+vid + "     ;     "
       if Meteor.isServer
-        #console.log @nonfactions, @factions
+        #console.log @factions
         if (_.indexOf @voters, vid) >= 0
           err = "Sorry, you cannot participate in this same election twice. (How did you do that?)"
           console.log err
@@ -227,26 +267,38 @@ class @Election extends VersionedInstance
           _id: vid
         if user.nonunique
           throw new Meteor.Error 403, "Sorry, you cannot participate in this experiment twice."
-        if @nonfactions.length is 0
-          throw new Meteor.Error 403, "Election full"
-        if @stage isnt 0
-          throw new Meteor.Error 403, "Huh? There's room but they moved on'"
-        @voters.push vid
-        faction = @nonfactions.pop()
-        @factions.push faction
-        @stagesDoneBy[0] += 1
-        eid = @save()
-        #console.log " "+ @nonfactions + @factions + eid
-        Meteor.users.update
-          _id: vid
-        ,
-          $set:
-            eid: eid
-            faction: faction
-            watcher: false
-        ,
-          multi: false
-        eid
+        if @stage > 1
+          throw new Meteor.Error 403, "Experiment already in progress; cannot join."
+        numVoters = @scen().numVoters()
+        if @voters.length >= numVoters
+          console.log "FULL", @voters
+          throw new Meteor.Error 403, "Election full."
+        @push
+          voters: vid
+        , =>
+          if @stage is 0
+            @nextStage("timerOnly")
+          console.log "voter pushed", @, user
+          vIndex = _.indexOf @voters, vid
+          if vIndex < 0
+            console.log "Adding voter failed mysteriously... BAD BAD BAD"
+            user.pushError "Joining election failed."
+          if vIndex >= numVoters
+            user.pushError "Election filled up."
+            @pull
+              voters: vid
+            return
+          @inc
+            "stagesDoneBy.0": 1
+          Meteor.users.update
+            _id: vid
+          ,
+            $set:
+              eid: @_id
+              faction: @factions[vIndex]
+              watcher: false
+          ,
+            multi: false
       
     promote: ->
       #console.log "promote"
@@ -258,66 +310,130 @@ class @Election extends VersionedInstance
         , mainElection
         #console.log mainElection, MainElection.findOne({})
         
-    finishStage: () ->
-      stage = @stage
-      console.log "finishStage", stage
-      [votesForStage, fullVotes] = @votesForStage stage
-      [winners, counts] = @meth().resolveVotes @scen().numCands(), votesForStage
-      tiebreakerGen = new MersenneTwister(@seed + stage)
-      tiebreakers = (tiebreakerGen.random() for cand in _.range @scen().numCands())
-      best = -1
-      if winners.length is 0
-        winners.push 0
-      for oneWinner in winners
-        if tiebreakers[oneWinner] > best
-          winner = oneWinner
-          best = tiebreakers[oneWinner]
-      console.log "winners, winner, tiebreakers: ", winners, winner, tiebreakers
-      factionCounts = for faction in @scen().factions()
-        votesForFaction = (v.vote for v in fullVotes when v.faction is faction)
-        [fwinners, fcounts] = @meth().resolveVotes @scen().numCands(), votesForFaction
-        fcounts
-      outcome = new Outcome
-        winner: winner
-        counts: counts
-        factionCounts: factionCounts
-        election: @_id
-        stage: stage
+    robovotes: (stage) ->
+      console.log "robovotes", stage
+      robofactions = @factions.slice(@voters.length)
+      factionCounts = _.countBy robofactions, (x)->x
+      console.log "robovotes", robofactions, factionCounts, @factions
+      votesByFaction = for faction, numVotes of factionCounts
+        faction = parseInt faction #!@#$#@!$ _.countby converts to strings, damne its eyes.
+        for vote in @robovotesForFaction(faction, numVotes, stage)
+          @recordRobovote vote, faction
+      return _.flatten votesByFaction, yes #shallow flatten to go from votesByFaction to votes.
+    
+    robovotesForFaction: (faction, numVotes, stage) ->
+      console.log "robovotesForFaction", faction, numVotes, stage
+      searchKey =
+        prevWinner: @winners[stage - 1]
+        faction: faction
         method: @method
         scenario: @scenario
-        voters: v.voter for v in fullVotes
-      console.log "My new outcome is", outcome
-      outcome.save()
-      console.log "and I just saved it:", outcome._id, Outcomes.findOne
-        _id: outcome._id
-      @winners[stage] = winner
-      @outcomes[stage] = outcome._id
-      @save()
+        robo: no
+        version: VERSION
+      if numVotes is 1
+      oldVotes = Votes.find searchKey,
+        reactive: no
+        limit: ROBO_DEPTH
+      oldVotes = oldVotes.fetch()
+      robovotes = for voter in [1..numVotes]
+        oldVote = oldVotes[randomTo oldVotes.length]
+        if oldVote?
+          oldVote.vote
+        else
+          honestVote ?= @meth().honestVote(@scen().payoffsForFaction(faction).payoffs)
+          honestVote
+            
+        
+    recordRobovote: (vote, faction) ->
+      console.log "recordRobovote", vote, faction
+      liveVote = new Vote
+        vote: vote
+        
+        voter: null
+        faction: faction
+        election: @_id
+        stage: @stage
+        step: @step
+        robo: yes
+        prevWinner: @winners[@stage - 1] 
+        method: @method
+        scenario: @scenario
+      liveVote.save()
+      return liveVote
+        
       
-    nextStage: (dontSave) ->
-      console.log "election.nextStage"
-      @stage += 1
+    finishStage: () ->
+      stage = @stage
+      if stage >= 1
+        console.log "finishStage", stage
+        fullRobovotes = @robovotes stage
+        [votesForStage, fullVotes] = @votesForStage stage, undefined, "noRobos"
+        votesForStage = votesForStage.concat (robo.vote for robo in fullRobovotes)
+        
+        console.log "finishStage fullVotes = fullVotes.concat fullRobovotes", fullVotes, fullRobovotes
+        fullVotes = fullVotes.concat fullRobovotes
+        tiebreakerGen = new MersenneTwister(@seed + stage)
+        tiebreakers = (tiebreakerGen.random() for cand in _.range @scen().numCands())
+        [winners, counts] = @meth().resolveVotes @scen(), votesForStage, tiebreakers
+        best = -1
+        if winners.length is 0
+          winners.push 0
+        for oneWinner in winners
+          if tiebreakers[oneWinner] > best
+            winner = oneWinner
+            best = tiebreakers[oneWinner]
+        console.log "winners, winner, tiebreakers: ", winners, winner, tiebreakers
+        factionCounts = for faction in @scen().factions()
+          votesForFaction = (v.vote for v in fullVotes when v.faction is faction)
+          [fwinners, fcounts] = @meth().resolveVotes @scen(), votesForFaction, tiebreakers
+          fcounts
+        outcome = new Outcome
+          winner: winner
+          counts: counts
+          factionCounts: factionCounts
+          election: @_id
+          stage: stage
+          method: @method
+          scenario: @scenario
+          voters: v.voter for v in fullVotes
+        console.log "My new outcome is", outcome
+        outcome.save()
+        console.log "and I just saved it:", outcome._id, Outcomes.findOne
+          _id: outcome._id
+        @winners[stage] = winner
+        @outcomes[stage] = outcome._id
+        @save()
+      
+    nextStage: (timerOnly) ->
+      console.log "election.nextStage", @_id, @stage, @sTimes
+      stage = @stage
+      if not timerOnly
+        stage += 1
       if Meteor.isServer 
         now = (new Date).getTime()
-        delay = PROCESS.minsForStage(@stage) * 60 * 1000
-        if nullOrAfterNow(@sTimes[@stage])
-          @sTimes[@stage] = now
-        if (not @sTimes[@stage + 1]) and delay > 0
-          console.log "setting stage timeout", delay, @stage, now, now + delay
-          @sTimes[@stage + 1] = now + delay
+        delay = PROCESS.minsForStage(stage) * 60 * 1000
+        console.log "election.nextStage 1", delay
+        if nullOrAfterNow(@sTimes[stage])
+          console.log "election.nextStage 12", delay, stage, @sTimes
+          @sTimes[stage] = now
+        if (not @sTimes[stage + 1]) and delay > 0
+          console.log "setting stage timeout", delay, stage, now, now + delay
+          @sTimes[stage + 1] = now + delay
           sT = (ms, fn) ->
             Meteor.setTimeout fn, ms
             
           sT delay, =>
-            @.constructor.nextForTime @_id, @stage
-      if not dontSave
+            @.constructor.nextForTime @_id, stage
+      if not timerOnly
+        @stage = stage
         @save()
               
     nextForTime: @static (eid, stage) ->
-      console.log "Stage timeout! Advancing stage\n!\n!\n!", eid, stage + 1
       election = new Election Elections.findOne
         _id: eid
-      if election.stage is stage
+      if election.stage <= stage
+        console.log "Stage timeout! Advancing stage\n!\n!\n!", eid, stage + 1
+        election.stage = stage
         election.finishStage()
         election.nextStage()
 
@@ -329,7 +445,7 @@ class @Election extends VersionedInstance
         @voters.splice voterIndex, 1
         [faction] = @factions.splice voterIndex, 1
         if Meteor.isServer
-          @nonfactions.push faction
+          @factions.push faction
         @save()
         
         
@@ -358,18 +474,21 @@ class @Election extends VersionedInstance
   completeness: ->
     "#{ @numVotes[@stage] }/#{ @scen()?.numVoters() }"
     
-  votesForStage: (stage, faction) ->
+  votesForStage: (stage, faction, noRobos) ->
     searchKey = 
       election: @_id
       stage: stage
     if faction?
       searchKey.faction = faction
+    if noRobos
+      searchKey.robo = false
     vCursor = Votes.find searchKey
     fullVotes = vCursor.fetch()
     console.log "votesForStage", stage, fullVotes
     [v.vote for v in fullVotes, fullVotes]
   
   isFull: ->
+    console.log "isFull", @voters.length, @scen().numVoters()
     @voters.length >= @scen().numVoters()
     
 Election.admin()
@@ -416,7 +535,6 @@ if Meteor.isServer
       fields:
         #voters: 0
         factions: 0
-        nonfactions: 0
         
   #console.log "----published elections"
   #console.log (Elections.find {}).count()
@@ -457,6 +575,7 @@ else if Meteor.is_client
   Meteor.autosubscribe ->
     if (Session.get 'router') and router?.current_page() is 'loggedIn'
       user = Meteor.user()
+      console.log "got new user", user
       if user?.faction isnt OLD_USER?.faction
         Session.set 'faction', user.faction
       if user?.step isnt OLD_USER?.step or user?.lastStep isnt OLD_USER?.lastStep

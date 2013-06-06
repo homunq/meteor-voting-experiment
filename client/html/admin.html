@@ -1,12 +1,15 @@
 <template name="payments">
+	<table>
 	{{#each payments}}
-		<div>
-			workerId: {{workerId}}<br/>
-			faction: {{vfaction}}<br/>
-			votedRounds: {{vVotedRounds}}<br/>
-			paymentDue: {{vPaymentDue}}
-		</div>
+		<tr>
+			<td>{{workerId}}</td>
+			<td>stickyWorkerId: {{stickyWorkerId}}</td>
+			<td>faction: {{faction}}</td>
+			<td>votedRounds: {{votedRounds}}</td>
+			<td>paymentDue: {{paymentDue}}</td>
+		</tr>
 	{{/each}}
+	</table>
 </template>
 
 <template name="electionsReport">

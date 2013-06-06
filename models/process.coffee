@@ -48,9 +48,12 @@ class Process
     mins
     
   shouldMoveOn: (step, lastStep, stage) ->
-    #console.log "shouldMoveOn", step, @firstForStages[stage], @step(step).stage, stage
-    (step >= @firstForStages[1]) and ((step < @firstForStages[stage]) or (lastStep is step and @step(step).stage < stage))
+    console.log "shouldMoveOn", step, @firstForStages[stage], @step(step).stage, stage
+    if (step >= 2) 
+      return ((step < @firstForStages[stage]) or (lastStep is step and @step(step).stage < stage))
+    return false
 
+  
 PROCESS = new Process "Base",
   overview:
     suggestedMins: 0
@@ -62,7 +65,7 @@ PROCESS = new Process "Base",
 ,
   consent:
     suggestedMins: 0
-    maxMins: 60
+    maxMins: 0
     stage: 0
     hit: off
     longName: "Consent"
@@ -70,11 +73,13 @@ PROCESS = new Process "Base",
     prereqForNextStage: true
     beforeFinish: (cb) ->
       election = (Session.get 'election') and ELECTION
-      election.addVoterAndSave Meteor.user()._id, cb
+      options = _.pick(election, ['scenario', 'method'])
+      options.method = nextMethodInWheel options.method
+      Election.findAndJoin election._id, options, cb
 , 
   scenario:
     suggestedMins: 1 
-    maxMins: 2
+    maxMins: 0.2
     stage: 0
     hit: on
     longName: "Scenario"
@@ -206,9 +211,10 @@ class StepRecord extends VersionedInstance
   constructor: (props) ->
     if Meteor.user? and not props?
       u = Meteor.user()
+      step = Session.get 'step'
       props =
         voter: u?._id
-        step: u?.step
+        step: step
         election: u?.eid
     super props
     
@@ -248,13 +254,14 @@ class StepRecord extends VersionedInstance
           if (stepDoneBy >= election.scen().numVoters() or #full scenario
                 (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
             
-            console.log "save StepRecord nextStage"
-            election.nextStage(true)
+            console.log "save StepRecord finishStage"
+            if election.stage >= 1
+              election.finishStage()
+            election.nextStage()
             
            
         #console.log "save StepRecord 6", election
-        if Meteor.isServer
-          election.save() 
+        election.save() 
           
       #move along if we can
       stageForNextStep = PROCESS.step(@step + 1).stage
@@ -273,7 +280,7 @@ class StepRecord extends VersionedInstance
       console.log "moving on ", step, really, voter
       newStep = step + (if really then 1 else 0)
       if Meteor.isClient
-        Session.set "step", newStep
+        Session.set "step", newStep #ugly hack for greater responsiveness... but remember not to get step from Meteor.user()
       else
         Meteor.users.update
           _id: voter

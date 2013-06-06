@@ -180,7 +180,10 @@ SurveyResponse.admin()
 
 console.log "creating @setupSurvey function"
 @setupSurvey = ->
-  window.SURVEY = new SurveyResponse
+  #Note: This is getting called redundantly when survey answers are repainted. Tolerable for now but yucky.
+  console.log "@setupSurvey"
+  if not window.SURVEY?
+    window.SURVEY = new SurveyResponse
   
 @sendSurvey = (cb) ->
   err = SURVEY.showErrors()

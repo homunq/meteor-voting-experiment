@@ -12,7 +12,7 @@ echo "Updating appfog"
 af update $app
 echo "Cleaning up"
 popd
-rm -rf ../bundle
+#rm -rf ../bundle
 echo "Code is in releases/$app.tgz"
 mkdir -p releases
 mv app.tgz releases/$app.tgz

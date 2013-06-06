@@ -3,7 +3,14 @@
 @console ?=
   log: ->
 
+@DEBUG ?= true
+
+debug = ->
+  if DEBUG
+    console.log arguments...
+
 class Field
+  #used by StamperInstance::fields for basic ORM
   constructor: (default_val, @validator) ->
     if (_ default_val).isFunction() 
       @default = default_val
@@ -46,6 +53,7 @@ class StamperInstance
     _.extend this, props
   
   @fields: (_fields) ->
+    #use this in the class declaration to give fields, validators, and/or defaults.
     if @::_fields?
       @::_fields = _.clone @::_fields #copy from superclass to class.
     else
@@ -56,11 +64,13 @@ class StamperInstance
         f = new field f
       @::_fields[fname] = f
        
-  @static: (fn) -> #for use inside @register
+  @static: (fn) -> #for use as a pseudo-decorator inside @register
+    #simply paints the function object with a static flag, so it can be treated differently by @register
     fn.static = true
     fn
     
   @register: (methods) ->
+    #use this inside the class declaration; hand it a hash of methods that should be executed server-side.
     servermethods = {}
     self = this
     for mname, method of methods
@@ -70,21 +80,22 @@ class StamperInstance
         cur_instance = undefined
         
         if not self::__name__
+          #Unfortunately, the class.name javascript property is not reliable in the face of minification.
+          #it works for testing, but remind the developer to redeclare it explicitly before they enter production.
           console.log ('Warning: Before you go into production, after "class '+self.name+
             '" you should add: "  __name__: \'' + self.name + '\'"')
             self::__name__ = self.name
         smname = self::__name__ + "_" + mname
         if !method.static #instance
           servermethods[smname] = (id, obj, args...) ->
-            console.log "server calling ", smname, "userId", @userId, "isServer", Meteor.isServer
+            debug "server calling ", smname, "userId", @userId, "isServer", Meteor.isServer
             if Meteor.isServer
               cur_instance = self.prototype.collection.findOne
                 _id: id
              
               if cur_instance
                 cur_instance = new self cur_instance
-              console.log "server method on", id, (cur_instance and "has cur_instance")
-              #console.log self.prototype.collection.find().fetch()
+              debug "server method on", id, (cur_instance and "has cur_instance")
             else
               cur_instance = obj
             if not cur_instance
@@ -94,14 +105,8 @@ class StamperInstance
             cur_instance[smname].apply cur_instance, args
         else #static
           servermethods[smname] = (args...) ->
-            console.log "server calling static ", smname, "userid", @userId
+            debug "server calling static ", smname, "userid", @userId
             self.userId = @userId #sneak in a method for current userId
-            #console.log "Crashy?", smname
-            #console.log self
-            #console.log self.constructor
-            #console.log self.prototype
-            
-            #console.log self.__proto__
             self[smname] args...
             
         if method.static
@@ -110,9 +115,9 @@ class StamperInstance
           goesOn = self.prototype
         if Meteor.is_client 
           do (method, smname) ->
-            console.log "adding method ", mname, " to ", goesOn
+            #console.log "adding method ", mname, " to ", goesOn
             goesOn[mname] = (args...) ->
-              console.log "client calling ", smname, mname
+              debug "client calling ", smname, mname
               if method.static
                 Meteor.call smname, args...
               else
@@ -120,11 +125,11 @@ class StamperInstance
         else
           goesOn[mname] = method
         goesOn[smname] = method
-    console.log "registering methods:", servermethods
     Meteor.methods servermethods
   
   @admin: ->
-    #console.log "Admin QQ ", @, @::collection
+    #Call immediately after the class declaration
+    #sets up an easy way to subscribe to an uncensored version of the collection, using a password declared elsewhere.
     @::collection.adminSubscribe = (password) => 
       if Meteor.isClient
         Meteor.subscribe @::collection._name + "_admin", password
@@ -136,6 +141,7 @@ class StamperInstance
   
     
   invalid: ->
+    #validate all fields of the object
     badFields = []
     for name, field of @_fields
       if field.invalid @[name]
@@ -145,6 +151,7 @@ class StamperInstance
     return no
     
   raw: ->
+    #return a json-able copy of self; that is, without methods or temp properties.
     fields = ['_id']
     if @_looseFields
       fields = fields.concat @._looseFields
@@ -156,6 +163,7 @@ class StamperInstance
   #  props.
     
   save: (cb) ->
+    #save current value of self to DB
     console.log "save: ", @_id, @::, @collection._name
     if @_id
       raw = @raw()
@@ -177,7 +185,57 @@ class StamperInstance
       if returnv
         @_id = returnv
       returnv
-          
+         
+  reload: ->
+    #reload properties from DB.
+    console.log "reloading", @, @collection.findOne
+      _id: @_id
+    _.extend @, @collection.findOne
+      _id: @_id
+    
+  inc: (incer, cb) -> #incer is a {field: inc} object
+    if not @_id
+      #can't atomically increment a record that's never been saved
+      cb new Meteor.Error(404, "Can't atomically increment a record that's never been saved")
+      return
+    @collection.update
+      _id: @_id
+    , 
+      $inc: incer
+    , =>
+      if cb
+        @reload()
+        cb()
+  
+  push: (pusher, cb) -> #pusher is a {field: item} object
+    if not @_id
+      #can't atomically push to a record that's never been saved
+      cb new Meteor.Error(404, "Can't atomically push to a record that's never been saved")
+      return
+    @collection.update
+      _id: @_id
+    , 
+      $push: pusher
+    , =>
+      if cb
+        @reload()
+        cb()
+    
+    
+  pull: (puller, cb) -> #puller is a {field: item} object
+    if not @_id
+      #can't atomically pull from a record that's never been saved
+      cb new Meteor.Error(404, "Can't atomically pull from a record that's never been saved")
+      return
+    @collection.update
+      _id: @_id
+    , 
+      $pull: puller
+    , =>
+      if cb
+        @reload()
+        cb()
+    
   remove: (cb) ->
     @collection.remove
       _id: @_id

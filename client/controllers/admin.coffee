@@ -72,12 +72,8 @@ Meteor.startup ->
             paymentList[i] = result
             Session.set "paymentList", paymentList
     payments = for voter, i in voters
-      {
-        workerId: voter.workerId
-        vFaction: voter.faction
-        vVotedRounds: "hahaha"
+      _.extend voter,
         paymentDue: paymentList[i]
-      }
     console.log "paymentList", payments, paymentList
     payments
         

@@ -101,12 +101,15 @@ class @MyRouter extends ReactiveRouter
       params = deparam params
     login_then =>
       user = new User Meteor.user()
-      user.setParams params
-      console.log "About to watchMain", user._id
-      Election.watchMain (error, result) =>
-        console.log "watchmain e=", error
-        console.log "watchmain r=", result
+      if not user.eid
+        user.setParams params
+        console.log "About to watchMain", user._id
+        Election.watchMain (error, result) =>
+          console.log "watchmain e=", error
+          console.log "watchmain r=", result
         
+          @goto 'loggedIn'
+      else
         @goto 'loggedIn'
         #console.log 'qwpr' + JSON.stringify Meteor.user()
     #@navigate 'election/new',
@@ -133,6 +136,7 @@ class @MyRouter extends ReactiveRouter
   makeElection: (scenario, method, delay=100, roundBackTo=-1) ->
     console.log "makeElection", scenario, method, delay, roundBackTo
     delay = parseInt delay
+    console.log "makeElection q", scenario, method, delay, roundBackTo
     roundBackTo = parseInt roundBackTo
     Election.make
       scenario: scenario
@@ -141,6 +145,7 @@ class @MyRouter extends ReactiveRouter
       Session.set "madeEid", result
       @goto 'madeElection' #use that template
       
+    console.log "makeElection 3", scenario, method, delay, roundBackTo
     @goto 'madeElection' #use that template
     Meteor.logout()
     

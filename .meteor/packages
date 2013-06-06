@@ -11,3 +11,4 @@ deps-extensions
 underscore
 accounts-password
 accounts-base
+preserve-inputs

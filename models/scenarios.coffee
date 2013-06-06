@@ -53,7 +53,9 @@ class Scenario
     
     
   shuffledFactions: ->
-    _(_.range(@factSizes.length)).shuffle().concat(_(@vFactions(1)).shuffle())
+    milk = _(@vFactions(1)).shuffle()
+    cream = _.shuffle _.range @factSizes.length
+    milk.concat(cream)
     
   payoffsExceptFaction: (myFaction) ->
     order = _.range @factSizes.length
@@ -86,6 +88,17 @@ class Scenario
       faction: faction
       color: scen?.factColors[faction]
       name: scen?.factNames[faction]
+      
+  prefs: ->
+    #as currently written, this ONLY WORKS by assuming that the lists of factions and candidates correspond. 
+    payoffsByFaction = _.zip @payoffs
+    prefs = for factionPayoffs in payoffsByFaction
+      sortablePayoffs = _.zip factionPayoffs, [0..factionPayoffs.length - 1]
+      sortablePayoffs.sort (a, b) ->
+        a[0] - b[0]
+      index for [payoff, index] in sortablePayoffs
+    prefs
+      
     
     
 @Scenarios =
@@ -141,3 +154,5 @@ class Scenario
               [0]]
   
     
+#expose for Node testing        
+exports = Scenarios unless Meteor?

@@ -27,7 +27,7 @@ Meteor.startup ->
       
 nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
-  #console.log "beforeFinish", beforeFinish
+  console.log "beforeFinish", beforeFinish
   if beforeFinish
     beforeFinish (error, result) ->
       #console.log "beforeFinish done", error, result
