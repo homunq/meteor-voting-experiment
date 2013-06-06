@@ -1,3 +1,6 @@
 temp/
 admin_password.coffee
 *.tgz
+.meteor/
+bundle/
+smart.lock
