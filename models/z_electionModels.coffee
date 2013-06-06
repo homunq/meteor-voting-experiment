@@ -330,17 +330,19 @@ class @Election extends VersionedInstance
         scenario: @scenario
         robo: no
         version: VERSION
-      if numVotes is 1
       oldVotes = Votes.find searchKey,
         reactive: no
         limit: ROBO_DEPTH
       oldVotes = oldVotes.fetch()
+      honestVote = undefined
       robovotes = for voter in [1..numVotes]
-        oldVote = oldVotes[randomTo oldVotes.length]
+        oldVote = oldVotes[randomTo oldVotes.length+1] #a 1/n chance of an "honestVote"
         if oldVote?
+          console.log "oldVote", oldVote.vote, faction
           oldVote.vote
         else
           honestVote ?= @meth().honestVote(@scen().payoffsForFaction(faction).payoffs)
+          console.log "honestVote", honestVote.vote, faction
           honestVote
             
         
