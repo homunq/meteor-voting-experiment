@@ -1,7 +1,7 @@
 {
   "meteor": {
      "git": "https://github.com/meteor/meteor"
-   , "tag" : "v0.5.9"
+   , "tag" : "v0.5.4"
   },
   "packages": {
     "deps-extensions": {
