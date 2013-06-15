@@ -60,6 +60,11 @@ if (Handlebars?)
     scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       scenario.numVoters()
+      
+  Handlebars.registerHelper 'scenSlides', ->
+    scenario = ((Session.get 'scenario') and SCENARIO)
+    if scenario
+      scenario.slides Session.get 'faction'
     
   Handlebars.registerHelper 'candRanks', ->
     scenario = ((Session.get 'scenario') and SCENARIO)
@@ -70,4 +75,5 @@ if (Handlebars?)
         ord: ''+ rank + (if rank <= 3 then ['st','nd','rd'][rank-1] else 'th')
     
   
-  
+@skitter = ->
+  Meteor.setTimeout (-> $(".box_skitter_large").skitter()), 0

@@ -127,17 +127,19 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 
 <template name="scenario">
 	<div class="span4">
-      <img src="/images/{{mapImg}}.png">
+		{{call skitter}}
+		<div class="box_skitter box_skitter_large">
+			<ul>
+				{{#each scenSlides}}
+				<li>
+					<a href="#cut"><img src="images/{{this}}.png" class="cut" /></a>
+					<div class="label_text"><p>.</p></div>
+				</li>
+				{{/each}}
+			</ul>
+		</div>
     </div>
-    <div class="span8"><p>Imagine that you live in one of the houses inside the dashed circle in the town at left. 
-    	You and the other inhabitants of this town are voting on where to build a new library. 
-    	You would like the library to be as close to your own house as possible.
-    	 Three candidate sites X, Y, and Z are marked on the map with flags.</p>
-	<p>You and the other participants in this experiment will be voting three times using a voting 
-		system that will be explained next. Your first vote will be for practice, 
-		and to familiarize yourself with the voting system used. The next two votes, you will 
-		get a bonus payment (real money, paid within 24 hours) depending on the result of the 
-		election. The payoffs for you and for the other voters are as follows</p>
+    <div class="span8"><p>Please read through the slides at left.</p>
       <!--Body content-->
 			{{> scenarioTable}}
 	</div>

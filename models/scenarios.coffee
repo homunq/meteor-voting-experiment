@@ -99,6 +99,10 @@ class Scenario
       index for [payoff, index] in sortablePayoffs
     prefs
       
+  slides: (faction) ->
+    for num in [1..5]
+      @factPngs[faction] + num
+    
     
     
 @Scenarios =
