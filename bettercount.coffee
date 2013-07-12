@@ -1,7 +1,7 @@
 
         
 if Meteor.isClient
-  console.log "client"
+  slog "client"
  
    
 if Meteor.isServer

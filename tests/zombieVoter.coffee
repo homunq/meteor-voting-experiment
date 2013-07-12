@@ -1,13 +1,14 @@
 console.log "hw"
 
-zombie = require "zombie"
+Browser = require "zombie"
 
-browser = new zombie.Browser()
+browser = new Browser()
 
 browser.setMaxListeners(0)
 
+
 browser.
-  visit("http://bettercount.meteor.com/?asdt"
+  visit("http://bettercount.meteor.com/new?asdt"
   ).then(->
     console.log "loaded, waiting 5"
     browser.wait(5000)

@@ -75,16 +75,18 @@ class Scenario
     
   candInfos: (faction, count) ->
     for candName, candNum in @candNames
-      @candInfo candNum, faction, count
+      @candInfo candNum, faction, 
+        count: count
       
-  candInfo: (candNum, faction, count, scen, factionCounts) ->
+  candInfo: (candNum, faction, outcome, scen) ->
     num: candNum
     name: @candNames[candNum]
     color: @candColors[candNum]
     myPayoff: @candNames[candNum] and @payoffs[candNum][faction]
-    count: count?[candNum]
+    count: outcome.counts?[candNum]
+    candTied: candNum in (outcome.ties or []) 
     factionCounts: for faction in (scen?.factions(faction) or [])
-      count: factionCounts?[faction][candNum] or 0
+      count: outcome.factionCounts?[faction][candNum] or 0
       faction: faction
       color: scen?.factColors[faction]
       name: scen?.factNames[faction]
@@ -101,16 +103,15 @@ class Scenario
       
   slides: (faction) ->
     for num in [1..5]
-      @factPngs[faction] + num
-    
-    
+      name:@factPngs[faction] + num
+      active: if num is 1 then "active " else ""
     
 @Scenarios =
   chicken: new Scenario
     factSizes: [4, 2, 3]
     factNames: ['Red', 'Green', 'Blue']
     factColors: ["#D40000", "#00D400", "#0000D4"]
-    factPngs: ["4voters", "2voters", "3voters"]
+    factPngs: ["4pairs", "2pairs", "3pairs"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0, 0],
@@ -130,7 +131,7 @@ class Scenario
     factSizes: [2, 1]
     factNames: ['Red', 'Blue']
     factColors: ["#D40000", "#00D400"]
-    factPngs: ["4voters", "2voters"]
+    factPngs: ["4pairs", "3pairs"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0],
@@ -138,9 +139,9 @@ class Scenario
               [0, 3]]
   mini: new Scenario
     factSizes: [1, 1]
-    factNames: ['Red', 'Green']
+    factNames: ['Red', 'Blue']
     factColors: ["#D40000", "#00D400"]
-    factPngs: ["4pairs", "2pairs"]
+    factPngs: ["4pairs", "3pairs"]
     candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3, 0],
@@ -151,7 +152,7 @@ class Scenario
     factNames: ['Red']
     factColors: ["#D40000"]
     factPngs: ["4pairs"]
-    candNames: ['Xc', 'Yc', 'Zc']
+    candNames: ['X', 'Y', 'Z']
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3],
               [2],

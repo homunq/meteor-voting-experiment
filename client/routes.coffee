@@ -82,10 +82,13 @@ deparam = (params, coerce) -> #from jquery-bbq
     else obj[key] = (if coerce then `undefined` else "")  if key
 
   obj
-    
+
+global = @
+   
 class @MyRouter extends ReactiveRouter
   routes:
     '?:params': 'watchElection'
+    ':newUser?:params': 'watchElection2'
     'election/:eid': 'inElection'
     'elections/clear/all': 'clearAll'
     'elections/makeOne/:scenario/:method': 'makeElection'
@@ -94,49 +97,58 @@ class @MyRouter extends ReactiveRouter
     'admin/elections/:password/:fromVersion': 'electionsReport'
     'admin/payments/:password/:eid': 'payments'
     
-  watchElection: (params) ->
-    console.log 'watch'
-    console.log Backbone.history.getFragment()
+  
+  watchElection2: (newUser, params) ->
+    @watchElection params, newUser
+    
+  watchElection: (params, newUser) ->
+    #slog 'watch'
+    slog Backbone.history.getFragment()
     if params
-      params = deparam params
-    login_then =>
+      xparams = deparam params
+    slog "qqqqqqqdstasdtasdtq", params
+    for k, v of xparams
+      slog "qqqqqqqq", k, v
+    if xparams?.slogNum
+      global.slogNum = parseInt xparams.slogNum
+    login_then newUser, =>
       user = new User Meteor.user()
       if not user.eid
-        user.setParams params
-        console.log "About to watchMain", user._id
+        user.setParams xparams
+        #slog "About to watchMain", user._id
         Election.watchMain (error, result) =>
-          console.log "watchmain e=", error
-          console.log "watchmain r=", result
+          #slog "watchmain e=", error
+          #slog "watchmain r=", result
         
           @goto 'loggedIn'
       else
         @goto 'loggedIn'
-        #console.log 'qwpr' + JSON.stringify Meteor.user()
+        #slog 'qwpr' + JSON.stringify Meteor.user()
     #@navigate 'election/new',
     #  trigger: true
 
   inElection: (eid) =>
-    console.log "route: election"
+    #slog "route: election"
     login_then =>
-      console.log "route: election; logged in"
+      #slog "route: election; logged in"
       Election.watch eid, =>
         @goto 'loggedIn' #use that template
         
   clearAll: ->
-    console.log "clear all"
+    #slog "clear all"
     Election.clearAll()
     
   goto: (where) ->
-    console.log "going to", where
+    #slog "going to", where
     if where is 'loggedIn'
-      console.log "yes, going to", where, $('#loading').hide()
+      #slog "yes, going to", where, $('#loading').hide()
       $('#loading').hide()
     super arguments...
     
   makeElection: (scenario, method, delay=100, roundBackTo=-1) ->
-    console.log "makeElection", scenario, method, delay, roundBackTo
+    #slog "makeElection", scenario, method, delay, roundBackTo
     delay = parseInt delay
-    console.log "makeElection q", scenario, method, delay, roundBackTo
+    #slog "makeElection q", scenario, method, delay, roundBackTo
     roundBackTo = parseInt roundBackTo
     Election.make
       scenario: scenario
@@ -145,18 +157,18 @@ class @MyRouter extends ReactiveRouter
       Session.set "madeEid", result
       @goto 'madeElection' #use that template
       
-    console.log "makeElection 3", scenario, method, delay, roundBackTo
+    #slog "makeElection 3", scenario, method, delay, roundBackTo
     @goto 'madeElection' #use that template
     Meteor.logout()
     
   electionsReport: (password, fromVersion) ->
     Session.set 'password', password
     Session.set 'fromVersion', (parseFloat fromVersion) or 0.93
-    console.log "going to elections report..."
+    #slog "going to elections report..."
     @goto 'electionsReport'
     
   payments: (password, eid) ->
-    console.log "payments"
+    #slog "payments"
     if eid is "x"
       latestElection = Elections.findOne {},
         sort: [["sTimes.0", "desc"]]
@@ -166,23 +178,21 @@ class @MyRouter extends ReactiveRouter
     @goto 'payments'
           
 
-global = @
-
 router = global.Router = new MyRouter()
 
 if Meteor.isClient
   Session.set 'router', true
 
 Meteor.startup ->
-  console.log "I should maybe $('#loading').hide()"
+  #slog "I should maybe $('#loading').hide()"
   old_eid = null
-  console.log "startup router"
+  #slog "startup router"
   Backbone.history.start
      pushState: true
   #Meteor.autosubscribe ->
-  #  console.log "should I??? $('#loading').hide()", router?.current_page()
+  #  slog "should I??? $('#loading').hide()", router?.current_page()
   #  if ((Session.get 'router') and router?.current_page()) is 'loggedIn'
-  #    console.log "$('#loading').hide()"
+  #    slog "$('#loading').hide()"
   #    $('#loading').hide()
   #  else
-  #    console.log "NOT     $('#loading').hide()", (Session.get 'router'), router?.current_page()
+  #    slog "NOT     $('#loading').hide()", (Session.get 'router'), router?.current_page()

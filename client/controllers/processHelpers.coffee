@@ -3,22 +3,22 @@
 @STEP_RECORD = undefined
 
 Meteor.startup ->
-  ##console.log _.keys Meteor
+  ##slog _.keys Meteor
   if Meteor.isClient
     Meteor.autosubscribe ->
       if (Session.get 'router') and router?.current_page() is 'loggedIn'
         step = Session.get 'step'
         if step? and step != STEP_RECORD?.step
-          #console.log "New step"
+          #slog "New step"
           window.STEP_RECORD = new StepRecord()
         else
-          console.log "not making STEP_RECORD", step, STEP_RECORD
+          slog "not making STEP_RECORD", step, STEP_RECORD
 
     Meteor.autosubscribe ->
       if (Session.get 'router') and router?.current_page() is 'loggedIn'
         stage = Session.get 'stage'
         [step, lastStep] = (Session.get 'stepLastStep') or [0,-1]
-        console.log "stepLastStep", step, lastStep, stage
+        slog "stepLastStep", step, lastStep, stage
         if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
           playSound 'next'
           STEP_RECORD.moveOn(yes)
@@ -27,18 +27,18 @@ Meteor.startup ->
       
 nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
-  console.log "beforeFinish", beforeFinish
+  slog "beforeFinish", beforeFinish
   if beforeFinish
     beforeFinish (error, result) ->
-      #console.log "beforeFinish done", error, result
+      #slog "beforeFinish done", error, result
       if !error
-        #console.log "NextStep"
+        #slog "NextStep"
         STEP_RECORD.finish()
       else
-        #console.log error
+        #slog error
         Session.set 'error', error.reason
   else
-    #console.log "NextStep direct"
+    #slog "NextStep direct"
     STEP_RECORD.finish()
     Session.set 'error', undefined
 
@@ -68,27 +68,41 @@ if (Handlebars?)
     METHOD.name
     
   Handlebars.registerHelper 'winner', ->
-    console.log "getting winner"
+    slog "getting winner"
     e = (Session.get 'election') and ELECTION
     if not e
-      console.log "No election for outcome!!!"
+      slog "No election for outcome!!!"
       return {}
     faction = Session.get 'faction'
     outcome = Outcomes.findOne
       election: e._id
       stage: e.stage - 1
     if not outcome
-      console.log "No outcome!!!"
+      slog "No outcome!!!"
       return {}
-    console.log "Outcome", outcome
+    slog "Outcome", outcome
     outcome = new Outcome outcome
-    e.scen().candInfo outcome.winner, faction, outcome.counts, e.scen(), outcome.factionCounts
+    e.scen().candInfo outcome.winner, faction, outcome, e.scen()
     
-  Handlebars.registerHelper 'userVoted', ->
-    console.log "getting userVoted"
+  Handlebars.registerHelper 'tied', ->
+    slog "getting tied"
     e = (Session.get 'election') and ELECTION
     if not e
-      console.log "No election for outcome!!!"
+      slog "No election for outcome!!!"
+      return {}
+    outcome = Outcomes.findOne
+      election: e._id
+      stage: e.stage - 1
+    if not outcome
+      slog "No outcome!!!"
+      return {}
+    return outcome.ties
+    
+  Handlebars.registerHelper 'userVoted', ->
+    slog "getting userVoted"
+    e = (Session.get 'election') and ELECTION
+    if not e
+      slog "No election for outcome!!!"
       return {}
     outcome = Outcomes.findOne
       election: e._id
@@ -96,24 +110,24 @@ if (Handlebars?)
     return Meteor.user()._id in (outcome?.voters or [])
     
   Handlebars.registerHelper 'losers', ->
-    console.log "getting losers"
+    slog "getting losers"
     e = (Session.get 'election') and ELECTION
     if not e
-      console.log "No election for outcome!!!"
+      slog "No election for outcome!!!"
       return {}
     faction = Session.get 'faction'
     outcome = Outcomes.findOne
       election: e._id
       stage: e.stage - 1
     if not outcome
-      console.log "No outcome!!!"
+      slog "No outcome!!!"
       return {}
     outcome = new Outcome outcome
-    console.log "Outcome", outcome
+    slog "Outcome", outcome
     losers = _.range e.scen().numCands()
     losers.splice outcome.winner, 1
     for loser in losers
-      e.scen().candInfo loser, faction, outcome.counts, e.scen(), outcome.factionCounts
+      e.scen().candInfo loser, faction, outcome, e.scen()
     
   Handlebars.registerHelper 'stepCompletedNum', (num) ->
     (Session.get 'stepCompletedNums')?[num] ? 0
@@ -144,11 +158,11 @@ if (Handlebars?)
     
     
   Handlebars.registerHelper 'stage', ->
-    console.log 'stage'
+    slog 'stage'
     return Session.get 'stage'
     
   Handlebars.registerHelper 'nextStage', ->
-    console.log 'helper nextStage'
+    slog 'helper nextStage'
     return (Session.get 'stage') + 1
     
   Handlebars.registerHelper 'steps', (subTemplate) ->
@@ -162,7 +176,7 @@ if (Handlebars?)
     new Handlebars.SafeString steps.join ""
     
   Handlebars.registerHelper 'stepPopover', (stepName) ->
-    console.log stepName
+    slog stepName
     new Handlebars.SafeString Template["#{ stepName }_popover"]()
     
   Handlebars.registerHelper 'stepExplanations', ->
@@ -183,9 +197,9 @@ if (Handlebars?)
     
     
   Handlebars.registerHelper 'stepName', ->
-    console.log 'stepName'
+    slog 'stepName'
     step = Session.get 'step'
-    console.log step
+    slog step
     if step?
       return PROCESS.steps[step].name
     "init"
@@ -213,7 +227,7 @@ if (Handlebars?)
     step = Session.get 'step'
     if step? and PROCESS.steps[step].hit
       user= Meteor.user()
-      return not user.workerId
+      return not user?.workerId
     false
     
   Handlebars.registerHelper 'noRoomForMe', ->

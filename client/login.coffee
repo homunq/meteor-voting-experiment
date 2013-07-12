@@ -3,37 +3,46 @@ uniqueId = (length=8) ->
   id += Math.random().toString(36).substr(2) while id.length < length
   id.substr 0, length
   
-@login_then = (cb) ->
+@login_then = (newUser, cb) ->
+  if newUser
+    slog "Logging out to log back in"
+    Meteor.logout ->
+      loginThen cb
+  else
+    loginThen cb
+
+loginThen = (cb) ->
   user = Meteor.user()
   if !user
-    console.log "I wasn't logged in, let's create a user."
+    slog "I wasn't logged in, let's create a user."
     newuser =
       username: uniqueId()
       password: uniqueId()
     Accounts.createUser _(newuser).clone(), (err, result) ->
-      console.log 'user created?', err, result
+      slog 'user created?', err, result, newuser.username
       if err
-        console.log 'user creation failed'
-        console.log err
+        slog 'user creation failed'
+        slog err
       else
         Meteor.loginWithPassword
           username: newuser.username
         , newuser.password, (err, result) ->
           if err
-            console.log "couldn't login: "
-            console.log err, result
+            slog "couldn't login: "
+            slog err, result
           else
-            console.log "subscribing to userData"
+            slog "subscribing to userData", Meteor.user()
             Meteor.subscribe("userData", Meteor.user()._id)
             cb()
+        slog 'user loginWithPassword attempted', err, result, newuser.username
   else 
-    console.log "seems I was logged in from the start"
+    slog "seems I was logged in from the start"
     Meteor.deps.await ->
       user =  Meteor.user()
-      console.log "checking user: it's ", user
+      slog "checking user: it's ", user
       user and not user.loading
     , ->
-      console.log "subscribing to userData"
+      slog "subscribing to userData"
       Meteor.subscribe("userData", Meteor.user()._id)
       cb()
     , true #once only

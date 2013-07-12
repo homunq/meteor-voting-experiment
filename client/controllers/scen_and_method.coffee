@@ -2,14 +2,14 @@ if (Handlebars?)
 
   Handlebars.registerHelper 'meth_subtemplate', (sub, data) ->
     template =  Template["#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"]
-    console.log "meth_subtemplate", "#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"
+    slog "meth_subtemplate", "#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"
     if template
       new Handlebars.SafeString template(data)
     else
       new Handlebars.SafeString "<!--#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }-->"
       
   Handlebars.registerHelper 'methName', ->
-    console.log "methName", (Session.get 'method')
+    slog "methName", (Session.get 'method')
     return Methods[(Session.get 'method')]?.longName
     
   Handlebars.registerHelper 'gradeOf', (gmj) ->
@@ -34,7 +34,11 @@ if (Handlebars?)
     e.scenario
     
   Handlebars.registerHelper 'scen', ->
-    ((Session.get 'scenario') and SCENARIO)?
+    scen = (Session.get 'scenario') and SCENARIO
+    slog "candNames", scen.candNames
+    if scen
+      return scen
+    {}
     
   Handlebars.registerHelper 'factions', ->
     ((Session.get 'scenario') and SCENARIO)?.factionsAttrs Meteor.user()?.faction
@@ -53,7 +57,7 @@ if (Handlebars?)
     scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       result = scenario.candInfos Session.get 'faction'
-    console.log "scenCandInfo", Session.get 'faction', (((Session.get 'scenario') and SCENARIO)), result
+    slog "scenCandInfo", Session.get 'faction', (((Session.get 'scenario') and SCENARIO)), result
     result
     
   Handlebars.registerHelper 'scenNumVoters', ->
@@ -75,5 +79,8 @@ if (Handlebars?)
         ord: ''+ rank + (if rank <= 3 then ['st','nd','rd'][rank-1] else 'th')
     
   
-@skitter = ->
-  Meteor.setTimeout (-> $(".box_skitter_large").skitter()), 0
+@carousel = ->
+  Meteor.setTimeout (-> $(".carousel").carousel
+    pause: "hover"
+    interval: 10000
+  ), 0

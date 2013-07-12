@@ -6,7 +6,7 @@ sT = (ms, fn) ->
 
 Meteor.startup ->
   Handlebars.registerHelper 'elections', ->
-    console.log "reporting on electionsEOE"
+    slog "reporting on electionsEOE"
     password = Session.get 'password'
     versionQuery =
       version: Session.get 'fromVersion'
@@ -53,7 +53,7 @@ Meteor.startup ->
       created: (new Date stepRecord.created).toLocaleTimeString()
   
   Handlebars.registerHelper 'payments', ->
-    console.log "payments helper"
+    slog "payments helper"
     eid = Session.get 'adminEid'
     voters = Session.get "voters"
     if voters is undefined
@@ -65,15 +65,15 @@ Meteor.startup ->
       paymentList = for voter in voters
         brainyVoter = new User voter
         do (i) ->
-          console.log "brainyVoter", i
+          slog "brainyVoter", i
           brainyVoter.serverCentsDue (error, result) ->
-            console.log "brainyVoter reply", i, error, result
+            slog "brainyVoter reply", i, error, result
             paymentList = (Session.get "paymentList") or ("xx" for voter in voters)
             paymentList[i] = result
             Session.set "paymentList", paymentList
     payments = for voter, i in voters
       _.extend voter,
         paymentDue: paymentList[i]
-    console.log "paymentList", payments, paymentList
+    slog "paymentList", payments, paymentList
     payments
         

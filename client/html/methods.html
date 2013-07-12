@@ -10,6 +10,26 @@
 		<p>The winner will be the site with the most approvals</p>
 </template>
 
+<template name="MAV_blurb">
+		<h2>Election Method: Majority Approval Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>The ballot will ask you to grade each
+		candidate</strong> (site) on a scale from A (excellent) to F (unacceptable). You may give two candidates the
+		same grade if you wish. Any candidate whom you do not explicitly grade will get an F from you.</p>
+		<h3>Counting</h3>
+		<p>To find the winner, first the "A" votes for each candidate are counted. If no
+		candidate gets 50% or more of the voters, the "B" votes are added to the count, then "C"
+		votes, etc. <strong>The first candidate to get 50% or more is the winner.</strong>
+		If two candidates would reach 50% at the same
+		grade, whichever of them has more votes at higher grades wins.</p>
+		
+		<p>To simplify reporting, the grades for each candidate will be
+			used to calculate a number on a scale from 0 (F) to 4 (A), using a formula
+			that will always give the highest number to whichever candidate would win the process described above. 
+			These "scores" for each candidate, along with 
+            their equivalent grades, will be reported after each election.</p>
+</template>
+
 <template name="GMJ_blurb">
 		<h2>Election Method: Graduated Majority Judgment</h2>
 		<h3>Ballot</h3>
@@ -79,10 +99,11 @@
 		<p>Vote submitted.</p>
 	{{else}}
 		<table class="table">
-			<tr><td >Candidate</td><td>Vote</td></tr>
+			<tr><td >Candidate</td><td>Your payoff<br/><small>(if this candidate wins)</small></td><td>Vote</td></tr>
 			{{#each scenCandInfo}}
 			<tr style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">
-				<td>{{name}} ({{bonus myPayoff}} for you)</td>
+				<td>{{name}}</td>
+				<td>{{bonus myPayoff}}</td>
 				<td>{{{meth_subtemplate "ballotLine" this}}}</td>
 			</tr>
 			{{/each}}
@@ -106,6 +127,18 @@
 </template>
 
 <template name="GMJ_postBlurb">
+	<p>A:Excellent B:Good C:Fair D:Poor F:Unacceptable</p>
+</template>
+
+<template name="MAV_ballotLine">
+	<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},4);">A
+	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},3);">B
+	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},2);">C
+	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},1);">D
+	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},0);">F
+</template>
+
+<template name="MAV_postBlurb">
 	<p>A:Excellent B:Good C:Fair D:Poor F:Unacceptable</p>
 </template>
 
@@ -135,9 +168,19 @@
 	<td>{{meth_subtemplate "resultHeadInner"}}</td>
 </template>
 <template name="GMJ_resultHeadInner">
-	Score
+	Grade
 </template>
 <template name="GMJ_result">
+	{{gradeOf count}} ({{count}})
+</template>
+
+<template name="MAV_resultHead">
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="MAV_resultHeadInner">
+	Grade
+</template>
+<template name="MAV_result">
 	{{gradeOf count}} ({{count}})
 </template>
 

@@ -1,0 +1,74 @@
+creating @setupSurvey function surveyModels.coffee.js:351
+Autosubscribing... undefined undefined z_electionModels.coffee.js:759
+client bettercount.coffee.js:3
+?workerId=afkxrzlyd routes.coffee.js:83
+seems I was logged in from the start login.coffee.js:45
+checking user: it's  Object {_id: "bc4f9002-cc02-4105-862b-0ce6d32b9bc8"} login.coffee.js:48
+subscribing to userData login.coffee.js:51
+client calling  User_setParams forElection stamper.coffee.js:18
+server calling  User_setParams userId bc4f9002-cc02-4105-862b-0ce6d32b9bc8 isServer false stamper.coffee.js:18
+save:  bc4f9002-cc02-4105-862b-0ce6d32b9bc8 undefined users stamper.coffee.js:241
+client calling  Election_watchMain userNonunique stamper.coffee.js:18
+server calling static  Election_watchMain userid bc4f9002-cc02-4105-862b-0ce6d32b9bc8 stamper.coffee.js:18
+watchMain  z_electionModels.coffee.js:178
+timeOffset 250 timeoffset.coffee.js:19
+got new user 
+Object {_id: "bc4f9002-cc02-4105-862b-0ce6d32b9bc8", username: "f33d7r59", _paid: null, _wasntMe: true, assignmentId: null…}
+ z_electionModels.coffee.js:768
+election (re)loading 0140f305-5f20-479a-90d9-f894a4d7a1af z_electionModels.coffee.js:780
+really (re)loading 0140f305-5f20-479a-90d9-f894a4d7a1af 
+Object {_id: "0140f305-5f20-479a-90d9-f894a4d7a1af", version: 0.98, scenario: "one", method: "approval", watchers: Array[0]…}
+ z_electionModels.coffee.js:785
+subscribing outcomes 0140f305-5f20-479a-90d9-f894a4d7a1af z_electionModels.coffee.js:799
+fully (re)loaded  0140f305-5f20-479a-90d9-f894a4d7a1af 
+Object {_id: "0140f305-5f20-479a-90d9-f894a4d7a1af", version: 0.98, scenario: "one", method: "approval", watchers: Array[0]…}
+ z_electionModels.coffee.js:813
+scenario processHelpers.coffee.js:203
+stepName processHelpers.coffee.js:231
+0 processHelpers.coffee.js:233
+helper nextStage processHelpers.coffee.js:182
+stepLastStep 0 7 0 processHelpers.coffee.js:24
+beforeFinish undefined processHelpers.coffee.js:40
+save:  undefined undefined stepRecords stamper.coffee.js:241
+raw:  
+Object {version: 0.98, created: 1372040862763, data: Object, voter: "bc4f9002-cc02-4105-862b-0ce6d32b9bc8", step: 0…}
+ stamper.coffee.js:250
+e02130a9-0ba8-413b-8e48-c8b8afd89ba0 stamper.coffee.js:260
+Resource interpreted as Image but transferred with MIME type text/html: "http://127.0.0.1:3000/images/.png". domutils.js:137
+outcomes (re)loaded z_electionModels.coffee.js:801
+saved e02130a9-0ba8-413b-8e48-c8b8afd89ba0 e02130a9-0ba8-413b-8e48-c8b8afd89ba0 stamper.coffee.js:255
+finished:::::::::::::::: process.coffee.js:378
+client calling  StepRecord_finished _moveOnServer stamper.coffee.js:18
+server calling  StepRecord_finished userId bc4f9002-cc02-4105-862b-0ce6d32b9bc8 isServer false stamper.coffee.js:18
+finished StepRecord. process.coffee.js:308
+stageForNextStep process.coffee.js:339
+client calling  StepRecord__moveOnServer _moveOnServer stamper.coffee.js:18
+server calling static  StepRecord__moveOnServer userid bc4f9002-cc02-4105-862b-0ce6d32b9bc8 stamper.coffee.js:18
+moving on  0 true bc4f9002-cc02-4105-862b-0ce6d32b9bc8 process.coffee.js:348
+scenario processHelpers.coffee.js:203
+stepName processHelpers.coffee.js:231
+1 processHelpers.coffee.js:233
+Resource interpreted as Image but transferred with MIME type text/html: "http://127.0.0.1:3000/images/.png". domutils.js:137
+got new user 
+Object {_id: "bc4f9002-cc02-4105-862b-0ce6d32b9bc8", username: "f33d7r59", _paid: null, _wasntMe: true, assignmentId: null…}
+ z_electionModels.coffee.js:768
+election (re)loading 0140f305-5f20-479a-90d9-f894a4d7a1af z_electionModels.coffee.js:780
+really (re)loading 0140f305-5f20-479a-90d9-f894a4d7a1af 
+Object {_id: "0140f305-5f20-479a-90d9-f894a4d7a1af", version: 0.98, scenario: "one", method: "approval", watchers: Array[0]…}
+ z_electionModels.coffee.js:785
+subscribing outcomes 0140f305-5f20-479a-90d9-f894a4d7a1af z_electionModels.coffee.js:799
+outcomes (re)loaded z_electionModels.coffee.js:801
+scenario processHelpers.coffee.js:203
+stepName processHelpers.coffee.js:231
+1 processHelpers.coffee.js:233
+not making STEP_RECORD 1 
+StepRecord {voter: "bc4f9002-cc02-4105-862b-0ce6d32b9bc8", step: 1, election: "0140f305-5f20-479a-90d9-f894a4d7a1af", version: 0.98, created: 1372040863088…}
+ processHelpers.coffee.js:15
+stepLastStep 1 -1 0 processHelpers.coffee.js:24
+Resource interpreted as Image but transferred with MIME type text/html: "http://127.0.0.1:3000/images/.png". domutils.js:137
+after?: <$label:0EtjAr28><$data:v5d2fySc><$landmark:tBo4LdeE><$events:iMz+7a9C><$watch:n9bPaeWh><$isolate:ckGBaWMX>
+	<div>Experiment is now running! 0/1 slots taken.</div>
+	<$label:Lqb6KRNV><$label:1EhP4q6R><$data:NBwS8SLy><$landmark:QaLN3No8><$events:73E7ehtE><$watch:fh7K3RxB><$isolate:VlbRuyDa>
+	<a href="#" onclick="nextStep();return false;" id="nextStep" title="Click to go to next step of experiment" class="btn btn-primary btn-large">
+	Consent and Next </a>
+	</$isolate:VlbRuyDa></$watch:fh7K3RxB></$events:73E7ehtE></$landmark:QaLN3No8></$data:NBwS8SLy></$label:1EhP4q6R></$label:Lqb6KRNV>

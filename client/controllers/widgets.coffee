@@ -1,4 +1,10 @@
-seconds2time = (seconds, hideSeconds) ->
+@seconds2roughTime = (seconds) ->
+  rounded = Math.round(seconds/10) * 10
+  if rounded is 0
+    return "under 5 seconds"
+  return "about "+seconds2time rounded
+  
+@seconds2time = (seconds, hideSeconds, notAbout) ->
   hours = Math.floor(seconds / 3600)
   minutes = Math.floor((seconds - (hours * 3600)) / 60)
   seconds = Math.floor(seconds - (hours * 3600) - (minutes * 60))
@@ -25,26 +31,31 @@ do ->
   intervaller = null
   intervalDone = no
   intervalStage = null
+  untilTime = null
   Handlebars.registerHelper 'countdownToStage', (stage, before, after) ->
-    #console.log "countdownToStage", stage, intervalStage, intervalDone, intervaller
-    if intervalStage isnt stage
-      #console.log "intervalStage"
+    #slog "countdownToStage", stage, intervalStage, intervalDone, intervaller
+    election = (Session.get 'election') and ELECTION
+    if stage isnt intervalStage
+      Session.set 'errer', ''
+    if untilTime isnt election.sTimes[stage]
+      #slog "intervalStage"
       clearInterval intervaller
+      if untilTime and (intervalStage is stage)
+        playSound 'ahem'
       intervaller = null
       intervalDone = no
       intervalStage = stage
-    election = (Session.get 'election') and ELECTION
     if election?
       untilTime = election.sTimes[stage]
-      #console.log "untilTime", untilTime, stage, election.sTimes
+      #slog "untilTime", untilTime, stage, election.sTimes
       #untilTime = inTenSeconds()
       if not intervaller and not intervalDone
         Session.set 'countDown', no
         sI = (ms, fn) ->
           setInterval fn, ms
-        intervaller = sI 1000, ->
+        intervaller = sI 2000, ->
           countDown = untilSTime untilTime
-          #console.log "countDown", countDown
+          #slog "countDown", countDown
           if countDown >= 0
             Session.set 'countDown', countDown
           else
@@ -54,27 +65,27 @@ do ->
             intervalDone = yes
       displayCount = Session.get 'countDown'
       if displayCount isnt no
-        #console.log "displayCount", displayCount, seconds2time displayCount/1000
+        #slog "displayCount", displayCount, seconds2time displayCount/1000
         
         displayAbsoluteTime = (sTimeHere untilTime).toLocaleTimeString()
         displayAbsoluteTime = displayAbsoluteTime.substr(0, displayAbsoluteTime.length - 3)
-        #console.log "displayCount", displayCount
+        #slog "displayCount", displayCount
         if displayCount and displayCount >= 0
           val = Template[before] 
-            displayCount: seconds2time displayCount/1000
+            displayCount: seconds2roughTime displayCount/1000
             displayAbsoluteTime: displayAbsoluteTime
-          #console.log "before?:", val, displayCount
+          #slog "before?:", val, displayCount
           return val
         else #if displayCount?
           val = Template[after]
-            displayCount: seconds2time displayCount/1000
+            displayCount: seconds2roughTime displayCount/1000
             displayAbsoluteTime: displayAbsoluteTime
-          console.log "after?:", val
+          slog "after?:", val
           return val
         #else
         #  return "no displayCount???"
     else
-      console.log "No experiment currently pending"
+      slog "No experiment currently pending"
       return "No experiment currently pending"
           
 Handlebars.registerHelper 'call', (funcName, data) ->
@@ -107,11 +118,11 @@ ballotSetup = ->
   ""
 
 voteFor = (cand, grade) ->
-  console.log "voteFor", cand, grade
+  slog "voteFor", cand, grade
   VOTE.vote[cand] = grade
 
 exclusiveVoteFor = (cand, rank, clearUI) ->
-  console.log "exclusiveVoteFor", cand, rank
+  slog "exclusiveVoteFor", cand, rank
   oldRank = VOTE.vote[cand]
   if -rank isnt oldRank
     if 0 > oldRank
@@ -125,7 +136,7 @@ exclusiveVoteFor = (cand, rank, clearUI) ->
         
       
 pluralityVoteFor = (cand) ->
-  console.log "pluralityVoteFor", cand
+  slog "pluralityVoteFor", cand
   VOTE.vote = cand
   
 

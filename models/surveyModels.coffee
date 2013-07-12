@@ -178,10 +178,10 @@ class SurveyResponse extends VersionedInstance
   
 SurveyResponse.admin()
 
-console.log "creating @setupSurvey function"
+slog "creating @setupSurvey function"
 @setupSurvey = ->
   #Note: This is getting called redundantly when survey answers are repainted. Tolerable for now but yucky.
-  console.log "@setupSurvey"
+  slog "@setupSurvey"
   if not window.SURVEY?
     window.SURVEY = new SurveyResponse
   
@@ -194,6 +194,6 @@ console.log "creating @setupSurvey function"
     cb err, undefined #callback, as if there had been an error server-side
   
 @surveyAnswer = (q, a) ->
-  console.log "surveyAnswer", q, a
+  slog "surveyAnswer", q, a
   SURVEY[q] = a
 

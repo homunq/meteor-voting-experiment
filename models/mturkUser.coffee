@@ -30,10 +30,10 @@ class @User extends VersionedInstance
     setParams: (params) ->
       if @workerId
         if @workerId is params.workerId
-          console.log "(re-adding same workerId, ignored)"
+          #slog "(re-adding same workerId, ignored)"
           return
-        console.log "You sneaky little thang, using the same browser with several workerIds."
-        console.log "I should report you but I won't because you're probably me."
+        #slog "You sneaky little thang, using the same browser with several workerIds."
+        #slog "I should report you but I won't because you're probably me."
       
       if params.workerId
         nonunique = Meteor.users.findOne
@@ -52,10 +52,10 @@ class @User extends VersionedInstance
       @turkSubmitTo = params.turkSubmitTo
       
       @save =>
-        console.log "setParams complete"
+        #slog "setParams complete"
   
     wasntMe: (yesItWas) ->
-      console.log "Setting nonunique for testing.", !yesItWas
+      #slog "Setting nonunique for testing.", !yesItWas
       wasntUnique = @nonunique
       @nonunique = no
       @_wasntMe = !yesItWas
@@ -81,7 +81,7 @@ class @User extends VersionedInstance
     forElection: @static (eid) ->
       election = Elections.findOne
         _id: eid
-      console.log "forElection", eid, election?.voters, Meteor.users.findOne({_id:election?.voters[0]})
+      #slog "forElection", eid, election?.voters, Meteor.users.findOne({_id:election?.voters[0]})
       if election
         return (Meteor.users.findOne({_id:vid}) for vid in election.voters)
       
@@ -94,23 +94,23 @@ class @User extends VersionedInstance
     votes = Votes.find
       voter: @_id
     votes = votes.fetch()
-    #console.log "hmmmmmmmmmmmmmmmmmmmmmmmm:", @_id, votes
+    #slog "hmmmmmmmmmmmmmmmmmmmmmmmm:", @_id, votes
     _.unique votes, false, (vote) ->
-      #console.log "unique vote?", vote
+      #slog "unique vote?", vote
       "#{vote.election} #{vote.stage}"
         
   centsDue: ->
-    #console.log "centsDue wtf", @, @votes
+    #slog "centsDue wtf", @, @votes
     if @_paid
       return 0
     cents = 0
     for vote in @votes()
-      #console.log "vote is", vote
+      #slog "vote is", vote
       if vote.stage in [2,3]
         outcome = Outcomes.findOne
           election: vote.election
           stage: vote.stage
-        #console.log "vote outcome", outcome
+        #slog "vote outcome", outcome
         if outcome
           outcome = new Outcome outcome
           cents += outcome.payFactionCents @faction
@@ -120,9 +120,9 @@ wasntMe = ->
   (new User Meteor.user()).wasntMe()
 
 if Meteor.isServer
-  console.log "server publishing userData!"
+  #slog "server publishing userData!"
   Meteor.publish "userData", (uid) ->
-    console.log "now someone subscribed to userData for", uid
+    #slog "now someone subscribed to userData for", uid
     Meteor.users.find 
       _id: uid
       

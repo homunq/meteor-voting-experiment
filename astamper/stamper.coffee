@@ -7,7 +7,7 @@
 
 debug = ->
   if DEBUG
-    console.log arguments...
+    slog arguments...
 
 class Field
   #used by StamperInstance::fields for basic ORM
@@ -40,7 +40,7 @@ class StamperInstance
         if pname isnt "_id"
           if not @_fields[pname]?
             err = "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor::__name__ }"
-            console.log "ERROR: ", err
+            slog "ERROR: ", err
             if @_strict
               throw new Error err
             if @_loose #keep extra fields and use them when saving
@@ -82,7 +82,7 @@ class StamperInstance
         if not self::__name__
           #Unfortunately, the class.name javascript property is not reliable in the face of minification.
           #it works for testing, but remind the developer to redeclare it explicitly before they enter production.
-          console.log ('Warning: Before you go into production, after "class '+self.name+
+          slog ('Warning: Before you go into production, after "class '+self.name+
             '" you should add: "  __name__: \'' + self.name + '\'"')
             self::__name__ = self.name
         smname = self::__name__ + "_" + mname
@@ -115,7 +115,7 @@ class StamperInstance
           goesOn = self.prototype
         if Meteor.is_client 
           do (method, smname) ->
-            #console.log "adding method ", mname, " to ", goesOn
+            #slog "adding method ", mname, " to ", goesOn
             goesOn[mname] = (args...) ->
               debug "client calling ", smname, mname
               if method.static
@@ -135,7 +135,7 @@ class StamperInstance
         Meteor.subscribe @::collection._name + "_admin", password
     if Meteor.isServer
       Meteor.publish @::collection._name + "_admin", (password) =>
-        console.log password, PASSWORD #@::collection.find().fetch()
+        slog password, PASSWORD #@::collection.find().fetch()
         if password is PASSWORD
           @::collection.find()
   
@@ -164,32 +164,32 @@ class StamperInstance
     
   save: (cb) ->
     #save current value of self to DB
-    console.log "save: ", @_id, @::, @collection._name
+    slog "save: ", @_id, @::, @collection._name
     if @_id
       raw = @raw()
-      #console.log "resave raw: ", raw
+      #slog "resave raw: ", raw
       @collection.update
         _id: @_id
       , raw, cb
       return @_id
     else
       x = @raw()
-      console.log "raw: ", x
+      slog "raw: ", x
       returnv= @collection.insert @raw(), (error, result)=>
         if !error and result
           @_id = result
-        console.log "saved", result, @_id
+        slog "saved", result, @_id
         if cb
           cb error, result
-      console.log returnv
+      slog returnv
       if returnv
         @_id = returnv
       returnv
          
   reload: ->
     #reload properties from DB.
-    console.log "reloading", @, @collection.findOne
-      _id: @_id
+    #slog "reloading", @, @collection.findOne
+    #  _id: @_id
     _.extend @, @collection.findOne
       _id: @_id
     
@@ -245,37 +245,37 @@ class StamperCursor #extends Meteor.Collection.Cursor
   constructor: (@cursor, @object) ->
     
   forEach: (cb) ->
-    console.log "foreach outer"
+    slog "foreach outer"
     @cursor.forEach (item) ->
-      console.log "foreach inner"
+      slog "foreach inner"
       cb new @object item
       
   map: (cb) ->
-    console.log "map outer"
+    slog "map outer"
     @cursor.map (item) ->
-      console.log "map inner"
+      slog "map inner"
       cb new @object item
       
   fetch: ->
-    console.log "fetch outer"
+    slog "fetch outer"
     (new @object item) for item in @cursor.fetch()
     
   count: ->
-    console.log "count outer"
+    slog "count outer"
     @cursor.count()
     
   rewind: ->
-    console.log "rewind outer"
+    slog "rewind outer"
     @cursor.rewind()
     
   observe: (cbs) ->
-    console.log "observe outer"
+    slog "observe outer"
     itype = @object
     if cbs.added
       do (cb = cbs.added) ->
         cbs.added = (doc, before_ind) ->
-          console.log "observe added inner"
-          console.log itype::__name__
+          slog "observe added inner"
+          slog itype::__name__
           debugger
           #todo: client-side colletions.js lie 54: var doc = self._collection.findOne(msg.id);
           #this is called in a Meteor.Collection but doesn't get those updates in a StamperCollection right now... why not?'
@@ -283,17 +283,17 @@ class StamperCursor #extends Meteor.Collection.Cursor
     if cbs.changed
       do (cb = cbs.changed) ->
         cbs.changed = (new_doc, at_ind, old_doc) ->
-          console.log "observe changed inner"
+          slog "observe changed inner"
           cb (new itype new_doc), before_ind, (new @object old_doc)
     if cbs.moved
       do (cb = cbs.moved) ->
         cbs.moved = (doc, old_ind, new_ind) ->
-          console.log "observe moved inner"
+          slog "observe moved inner"
           cb (new itype doc), old_ind, new_ind
     if cbs.removed
       do (cb = cbs.removed) ->
         cbs.removed = (old_doc, at_ind) ->
-          console.log "observe removed inner"
+          slog "observe removed inner"
           cb (new itype old_doc), at_ind
     @cursor.observe cbs
     
@@ -303,33 +303,33 @@ class StamperCollection extends Meteor.Collection
     @object.collection = @
   
   find: (selector, options) ->
-    console.log "find outer"
+    slog "find outer"
     inner_cursor = @collection.find selector, options
     outer_cursor = new StamperCursor (inner_cursor), @object  
     outer_cursor.__proto__.__proto__ = inner_cursor.__proto__
     outer_cursor
   
   findOne: (selector, options) ->
-    console.log "findone outer"
+    slog "findone outer"
     result = @collection.findOne selector, options
     if result
       return new @object result
     result
   
   insert: (doc, cb) ->
-    console.log "insert outer"
+    slog "insert outer"
     if selector instanceof @object
       selector = selector.raw()
     @collection.insert doc, cb 
   
   update: (selector, modifier, options, cb) ->
-    console.log "update outer"
+    slog "update outer"
     if selector instanceof @object
       selector = selector.id
     @collection.update selector, modifier, options, cb
   
   remove: (selector, cb) ->
-    console.log "remove outer"
+    slog "remove outer"
     if selector instanceof @object
       selector = selector.id
     @collection.remove selector, cb  

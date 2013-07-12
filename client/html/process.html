@@ -6,9 +6,9 @@
         <source src="/audio/next.mp3" type="audio/mpeg" />
         Your browser does not support HTML5 audio.
     </audio>
-    <audio id="hurry" hidden="true">
-        <source src="/audio/hurry.ogg" type="audio/ogg" />
-        <source src="/audio/hurry.mp3" type="audio/mpeg" />
+    <audio id="ahem" hidden="true">
+        <source src="/audio/ahem.ogg" type="audio/ogg" />
+        <source src="/audio/ahem.mp3" type="audio/mpeg" />
         Your browser does not support HTML5 audio.
     </audio>
 	<div class="navbar">
@@ -126,20 +126,30 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 </template>
 
 <template name="scenario">
-	<div class="span4">
-		{{call skitter}}
-		<div class="box_skitter box_skitter_large">
-			<ul>
+	<div class="span6">
+		{{call "carousel"}}
+		<div class="carousel slide carousel-fade">
+		  <ol class="carousel-indicators">
+		    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+		    <li data-target="#myCarousel" data-slide-to="1"></li>
+		    <li data-target="#myCarousel" data-slide-to="2"></li>
+		    <li data-target="#myCarousel" data-slide-to="3"></li>
+		    <li data-target="#myCarousel" data-slide-to="4"></li>
+		  </ol>
+		  <!-- Carousel items -->
+		  <div class="carousel-inner">
 				{{#each scenSlides}}
-				<li>
-					<a href="#cut"><img src="images/{{this}}.png" class="cut" /></a>
-					<div class="label_text"><p>.</p></div>
-				</li>
+				<div class="{{this.active}}item">
+					<a href="#" onclick="$('.carousel').carousel('next')"><img src="images/{{this.name}}.png" class="cut" /></a>
+				</div>
 				{{/each}}
-			</ul>
+		  </div>
+		  <!-- Carousel nav -->
+		  <a class="carousel-control left" href="#myCarousel" data-slide="prev" onclick="$('.carousel').carousel('prev')">&lsaquo;</a>
+		  <a class="carousel-control right" href="#myCarousel" data-slide="next" onclick="$('.carousel').carousel('next')">&rsaquo;</a>
 		</div>
     </div>
-    <div class="span8"><p>Please read through the slides at left.</p>
+    <div class="span6"><p>Please read through the slides at left.</p>
       <!--Body content-->
 			{{> scenarioTable}}
 	</div>
@@ -163,8 +173,8 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 		may or may not decide to change your vote based on what happened this time. Remember that the other voters
 		also have this choice.</p>
 	{{> outcomes}}
-	<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
-		not necessarily lead to the same winner.</p>
+	{{#if tied}}<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
+		not necessarily lead to the same winner.</p>{{/if}}
 	{{{renderWith "nextStep" "Next"}}}
 </template>
 
@@ -180,8 +190,8 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	<h2>Results</h2>
 	<p>The table below shows the winning candidate, and the bonus payout you <strong>will</strong> receive.</p>
 	{{> outcomes}}
-	<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
-		not necessarily lead to the same winner.</p>
+	{{#if tied}}<p>Note that ties are broken randomly each time they occur, and so in cases of ties, the same votes may
+		not necessarily lead to the same winner.</p>{{/if}}
 	{{{renderWith "nextStep" "Next"}}}
 </template>
 

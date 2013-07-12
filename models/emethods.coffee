@@ -1,6 +1,4 @@
 (_ = require "underscore") unless Meteor?
-console.log "hi"
-console.log _
 nobind = (f) ->
   f.nobind = true
   f
@@ -37,14 +35,14 @@ Methods = makeMethods
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        console.log "resolveVotes", numCands, votes
+        #slog "resolveVotes", numCands, votes
         empty = (0 for cand in [1..numCands])
         counts = _.map (_.zip empty, votes...), (cvotes) ->
           _.reduce cvotes, (a,b) ->
             b ?= 0
             a + b
           , 0
-        console.log "resolveVotes2", counts
+        #slog "resolveVotes2", counts
         winners = []
         winningVotes = 0
         for count, cand in counts
@@ -70,7 +68,7 @@ Methods = makeMethods
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        console.log "resolveVotes", numCands, votes
+        #slog "resolveVotes", numCands, votes
         nullVote = (0 for score in [1..@grades.length])
         voteTallies = for vote in votes
           for score in vote
@@ -105,6 +103,56 @@ Methods = makeMethods
         [winners, scores]
         
       honestVotes: [0,1,3,4]
+      
+  MAV:
+    longName: "Majority Approval Voting"
+    actions:
+      grades: ['F', 'D', 'C', 'B', 'A']
+    
+      validVote: (numCands, vote) ->
+        if vote.length > numCands then return false
+        
+        if (_(vote).without undefined, (_.range @grades.length)...) isnt [] then return false
+        true
+        
+      resolveVotes: (scen, votes) ->
+        numCands = scen.numCands()
+        #slog "resolveVotes", numCands, votes
+        nullVote = (0 for score in [1..@grades.length])
+        voteTallies = for vote in votes
+          for score in vote
+            score ?= 0
+            tally = nullVote.slice()
+            tally[score] = 1
+            tally
+        tallies = _.map (_.zip voteTallies...), (cTallies) ->
+          _.reduce cTallies, (tallyA, tallyB) ->
+            _.map (_.zip tallyA, tallyB), (twoNums) ->
+              twoNums[0] + twoNums[1]
+          , nullVote
+        half = votes.length / 2
+        fakeLesses = half - votes.length / 10
+        scores = for tally in tallies
+          cumulative = 0
+          median = -1
+          while median < 4 and cumulative < half
+            median += 1
+            cumulative += tally[median]
+          lesses = cumulative - tally[median]
+          mores = votes.length - cumulative
+          score = median + ((mores - fakeLesses) / (2 * (votes.length - mores - fakeLesses)))
+          score
+        winners = []
+        winningScore = -1
+        for score, cand in scores
+          if score > winningScore
+            winners = [cand]
+            winningScore = score
+          else if score is winningScore
+            winners.push cand
+        [winners, scores]
+        
+      honestVotes: [0,1,3,4]
 
   IRV:
     longName: "Instant Runoff Voting"
@@ -121,12 +169,11 @@ Methods = makeMethods
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        console.log "resolveVotes", numCands, votes
+        #slog "resolveVotes", numCands, votes
         ballots = for vote in votes
           ballot = []
           for rank, cand in vote
             ballot[-rank - 1] = cand
-            console.log "rc", rank, cand, ballot
           ballot
         piles = ([] for cand in [1..numCands])
         winner = null
@@ -148,10 +195,9 @@ Methods = makeMethods
                   losers = [cand]
                 if pile.length is losingScore
                   losers.push cand
-            console.log "pile cand", pile, cand, winningScore, losingScore, winner, losers
           if winner is null
             if losers.length is 0
-              console.log "IRV fuckup, everybody wins", piles, numVotes, round
+              slog "IRV fuckup, everybody wins", piles, numVotes, round
               return [(cand for cand in [0..numCands - 1]), piles]
             loser = losers[Math.floor(Math.random() * losers.length)]
             resort = piles[loser]
@@ -173,7 +219,7 @@ Methods = makeMethods
             piles[vote[0]].push vote
           else
             elims += 1
-        console.log "sortAndElim", votes, piles
+        #slog "sortAndElim", votes, piles
         elims    
         
       honestVotes: [-3,-2,-2,-1]
@@ -185,6 +231,7 @@ Methods = makeMethods
         if not vote?
           return true #abstaining is OK 
         if not (0 <= vote < numCands)
+          slog "invalid plurality vote:", vote, numcands
           return false
         true
             
@@ -196,9 +243,15 @@ Methods = makeMethods
           if (0 <= vote < numCands)
             ballot[vote] = 1
           ballot
-        Methods.approval.resolveVotes(numCands, approvalBallots)
+        Methods.approval.resolveVotes scen, approvalBallots
 
-      honestVotes: [0,0,0,1]
+      honestVote: (payouts) ->
+        bestPay = -1
+        vote = null
+        for payout, i in payouts
+          if payout > bestPay
+            vote = i
+        vote
     
   score:
     longName: "Score Voting"
@@ -213,7 +266,7 @@ Methods = makeMethods
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        console.log "resolveVotes", numCands, votes
+        slog "resolveVotes", numCands, votes
         sums = _.map (_.zip votes...), (scores) ->
           _.reduce scores, (tallyA, tallyB) ->
             (tallyA or 0) + (tallyB or 0)
@@ -245,7 +298,7 @@ Methods = makeMethods
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        console.log "resolveVotes", numCands, votes
+        #slog "resolveVotes", numCands, votes
         tallies = (0 for cand in [0..numCands]) for cand in [0..numCands]
         for vote in votes
           for winCand in [0..numCands]
@@ -293,7 +346,7 @@ Methods = makeMethods
   
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        console.log "resolveVotes", numCands, votes
+        #slog "resolveVotes", numCands, votes
         sums = _.map (_.zip votes...), (scores) ->
           _.reduce scores, (tallyA, tallyB) ->
             (tallyA or 0) + (tallyB or 0) + (numCands)
