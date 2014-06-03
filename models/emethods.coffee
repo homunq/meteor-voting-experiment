@@ -1,9 +1,9 @@
-(_ = require "underscore") unless Meteor?
+(@_ = require "underscore") unless Meteor?
 nobind = (f) ->
   f.nobind = true
   f
   
-class Method
+class @Method
   constructor: (@name, options) ->
     #NOTE: all omethods are bound by default. I'm not sure that this is necessary but I'd sure rather debug the bugs from overdng this than from not doing it.
     @longName = options.longName
@@ -17,6 +17,15 @@ class Method
   
   honestVote: (payouts) ->
     @honestVotes[payout] for payout in payouts
+    
+  resolveHonestVotes: (scenario) ->
+    @resolveVotes scenario, @allHonestVotes scenario
+    
+  allHonestVotes: (scenario) ->
+    console.log "hv"
+    for faction in scenario.vFactions()
+      console.log "@payoffsForFaction", faction, scenario.payoffsForFaction faction
+      @honestVote (scenario.payoffsForFaction faction).payoffs
   
 makeMethods = (methods) ->
   madeMethods = {}
@@ -24,7 +33,7 @@ makeMethods = (methods) ->
     madeMethods[mName] = new Method mName, methOpts
   madeMethods
   
-Methods = makeMethods
+@Methods = makeMethods
   approval:
     longName: "Approval Voting"
     actions:
@@ -54,7 +63,87 @@ Methods = makeMethods
         [winners, counts]
       
       honestVotes: [0,0,1,1]
+    
+  borda:
+    longName: "Borda voting"
+    
+    actions:
+      validVote: (numCands, vote) ->
+        if vote.length > numCands 
+          return false
+        if (_.compact vote).length isnt (_.uniq _.compact vote).length
+          return false
+        for rank in vote
+          if not (0 > rank >= -numCands)
+            return false
+        true
+  
+      resolveVotes: (scen, votes) ->
+        numCands = scen.numCands()
+        #slog "resolveVotes", numCands, votes
+        sums = _.map (_.zip votes...), (scores) ->
+          _.reduce scores, (tallyA, tallyB) ->
+            (tallyA or 0) + (tallyB or 0) + (numCands)
+          , 0
+        winners = []
+        winningScore = -1
+        for score, cand in sums
+          if score > winningScore
+            winners = [cand]
+            winningScore = score
+          else if score is winningScore
+            winners.push cand
+        [winners, scores]
         
+      honestVotes: [-3,-2,-2,-1]
+          
+  condorcet:
+    longName: "Condorcet (pairwise) voting"
+    actions:
+      validVote: (numCands, vote) ->
+        if vote.length > numCands 
+          return false
+        if (_.compact vote).length isnt (_.uniq _.compact vote).length
+          return false
+        for rank in vote
+          if not (0 > rank >= -numCands)
+            return false
+        true
+        
+      resolveVotes: (scen, votes) ->
+        numCands = scen.numCands()
+        #slog "resolveVotes", numCands, votes
+        tallies = (0 for cand in [0..numCands]) for cand in [0..numCands]
+        for vote in votes
+          for winCand in [0..numCands]
+            for loseCand in [0..numCands]
+              if vote[winCand] >= vote[loseCand] then tallies[winCand][loseCand] += 1
+        minMargins = []
+        beats = [] 
+        for cand in [0..numCands]
+          minMargin = votes.length
+          beats[cand] = []
+          for otherCand in [0..numCands]
+            if otherCand is cand
+              continue
+            margin = tallies[cand][otherCand] - tallies [otherCand][cand]
+            if margin > 0
+              beats[cand].push otherCand
+            if margin < minMargin
+              minMargin = margin
+          minMargins[cand] = minMargin
+        winners = []
+        winningScore = -(votes.length)
+        for score, cand in minMargins
+          if score > winningScore
+            winners = [cand]
+            winningScore = score
+          else if score is winningScore
+            winners.push cand
+        [winners, beats]
+        
+      honestVotes: [-3,-2,-2,-1]
+      
   GMJ:
     longName: "Graduated Majority Judgment"
     actions:
@@ -69,18 +158,11 @@ Methods = makeMethods
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
         #slog "resolveVotes", numCands, votes
-        nullVote = (0 for score in [1..@grades.length])
-        voteTallies = for vote in votes
-          for score in vote
-            score ?= 0
-            tally = nullVote.slice()
-            tally[score] = 1
-            tally
-        tallies = _.map (_.zip voteTallies...), (cTallies) ->
-          _.reduce cTallies, (tallyA, tallyB) ->
-            _.map (_.zip tallyA, tallyB), (twoNums) ->
-              twoNums[0] + twoNums[1]
-          , nullVote
+        tallies = for cand in [0...numCands]
+          0 for score in [1..@grades.length]
+        for vote in votes
+          for score, cand in vote
+            tallies[cand][score] += 1
         half = votes.length / 2
         scores = for tally in tallies
           cumulative = 0
@@ -104,56 +186,6 @@ Methods = makeMethods
         
       honestVotes: [0,1,3,4]
       
-  MAV:
-    longName: "Majority Approval Voting"
-    actions:
-      grades: ['F', 'D', 'C', 'B', 'A']
-    
-      validVote: (numCands, vote) ->
-        if vote.length > numCands then return false
-        
-        if (_(vote).without undefined, (_.range @grades.length)...) isnt [] then return false
-        true
-        
-      resolveVotes: (scen, votes) ->
-        numCands = scen.numCands()
-        #slog "resolveVotes", numCands, votes
-        nullVote = (0 for score in [1..@grades.length])
-        voteTallies = for vote in votes
-          for score in vote
-            score ?= 0
-            tally = nullVote.slice()
-            tally[score] = 1
-            tally
-        tallies = _.map (_.zip voteTallies...), (cTallies) ->
-          _.reduce cTallies, (tallyA, tallyB) ->
-            _.map (_.zip tallyA, tallyB), (twoNums) ->
-              twoNums[0] + twoNums[1]
-          , nullVote
-        half = votes.length / 2
-        fakeLesses = half - votes.length / 10
-        scores = for tally in tallies
-          cumulative = 0
-          median = -1
-          while median < 4 and cumulative < half
-            median += 1
-            cumulative += tally[median]
-          lesses = cumulative - tally[median]
-          mores = votes.length - cumulative
-          score = median + ((mores - fakeLesses) / (2 * (votes.length - mores - fakeLesses)))
-          score
-        winners = []
-        winningScore = -1
-        for score, cand in scores
-          if score > winningScore
-            winners = [cand]
-            winningScore = score
-          else if score is winningScore
-            winners.push cand
-        [winners, scores]
-        
-      honestVotes: [0,1,3,4]
-
   IRV:
     longName: "Instant Runoff Voting"
     actions:
@@ -208,7 +240,12 @@ Methods = makeMethods
           winners = [winner]
         else
           winners = (cand for cand in [0..(numCands - 1)] when cand not in losers)
-        [winners, piles]
+        shortpiles = for pile in piles
+          if _.isArray(pile)
+            1 for vote in pile
+          else
+            pile
+        [winners, shortpiles]
         
       sortAndElim: (votes, piles) ->
         elims = 0
@@ -223,7 +260,57 @@ Methods = makeMethods
         elims    
         
       honestVotes: [-3,-2,-2,-1]
+     
+  MAV:
+    longName: "Majority Approval Voting"
+    actions:
+      grades: ['F', 'D', 'C', 'B', 'A']
+    
+      validVote: (numCands, vote) ->
+        if vote.length > numCands then return false
         
+        if (_(vote).without undefined, (_.range @grades.length)...) isnt [] then return false
+        true
+        
+      resolveVotes: (scen, votes) ->
+        numCands = scen.numCands()
+        #slog "resolveVotes", numCands, votes
+        nullVote = (0 for score in [1..@grades.length])
+        voteTallies = for vote in votes
+          for score in vote
+            score ?= 0
+            tally = nullVote.slice()
+            tally[score] = 1
+            tally
+        tallies = _.map (_.zip voteTallies...), (cTallies) ->
+          _.reduce cTallies, (tallyA, tallyB) ->
+            _.map (_.zip tallyA, tallyB), (twoNums) ->
+              twoNums[0] + twoNums[1]
+          , nullVote
+        half = votes.length / 2
+        fakeLesses = half - votes.length / 10
+        scores = for tally in tallies
+          cumulative = 0
+          median = -1
+          while median < 4 and cumulative < half
+            median += 1
+            cumulative += tally[median]
+          lesses = cumulative - tally[median]
+          mores = votes.length - cumulative
+          score = median + ((mores - fakeLesses) / (2 * (votes.length - mores - fakeLesses)))
+          score
+        winners = []
+        winningScore = -1
+        for score, cand in scores
+          if score > winningScore
+            winners = [cand]
+            winningScore = score
+          else if score is winningScore
+            winners.push cand
+        [winners, scores]
+        
+      honestVotes: [0,1,3,4]
+   
   plurality:
     longName: "Plurality Voting"
     actions:
@@ -251,6 +338,7 @@ Methods = makeMethods
         for payout, i in payouts
           if payout > bestPay
             vote = i
+            bestPay = payout
         vote
     
   score:
@@ -282,86 +370,6 @@ Methods = makeMethods
         [winners, scores]
         
       honestVotes: [0,2,8,10]
-      
-  rankedCondorcet:
-    longName: "Condorcet (pairwise) voting"
-    actions:
-      validVote: (numCands, vote) ->
-        if vote.length > numCands 
-          return false
-        if (_.compact vote).length isnt (_.uniq _.compact vote).length
-          return false
-        for rank in vote
-          if not (0 > rank >= -numCands)
-            return false
-        true
-        
-      resolveVotes: (scen, votes) ->
-        numCands = scen.numCands()
-        #slog "resolveVotes", numCands, votes
-        tallies = (0 for cand in [0..numCands]) for cand in [0..numCands]
-        for vote in votes
-          for winCand in [0..numCands]
-            for loseCand in [0..numCands]
-              if vote[winCand] >= vote[loseCand] then tallies[winCand][loseCand] += 1
-        minMargins = []
-        beats = [] 
-        for cand in [0..numCands]
-          minMargin = votes.length
-          beats[cand] = []
-          for otherCand in [0..numCands]
-            if otherCand is cand
-              continue
-            margin = tallies[cand][otherCand] - tallies [otherCand][cand]
-            if margin > 0
-              beats[cand].push otherCand
-            if margin < minMargin
-              minMargin = margin
-          minMargins[cand] = minMargin
-        winners = []
-        winningScore = -(votes.length)
-        for score, cand in minMargins
-          if score > winningScore
-            winners = [cand]
-            winningScore = score
-          else if score is winningScore
-            winners.push cand
-        [winners, beats]
-        
-      honestVotes: [-3,-2,-2,-1]
-      
-  borda:
-    longName: "Borda voting"
-    
-    actions:
-      validVote: (numCands, vote) ->
-        if vote.length > numCands 
-          return false
-        if (_.compact vote).length isnt (_.uniq _.compact vote).length
-          return false
-        for rank in vote
-          if not (0 > rank >= -numCands)
-            return false
-        true
-  
-      resolveVotes: (scen, votes) ->
-        numCands = scen.numCands()
-        #slog "resolveVotes", numCands, votes
-        sums = _.map (_.zip votes...), (scores) ->
-          _.reduce scores, (tallyA, tallyB) ->
-            (tallyA or 0) + (tallyB or 0) + (numCands)
-          , 0
-        winners = []
-        winningScore = -1
-        for score, cand in sums
-          if score > winningScore
-            winners = [cand]
-            winningScore = score
-          else if score is winningScore
-            winners.push cand
-        [winners, scores]
-        
-      honestVotes: [-3,-2,-2,-1]
       
   SODA:
     longName: "SODA voting"

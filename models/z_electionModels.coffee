@@ -138,12 +138,13 @@ class @Election extends VersionedInstance
         election.addVoterAndSave(uid)
         
     watchMain: @static ->
-      slog 'watchMain '
+      slog 'watchMain yo server is ', Meteor.isServer
       if Meteor.isServer
-        #slog 'watchMain 2'
+        slog 'watchMain 2'
         eid = MainElection.findOne()?.eid
         slog MainElection.find().fetch()
         if eid
+          slog 'wm3', eid
           @watch eid
         else
           slog 'no elections pending'
@@ -264,7 +265,7 @@ class @Election extends VersionedInstance
           err = "Sorry, you cannot participate in this same election twice. (How did you do that?)"
           slog err
           throw new Meteor.Error 403, err
-        user = new User Meteor.users.findOne
+        user = new MtUser Meteor.users.findOne
           _id: vid
         if user.nonunique
           throw new Meteor.Error 403, "Sorry, you cannot participate in this experiment twice."
@@ -585,15 +586,15 @@ if Meteor.isServer
     insert: ->
       yes
 
-else if Meteor.is_client
-  slog 'Autosubscribing...', OLD_ELECTION, OLD_USER
+else if Meteor.isClient
   Meteor.subscribe 'elections'
 
-  OLD_ELECTION = undefined
-  OLD_USER = undefined
-  OLD_STEP_COMPLETED_NUM = undefined
+  @OLD_ELECTION = undefined
+  @OLD_USER = undefined
+  @OLD_STEP_COMPLETED_NUM = undefined
+  slog 'Autosubscribing...', OLD_ELECTION, OLD_USER
   Meteor.autosubscribe ->
-    if (Session.get 'router') and router?.current_page() is 'loggedIn'
+    if (Session.get 'router') and router?.current_page.get() is 'loggedIn'
       user = Meteor.user()
       slog "got new user", user
       if user?.faction isnt OLD_USER?.faction

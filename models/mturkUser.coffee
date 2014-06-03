@@ -1,7 +1,7 @@
 
 @USERS = Meteor.users
 
-class @User extends VersionedInstance
+class @MtUser extends VersionedInstance
   __name__: "User"
     
   collection: Meteor.users
@@ -28,6 +28,7 @@ class @User extends VersionedInstance
   
   @register
     setParams: (params) ->
+      slog "user.setParams started", params
       if @workerId
         if @workerId is params.workerId
           #slog "(re-adding same workerId, ignored)"
@@ -64,7 +65,7 @@ class @User extends VersionedInstance
           workerId: @workerId
         dupeWorkers = dupeWorkers.fetch()
         for dupeWorker in dupeWorkers
-          dupeWorker = new User dupeWorker
+          dupeWorker = new MtUser dupeWorker
           dupeWorker._wasntMe = true
           dupeWorker.save()
       @save()
@@ -117,7 +118,7 @@ class @User extends VersionedInstance
     cents
                 
 wasntMe = ->
-  (new User Meteor.user()).wasntMe()
+  (new MtUser Meteor.user()).wasntMe()
 
 if Meteor.isServer
   #slog "server publishing userData!"

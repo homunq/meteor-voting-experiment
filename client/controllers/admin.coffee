@@ -63,7 +63,7 @@ Meteor.startup ->
     paymentList = Session.get "paymentList"
     if paymentList is undefined
       paymentList = for voter in voters
-        brainyVoter = new User voter
+        brainyVoter = new MtUser voter
         do (i) ->
           slog "brainyVoter", i
           brainyVoter.serverCentsDue (error, result) ->

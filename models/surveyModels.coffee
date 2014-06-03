@@ -16,7 +16,7 @@ mandatory = (x) ->
 optional = (x) ->
   true
     
-class Question extends Field
+class @Question extends Field
   textTemplate: Template?.questionText
   
   constructor: (@text, validator) ->
@@ -46,21 +46,21 @@ class Question extends Field
   responseHtml: ->
     "<!--NOT IMPLEMENTED-->"
     
-class TextQuestion extends Question
+class @TextQuestion extends Question
   responseHtml: ->
     Template.answerText
       qName: @name
   
-class NumberQuestion extends TextQuestion
+class @NumberQuestion extends TextQuestion
   constructor: (@text, validator) ->
     super @text, (both validator, isNumber)
 
-class TextboxQuestion extends Question
+class @TextboxQuestion extends Question
   responseHtml: ->
     Template.answerTextbox
       qName: @name
   
-class RadioQuestion extends Question
+class @RadioQuestion extends Question
   constructor: (@text, @options, validator) ->
     super @text, validator
     
@@ -76,11 +76,11 @@ class RadioQuestion extends Question
       text: oText
       num: oNum
   
-class ScaleQuestion extends RadioQuestion
+class @ScaleQuestion extends RadioQuestion
   constructor: (@text, @lowEnd, @highEnd, validator) ->
     super @text, [0..5], validator
     
-class MandatoryScaleQuestion extends ScaleQuestion
+class @MandatoryScaleQuestion extends ScaleQuestion
   mandatory: true
   #textTemplate: Template.mandatoryQuestionText
   
@@ -89,7 +89,7 @@ class MandatoryScaleQuestion extends ScaleQuestion
     
     
     
-class Section extends Question
+class @Section extends Question
   constructor: (@text, @blurb, validator) ->
     super @text
     
@@ -108,7 +108,7 @@ SurveyResponses.allow
   insert: (uid, doc) ->
     true
 
-class SurveyResponse extends VersionedInstance
+class @SurveyResponse extends VersionedInstance
   
   collection: SurveyResponses
   

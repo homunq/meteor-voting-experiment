@@ -1,5 +1,5 @@
 
-class Scenario
+class @Scenario
   #factSizes: [2, 1]
   #payoffs: [[3, 0],
   #         [2,2],
@@ -48,7 +48,7 @@ class Scenario
       size: @factSizes[faction]
       color: @factColors[faction]
     
-  vFactions: (skim) ->
+  vFactions: (skim=0) ->
     _.flatten(num for val in _.range(factSize - skim) for factSize, num in @factSizes)
     
     
@@ -105,6 +105,7 @@ class Scenario
     for num in [1..5]
       name:@factPngs[faction] + num
       active: if num is 1 then "active " else ""
+      
     
 @Scenarios =
   chicken: new Scenario

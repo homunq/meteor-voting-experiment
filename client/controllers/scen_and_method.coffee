@@ -1,4 +1,4 @@
-if (Handlebars?) 
+if (Handlebars?.registerHelper?) 
 
   Handlebars.registerHelper 'meth_subtemplate', (sub, data) ->
     template =  Template["#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"]

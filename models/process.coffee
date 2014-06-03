@@ -4,14 +4,14 @@ Snobind = (f) ->
   
 chai.should()
 
-class Step
+class @Step
   constructor: (@name, @num, options) ->
     _.extend @, options
     
   canFinish: (stepRecord) -> #can be overloaded at instance level in options+
     true 
     
-class Process
+class @Process
   constructor: (@name, steps...) ->
     @steps = []
     @firstForStages = [1]
@@ -19,7 +19,7 @@ class Process
     @suggestedMins = @maxMins = 0
     for step in steps
       for name, options of step
-        if (Handlebars?)
+        if (Handlebars?.SafeString?)
           options.blurb = new Handlebars.SafeString options.blurb
           
         @steps.push new Step(name, @steps.length, options)
@@ -31,7 +31,7 @@ class Process
         if not options.hide
           @suggestedMins += options.suggestedMins
           @maxMins += options.maxMins
-  
+          
   step: (num) ->
     @steps[num]
     
@@ -53,8 +53,7 @@ class Process
       return ((step < @firstForStages[stage]) or (lastStep is step and @step(step)?.stage < stage))
     return false
 
-  
-PROCESS = new Process "Base",
+@PROCESS = new Process "Base",
   overview:
     suggestedMins: 0
     maxMins: 0
@@ -197,13 +196,13 @@ if false ###############################
         true
   else  
     Meteor.autosubscribe ->
-      if (Session.get 'router') and router?.current_page() is 'loggedIn'
+      if (Session.get 'router') and router?.current_page.get() is 'loggedIn'
         user = Meteor.user()
         if user?
           Meteor.subscribe 'stepRecords', user._id
           ############################
 
-class StepRecord extends VersionedInstance
+class @StepRecord extends VersionedInstance
   __name__: "StepRecord"
   
   collection: StepRecords

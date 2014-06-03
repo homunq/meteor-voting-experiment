@@ -2439,6 +2439,10 @@
           new Assertion(val1, msg).to.equal(val2);
         };
 
+        should.eql = function (val1, val2, msg) {
+          new Assertion(val1, msg).to.deep.equal(val2);
+        };
+        
         should.Throw = function (fn, errt, errs, msg) {
           new Assertion(fn, msg).to.Throw(errt, errs);
         };

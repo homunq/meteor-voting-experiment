@@ -1,3 +1,41 @@
+/* COMMMMENTED OUT JUST IN CASE
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+!!
+
+
 // Simply a backbone router with a single added function
 // goto() which can be called with either
 //   a) a page name
@@ -102,3 +140,4 @@ FilteredRouter = ReactiveRouter.extend({
     }
   }
 });
+*/

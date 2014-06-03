@@ -1,15 +1,16 @@
 #TODO: static methods that can be inherited
+console.log "LOADING STAMPER"
 
 @console ?=
   log: ->
 
-@DEBUG ?= true
+@DEBUG = true #?= true
 
 debug = ->
   if DEBUG
     slog arguments...
 
-class Field
+class @Field
   #used by StamperInstance::fields for basic ORM
   constructor: (default_val, @validator) ->
     if (_ default_val).isFunction() 
@@ -29,9 +30,9 @@ class Field
 field = -> #just some sugar to save typing "new". 
   new Field arguments...
   
-class StamperInstance
+class @StamperInstance
   #todo: getters/setters; hide actual values in _raw object
-  constructor: (props) -> #=Meteor.is_client) ->
+  constructor: (props) -> #=Meteor.isClient) ->
     props ?= {}
     if @_loose
       @_looseFields = []
@@ -88,7 +89,7 @@ class StamperInstance
         smname = self::__name__ + "_" + mname
         if !method.static #instance
           servermethods[smname] = (id, obj, args...) ->
-            debug "server calling ", smname, "userId", @userId, "isServer", Meteor.isServer
+            slog "server calling ", smname, "userId", @userId, "isServer", Meteor.isServer
             if Meteor.isServer
               cur_instance = self.prototype.collection.findOne
                 _id: id
@@ -97,7 +98,7 @@ class StamperInstance
                 cur_instance = new self cur_instance
               debug "server method on", id, (cur_instance and "has cur_instance")
             else
-              cur_instance = obj
+              cur_instance = new self obj
             if not cur_instance
               throw Meteor.Error 404, "No such object on #{ if Meteor.isServer then 'server'  else 'client' }"
               
@@ -113,11 +114,11 @@ class StamperInstance
           goesOn = self
         else
           goesOn = self.prototype
-        if Meteor.is_client 
+        if Meteor.isClient 
           do (method, smname) ->
             #slog "adding method ", mname, " to ", goesOn
             goesOn[mname] = (args...) ->
-              debug "client calling ", smname, mname
+              slog "client calling ", smname, mname
               if method.static
                 Meteor.call smname, args...
               else
@@ -125,7 +126,10 @@ class StamperInstance
         else
           goesOn[mname] = method
         goesOn[smname] = method
-    Meteor.methods servermethods
+    Meteor.startup ->
+      #for k, v of servermethods
+      #  console.log "creating server method ", k
+      Meteor.methods servermethods
   
   @admin: ->
     #Call immediately after the class declaration
@@ -241,7 +245,7 @@ class StamperInstance
       _id: @_id
     , cb
     
-class StamperCursor #extends Meteor.Collection.Cursor
+class @StamperCursor #extends Meteor.Collection.Cursor
   constructor: (@cursor, @object) ->
     
   forEach: (cb) ->
@@ -297,7 +301,7 @@ class StamperCursor #extends Meteor.Collection.Cursor
           cb (new itype old_doc), at_ind
     @cursor.observe cbs
     
-class StamperCollection extends Meteor.Collection
+class @StamperCollection extends Meteor.Collection
   constructor: (name, manager, @object) ->
     @collection = new Meteor.Collection name, manager
     @object.collection = @

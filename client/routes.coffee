@@ -106,13 +106,15 @@ class @MyRouter extends ReactiveRouter
     slog Backbone.history.getFragment()
     if params
       xparams = deparam params
-    slog "qqqqqqqdstasdtasdtq", params
+    slog "watchElection params", params
     for k, v of xparams
-      slog "qqqqqqqq", k, v
+      slog "one param", k, v
     if xparams?.slogNum
       global.slogNum = parseInt xparams.slogNum
+    slog "gonna login_then 1"
     login_then newUser, =>
-      user = new User Meteor.user()
+      slog "did login_then 1"
+      user = new MtUser Meteor.user()
       if not user.eid
         user.setParams xparams
         #slog "About to watchMain", user._id
@@ -129,13 +131,15 @@ class @MyRouter extends ReactiveRouter
 
   inElection: (eid) =>
     #slog "route: election"
+    slog "gonna login_then 2"
     login_then =>
+      slog "did login_then 1"
       #slog "route: election; logged in"
       Election.watch eid, =>
         @goto 'loggedIn' #use that template
         
   clearAll: ->
-    #slog "clear all"
+    slog "clear all"
     Election.clearAll()
     
   goto: (where) ->
@@ -146,7 +150,7 @@ class @MyRouter extends ReactiveRouter
     super arguments...
     
   makeElection: (scenario, method, delay=100, roundBackTo=-1) ->
-    #slog "makeElection", scenario, method, delay, roundBackTo
+    slog "makeElection", scenario, method, delay, roundBackTo
     delay = parseInt delay
     #slog "makeElection q", scenario, method, delay, roundBackTo
     roundBackTo = parseInt roundBackTo
@@ -186,7 +190,7 @@ if Meteor.isClient
 Meteor.startup ->
   #slog "I should maybe $('#loading').hide()"
   old_eid = null
-  #slog "startup router"
+  slog "startup router"
   Backbone.history.start
      pushState: true
   #Meteor.autosubscribe ->

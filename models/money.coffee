@@ -1,7 +1,7 @@
 $baseRate = 100
 $bonusUnit = 36
 
-if (Handlebars?) 
+if (Handlebars?.registerHelper?) 
   Handlebars.registerHelper "baseRate", ->
     
     accounting.formatMoney($baseRate / 100)
@@ -20,7 +20,7 @@ if (Handlebars?)
     centsDue = Session.get "centsDue"
     if centsDue
       return centsDue
-    user = new User Meteor.user()
+    user = new MtUser Meteor.user()
     user.serverCentsDue (error, result) ->
       Session.set "centsDue", result
     user.centsDue()

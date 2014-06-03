@@ -8,7 +8,7 @@ if (Handlebars) {
   // if Router is defined, provide a currentPage helper
   Handlebars.registerHelper('currentPage', function() {
     if (Router)
-      return Router.current_page();
+      return Router.current_page.get();
   });
 }
   
