@@ -4,3 +4,5 @@ admin_password.coffee
 .meteor/
 bundle/
 smart.lock
+.project.*
+.DS*
