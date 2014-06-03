@@ -6,3 +6,4 @@ bundle/
 smart.lock
 .project.*
 .DS*
+.meteor/*
