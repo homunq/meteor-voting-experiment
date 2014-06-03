@@ -21,9 +21,13 @@
 </template>
 
 <template name="oneStep">
-	<li {{#if thisStep}}class="active"{{/if}}><a href="#" class="hasPopover">{{num}}:
+	{{#if thisStep}}<li class="active">{{> stepGuts}}</li>{{else}}<li>{{> stepGuts}}</li>{{/if}}
+</template>
+
+<template name="stepGuts">
+	<a href="#" class="hasPopover">{{num}}:
 		{{name}}{{#if 1}}<div class="underbar">{{stepCompletedNum num}}/{{scenNumVoters}} done</div>{{/if}}{{#if false}}
-			{{/if}}{{#if popover}}<span style="font-size: 80%">hover for pic</span><span class="popover">{{stepPopover name}}</span>{{/if}}</a></li>
+			{{/if}}{{#if popover}}<span style="font-size: 80%">hover for pic</span><span class="popover">{{stepPopover name}}</span>{{/if}}</a>
 </template>
 
 <template name="scenario_popover">
@@ -115,11 +119,11 @@ Harvard University<br/>
 1 Oxford Street<br/>
 Cambridge, MA 02140</p>
 
-If you have questions about your rights in this research, or for questions, concerns,
+<p>If you have questions about your rights in this research, or for questions, concerns,
 suggestions, or complaints that are not being addressed by the research team, or
 in case of research-related harm, please contact Committee on the Use of Human
 Subjects in Research at Harvard University, 1414 Mass. Ave., Second Floor,
-Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.png"/></p>
+Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.png"/></p></div>
 
 
 	{{> countdownWithSound}}

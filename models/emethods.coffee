@@ -409,7 +409,10 @@ makeMethods = (methods) ->
         #returns [winner, totals, [[delegator, numassigns], ...]]
         noDelegations = ((_(delegations).without 0) is [])
         filteredApprovals = for approval, i in approvals
-          approval if (delegations[i] or noDelegations) else 0
+          if (delegations[i] or noDelegations)
+            approval  
+          else 
+            0
         delegator = @winnerOf filteredApprovals
         if noDelegations
           return [delegator, approvals, []]

@@ -576,11 +576,11 @@ if Meteor.isServer
     Outcomes.find
       election: eid
       
-  slog "gonna .autorun"
-  Meteor.autorun ->
-    Outcomes.find().fetch({},{reactive: true})
+  #slog "gonna .autorun"
+  #Meteor.autorun ->
+  #  Outcomes.find().fetch({},{reactive: true})
     #---------------------
-    slog "should be (re-)publishing outcomes"
+  #  slog "should be (re-)publishing outcomes"
   
   Outcomes.allow
     insert: ->

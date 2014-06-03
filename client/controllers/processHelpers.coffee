@@ -46,7 +46,7 @@ if (Handlebars?)
   #a simple handlebars function that lets you render a page based a reactive var
   Handlebars.registerHelper 'renderWith', (name, text) ->
     if Template[name]
-      new Handlebars.SafeString Template[name]
+      new Handlebars.SafeString "<!--" + name + "-->" + Template[name]
         text: text
     else
       new Handlebars.SafeString "<!--missing #{ name } template-->"
