@@ -1,12 +1,14 @@
 
             
-@STEP_RECORD = undefined
+@STEP_RECORD ?= undefined
+@SCENARIO ?= undefined
+@ELECTION ?= undefined
 
 Meteor.startup ->
   ##slog _.keys Meteor
   if Meteor.isClient
     Meteor.autosubscribe ->
-      if (Session.get 'router') and router?.current_page.get() is 'loggedIn'
+      if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
         step = Session.get 'step'
         if step? and step != STEP_RECORD?.step
           #slog "New step"
@@ -15,7 +17,7 @@ Meteor.startup ->
           slog "not making STEP_RECORD", step, STEP_RECORD
 
     Meteor.autosubscribe ->
-      if (Session.get 'router') and router?.current_page.get() is 'loggedIn'
+      if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
         stage = Session.get 'stage'
         [step, lastStep] = (Session.get 'stepLastStep') or [0,-1]
         slog "stepLastStep", step, lastStep, stage
@@ -238,5 +240,5 @@ if (Handlebars?)
     ELECTION?.isFull()
     
   Handlebars.registerHelper 'currentPageIsnt', (page) ->
-    currentPage = Router.current_page.get()
+    currentPage = ROUTER.current_page.get()
     currentPage isnt page

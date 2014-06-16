@@ -182,7 +182,7 @@ class @MyRouter extends ReactiveRouter
     @goto 'payments'
           
 
-router = global.Router = new MyRouter()
+ROUTER = global.ROUTER = new MyRouter()
 
 if Meteor.isClient
   Session.set 'router', true

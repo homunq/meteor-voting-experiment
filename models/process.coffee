@@ -196,7 +196,7 @@ if false ###############################
         true
   else  
     Meteor.autosubscribe ->
-      if (Session.get 'router') and router?.current_page.get() is 'loggedIn'
+      if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
         user = Meteor.user()
         if user?
           Meteor.subscribe 'stepRecords', user._id

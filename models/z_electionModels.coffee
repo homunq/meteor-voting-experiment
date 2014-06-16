@@ -39,9 +39,9 @@ class @Vote extends VersionedInstance
     
 Vote.admin()
 
-Elections = new Meteor.Collection 'elections', null
+@Elections = new Meteor.Collection 'elections', null
 
-MainElection = new Meteor.Collection 'mainElection', null
+@MainElection = new Meteor.Collection 'mainElection', null
 if Meteor.isServer && !MainElection.findOne()
   #slog "setting up MainElection..."
   MainElection.insert
@@ -594,7 +594,8 @@ else if Meteor.isClient
   @OLD_STEP_COMPLETED_NUM = undefined
   slog 'Autosubscribing...', OLD_ELECTION, OLD_USER
   Meteor.autosubscribe ->
-    if (Session.get 'router') and router?.current_page.get() is 'loggedIn'
+    slog 'autosubscribe (re)new'
+    if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
       user = Meteor.user()
       slog "got new user", user
       if user?.faction isnt OLD_USER?.faction

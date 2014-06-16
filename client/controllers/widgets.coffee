@@ -37,7 +37,7 @@ do ->
     election = (Session.get 'election') and ELECTION
     if stage isnt intervalStage
       Session.set 'errer', ''
-    if untilTime isnt election.sTimes[stage]
+    if untilTime isnt election?.sTimes[stage]
       #slog "intervalStage"
       clearInterval intervaller
       if untilTime and (intervalStage is stage)
