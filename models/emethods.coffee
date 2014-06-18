@@ -3,6 +3,8 @@ nobind = (f) ->
   f.nobind = true
   f
   
+
+  
 class @Method
   constructor: (@name, options) ->
     #NOTE: all omethods are bound by default. I'm not sure that this is necessary but I'd sure rather debug the bugs from overdng this than from not doing it.
@@ -18,14 +20,21 @@ class @Method
   honestVote: (payouts) ->
     @honestVotes[payout] for payout in payouts
     
-  resolveHonestVotes: (scenario) ->
-    @resolveVotes scenario, @allHonestVotes scenario
+  resolveHonestVotes: (scenario, seed) ->
+    @resolveVotes scenario, (@allHonestVotes scenario), seed
     
   allHonestVotes: (scenario) ->
     console.log "hv"
     for faction in scenario.vFactions()
-      console.log "@payoffsForFaction", faction, scenario.payoffsForFaction faction
+      #console.log "@payoffsForFaction", faction, scenario.payoffsForFaction faction
       @honestVote (scenario.payoffsForFaction faction).payoffs
+      
+  breakTies: (scores, seed) ->
+    if seed == 0
+      return (score + i / 100 for i, score of scores)
+    return (score + Math.random() for score in scores)
+      
+      
   
 makeMethods = (methods) ->
   madeMethods = {}
@@ -93,7 +102,7 @@ makeMethods = (methods) ->
             winningScore = score
           else if score is winningScore
             winners.push cand
-        [winners, scores]
+        [winners, sums]
         
       honestVotes: [-3,-2,-2,-1]
           
@@ -112,21 +121,22 @@ makeMethods = (methods) ->
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
+        lastCand = numCands - 1
         #slog "resolveVotes", numCands, votes
-        tallies = (0 for cand in [0..numCands]) for cand in [0..numCands]
+        tallies = ((0 for cand in [0..lastCand]) for cand in [0..lastCand])
         for vote in votes
-          for winCand in [0..numCands]
-            for loseCand in [0..numCands]
+          for winCand in [0..lastCand]
+            for loseCand in [0..lastCand]
               if vote[winCand] >= vote[loseCand] then tallies[winCand][loseCand] += 1
         minMargins = []
         beats = [] 
-        for cand in [0..numCands]
+        for cand in [0..lastCand]
           minMargin = votes.length
           beats[cand] = []
-          for otherCand in [0..numCands]
+          for otherCand in [0..lastCand]
             if otherCand is cand
               continue
-            margin = tallies[cand][otherCand] - tallies [otherCand][cand]
+            margin = tallies[cand][otherCand] - tallies[otherCand][cand]
             if margin > 0
               beats[cand].push otherCand
             if margin < minMargin
@@ -140,7 +150,10 @@ makeMethods = (methods) ->
             winningScore = score
           else if score is winningScore
             winners.push cand
-        [winners, beats]
+        console.log "minMargins, beats, winners", minMargins..., beats..., winners...
+        scores = for beat, b in beats
+          "beats #{beat.length} others; worst margin #{minMargins[b]}"
+        [winners, scores]
         
       honestVotes: [-3,-2,-2,-1]
       
@@ -367,7 +380,7 @@ makeMethods = (methods) ->
             winningScore = score
           else if score is winningScore
             winners.push cand
-        [winners, scores]
+        [winners, sums]
         
       honestVotes: [0,2,8,10]
       
@@ -381,10 +394,10 @@ makeMethods = (methods) ->
         if (_(vote).without 0,1,undefined) isnt [] then return false
         true
         
-      resolveVotes: (scen, votes, tiebreakers) ->
+      resolveVotes: (scen, votes, seed) ->
         numCands = scen.numCands()
-        approvals = 0 for cand in [0..numCands - 1]
-        delegations = 0 for cand in [0..numCands - 1]
+        approvals = (0 for cand in [0..numCands - 1])
+        delegations = (0 for cand in [0..numCands - 1])
         for vote in votes
           multiApprovals = 0
           for line, l in vote
@@ -394,48 +407,49 @@ makeMethods = (methods) ->
               multiApprovals += 1
           if multiApprovals is 1
             delegations[vote.indexOf 1] += 1
-        brokenApprovals = approvals.slice()
-        for breaker, b in tiebreakers
-          if breaker < 0 or breaker >= 1
-            throw new Meteor.Error 500, "Tiebreaker fail."
-          brokenApprovals[b] += breaker
+        brokenApprovals = @breakTies(approvals,seed)
         
         [winner, totals, delegations] = @recursiveWinner brokenApprovals, delegations, scen.prefs()
         scores = for total, t in totals
           "#{approvals[t]} + #{Math.round(total - brokenApprovals[t])}"
-        [[winner], scores]
+        [winner, scores]
           
       recursiveWinner: (approvals, delegations, prefs) ->
         #returns [winner, totals, [[delegator, numassigns], ...]]
-        noDelegations = ((_(delegations).without 0) is [])
+        noDelegations = ((_(delegations).without 0).length is 0)
         filteredApprovals = for approval, i in approvals
-          if (delegations[i] or noDelegations)
+          if (delegations[i] or noDelegations) #if there are no delegations, we just want to get the winner to return it.
             approval  
           else 
             0
         delegator = @winnerOf filteredApprovals
         if noDelegations
-          return [delegator, approvals, []]
+          return [[delegator], approvals, []]
           
         newDelegations = delegations.slice()
         newDelegations[delegator] = 0
         subWinners = for deleLen in [0..(prefs[delegator].length - 2)]
           newApprovals = approvals.slice()
-          for assignTo, i in prefs[delegator].slice 0, deleLen
-            if i isnt 0
+          for assignTo in prefs[delegator].slice 1, deleLen+1
+              #console.log "plus", assignTo, delegations[delegator]
               newApprovals[assignTo] += delegations[delegator]
-          recursiveWinner newApprovals, newDelegations, prefs
+          #console.log "newApprovals", newApprovals, deleLen, prefs[delegator]
+          @recursiveWinner newApprovals, newDelegations, prefs
         winnerIndex = 999
         for subWinnerData, numSubAssigns in subWinners by -1
           [subWinner, totals, delegations] = subWinnerData
-          subWinnerIndex = _(prefs[delegator]).indexof(subWinner)
+          subWinnerIndex = _(prefs[delegator]).indexOf(subWinner[0])
           if (((subWinnerIndex >= 0) and (subWinnerIndex <= winnerIndex)) or
             ((numSubAssigns is 0) and (winnerIndex is 999)))
               winnerIndex = subWinnerIndex
-              winner = subWinner
-              numAssigns = subAssigns
+              winner = subWinner[0]
+              numAssigns = numSubAssigns
               laterDelegations = delegations
               totals = totals
+          #console.log "hi2", subWinner, winner, subWinnerIndex, numSubAssigns
+        console.log "totals", (totals for [subWinner, totals, delegations] in subWinners)...
+        #console.log "delegator is", delegator, filteredApprovals, noDelegations, delegations
+        console.log "delegator, winner, numAssigns, totals, laterDelegations", delegator, winner, numAssigns, totals, laterDelegations
         return [[winner], totals, [[delegator, numAssigns]].concat laterDelegations]
         
       winnerOf: (scores) ->
@@ -444,9 +458,9 @@ makeMethods = (methods) ->
           if not (score < best)
             best = score
             bestI = i
-        return i
+        return bestI
         
-      honestVotes: [0,0,1,1]
+      honestVotes: [0,0,0,1]
         
 #expose for Node testing        
 exports = Methods unless Meteor?

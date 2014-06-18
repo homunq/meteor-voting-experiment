@@ -93,12 +93,16 @@ class @Scenario
       
   prefs: ->
     #as currently written, this ONLY WORKS by assuming that the lists of factions and candidates correspond. 
-    payoffsByFaction = _.zip @payoffs
+    payoffsByFaction = _.zip @payoffs...
+    #console.log "payoffs", payoffsByFaction...
     prefs = for factionPayoffs in payoffsByFaction
       sortablePayoffs = _.zip factionPayoffs, [0..factionPayoffs.length - 1]
+      #console.log "sortablePayoffs0", sortablePayoffs, factionPayoffs[0], [0..factionPayoffs[0].length - 1]
       sortablePayoffs.sort (a, b) ->
-        a[0] - b[0]
+        b[0] - a[0]
+      #console.log "sortablePayoffs", sortablePayoffs...
       index for [payoff, index] in sortablePayoffs
+    #console.log "prefs", prefs...
     prefs
       
   slides: (faction) ->
