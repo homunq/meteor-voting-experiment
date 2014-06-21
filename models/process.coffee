@@ -180,7 +180,7 @@ class @Process
 
     
     
-StepRecords = new Meteor.Collection 'stepRecords', null
+@StepRecords = new Meteor.Collection 'stepRecords', null
 
 StepRecords.allow
   insert: ->

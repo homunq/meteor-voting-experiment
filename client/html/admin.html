@@ -1,3 +1,13 @@
+<template name="electionMaker">
+	<p>method: <select id="methPicker">{{#each allMethods}}
+			<option value="{{this}}">{{this}}</option>
+		{{/each}}</select></p>
+	<p>scenario: <select id="scenPicker">{{#each allScenarios}}
+			<option value="{{this}}">{{this}}</option>
+		{{/each}}</select></p>
+	<p><button id="create">create</button></p>
+</template>
+
 <template name="payments">
 	<table>
 	{{#each payments}}

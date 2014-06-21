@@ -6,7 +6,7 @@ console.log "LOADING STAMPER"
 
 @DEBUG = true #?= true
 
-debug = ->
+@debug = ->
   if DEBUG
     slog arguments...
 

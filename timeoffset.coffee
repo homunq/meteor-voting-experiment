@@ -1,4 +1,4 @@
-timeOffset = 0
+@timeOffset = 0
 
 Meteor.methods
   timeOffset: (msClient) ->
@@ -13,9 +13,9 @@ if Meteor.isClient
       slog "timeOffset", result
       timeOffset = result
     
-untilSTime = (sTime) ->
+@untilSTime = (sTime) ->
   d = new Date()
   return sTime - timeOffset - d.getTime()
   
-sTimeHere = (sTime) ->
+@sTimeHere = (sTime) ->
   return new Date (sTime - timeOffset)

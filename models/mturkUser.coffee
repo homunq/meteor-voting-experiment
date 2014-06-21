@@ -117,7 +117,7 @@ class @MtUser extends VersionedInstance
           cents += outcome.payFactionCents @faction
     cents
                 
-wasntMe = ->
+@wasntMe = ->
   (new MtUser Meteor.user()).wasntMe()
 
 if Meteor.isServer

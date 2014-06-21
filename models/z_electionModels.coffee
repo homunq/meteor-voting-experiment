@@ -13,7 +13,7 @@ ROBO_SUB_DEPTH = 10 #if multiple robovotes are to be chosen, a block of ROBO_SUB
 randomTo = (roof) ->
   Math.floor(Math.random() * roof)
 
-Votes = new Meteor.Collection 'votes'
+@Votes = new Meteor.Collection 'votes'
 
 class @Vote extends VersionedInstance
   __name__: "Vote"
@@ -251,10 +251,15 @@ class @Election extends VersionedInstance
         catch e
           slog "addWatcherAndSave make new ", e
           if e instanceof Meteor.Error
-            eid = undefined
-            @make(options, true, 0, false)
+            if e.error is 403
+              slog "...but it's just a wasntMe error"
+              break
+            else
+              eid = undefined
+              @make(options, true, 0, false)
           else
             throw e
+        Session.set 'error', e.message
             
     addVoterAndSave: (vid) ->
       #slog "addVoterAndSave "+vid + "     ;     "
@@ -600,10 +605,10 @@ else if Meteor.isClient
       slog "got new user", user
       if user?.faction isnt OLD_USER?.faction
         Session.set 'faction', user?.faction
-      if user?.step isnt OLD_USER?.step or user?.lastStep isnt OLD_USER?.lastStep
-        Session.set 'stepLastStep', [user?.step, user?.lastStep or -1]
       if user?.step isnt OLD_USER?.step
         Session.set 'step', user?.step
+      if user?.step isnt OLD_USER?.step or user?.lastStep isnt OLD_USER?.lastStep
+        Session.set 'stepLastStep', [user?.step, user?.lastStep or -1]
       OLD_USER = user
       
       

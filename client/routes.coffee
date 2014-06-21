@@ -91,12 +91,16 @@ class @MyRouter extends ReactiveRouter
     ':newUser?:params': 'watchElection2'
     'election/:eid': 'inElection'
     'elections/clear/all': 'clearAll'
+    'elections/make/': 'electionMaker'
     'elections/makeOne/:scenario/:method': 'makeElection'
     'elections/makeOne/:scenario/:method/:delay': 'makeElection'
     'elections/makeOne/:scenario/:method/:delay/:roundBackTo': 'makeElection'
     'admin/elections/:password/:fromVersion': 'electionsReport'
     'admin/payments/:password/:eid': 'payments'
     
+  electionMaker: () ->
+    slog 'maker loaded'
+    @goto 'electionMaker'
   
   watchElection2: (newUser, params) ->
     @watchElection params, newUser

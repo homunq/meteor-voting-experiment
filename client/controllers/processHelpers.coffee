@@ -4,30 +4,39 @@
 @SCENARIO ?= undefined
 @ELECTION ?= undefined
 
+global = @
+
+global.STEP_RECORD = undefined
+
 Meteor.startup ->
   ##slog _.keys Meteor
   if Meteor.isClient
     Meteor.autosubscribe ->
+      #setup STEP_RECORD
       if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
         step = Session.get 'step'
-        if step? and step != STEP_RECORD?.step
-          #slog "New step"
-          window.STEP_RECORD = new StepRecord()
-        else
-          slog "not making STEP_RECORD", step, STEP_RECORD
-
+        if step?
+          if step != STEP_RECORD?.step
+            #slog "New step"
+            global.STEP_RECORD = new StepRecord()
+            
+            
+          #Move on if needed
     Meteor.autosubscribe ->
-      if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
-        stage = Session.get 'stage'
-        [step, lastStep] = (Session.get 'stepLastStep') or [0,-1]
-        slog "stepLastStep", step, lastStep, stage
-        if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
-          playSound 'next'
-          STEP_RECORD.moveOn(yes)
-        if step is 0
-          nextStep()
+      stage = Session.get 'stage'
       
-nextStep = ->
+      [step, lastStep] = (Session.get 'stepLastStep') or [0,-1]
+      if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
+          #is again separate autosubscribe?
+        if STEP_RECORD?
+          slog "stepLastStep", step, lastStep, stage
+          if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
+            playSound 'next'
+            STEP_RECORD.moveOn(yes)
+          if step is 0
+            nextStep()
+      
+@nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
   slog "beforeFinish", beforeFinish
   if beforeFinish
@@ -151,7 +160,7 @@ if (Handlebars?)
     
     
   Handlebars.registerHelper 'stepWaiting', ->
-    stepLastStep = Session.get 'stepLastStep'
+    stepLastStep = (Session.get 'stepLastStep') or [0,-1]
     return (stepLastStep[0] is stepLastStep[1])
     
   Handlebars.registerHelper 'isLastStep', ->

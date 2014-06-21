@@ -1,3 +1,43 @@
 ☐☒☑xo
 
 	Accounts.createUser api has changed; check my current usage
+	
+	
+	
+.....
+
+
+Borda ballot lines are blank
+		also score
+
+faction is sometimes null (second reload?)
+		eid and step are "correct"
+		picture is broken (duh)
+		also, all payoffs are $1.08
+		after "wasntMe" is one of various times it can happen
+		
+loading second user with a pre-used workerId into a new election can hang on "loading" 
+			(about 10 lines of debugging - up to "isServer: false timeOffset 2"... 
+			user has just id and username....
+			straight reload fixes...)
+			reproducible
+			straight reload sometimes doesn't fix...
+			theory: this is when there was an existing user, loginThen not called.
+			penultimate message: gonna login_then 1; 
+			logout() and reload fixes
+			
+x		Chrome freezes on "waiting for 1 other voter, or until ...."
+		just when update should happen???
+		gah, chrome freezes, how do I debug that?
+		reproducible
+		after timer, before findAndJoin
+			Resolution: was continually recreating StepRecord in 1st processHelpers autosubscribe
+			
+doesn't jump past consent when you take HIT
+		has to do with processHelpers autosubscribes
+		
+2 vote, one is "waiting", other is "you already voted" but doesn't register, both stuck.
+
+after "wasntMe", 
+
+x					"waiting" countdown counts by 10s... heh, that works

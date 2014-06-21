@@ -5,6 +5,21 @@ sT = (ms, fn) ->
 
 
 Meteor.startup ->
+  Template.electionMaker.events
+    'click #create': ->
+      attrs = 
+        scenario: $('#scenPicker option:selected').attr('value')
+        method: $('#methPicker option:selected').attr('value')
+      Election.make attrs, true, 0, false, (result, error) =>
+        Session.set "madeEid", result
+        slog 'madeElection',  attrs#use that template
+    
+  Handlebars.registerHelper 'allMethods', ->
+    return (name for name, meth of Methods)
+    
+  Handlebars.registerHelper 'allScenarios', ->
+    return (name for name, scen of Scenarios)
+    
   Handlebars.registerHelper 'elections', ->
     slog "reporting on electionsEOE"
     password = Session.get 'password'

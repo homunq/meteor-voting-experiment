@@ -20,7 +20,7 @@
       time += (if (seconds < 10) then ":0" + seconds else ":" + seconds)
   time
 
-inTenSeconds = ->
+@inTenSeconds = ->
   now = new Date
   later = new Date
   later.setSeconds(now.getSeconds() + 3) 
@@ -94,34 +94,36 @@ Handlebars.registerHelper 'call', (funcName, data) ->
 Handlebars.registerHelper 'debugger', (data, outerdata) ->
   debugger
   
-playSound = (whichSound) ->
+@playSound = (whichSound) ->
   sT = (ms, fn) ->
     setTimeout fn, ms
   sT 1000, ->
     document.getElementById(whichSound).play()
   
-playSoundOnce = ->
+@playSoundOnce = ->
   window.SOUNDED ?= false
   if not SOUNDED
     playSound 'starting'
     window.SOUNDED = true
+
+global = @
     
-VOTE = null  
-ballotSetup = ->
+global.VOTE = null  
+@ballotSetup = ->
   step = Session.get('step')
   user = Meteor.user()
   if !VOTE or VOTE.step isnt step
-    VOTE = new Vote
+    global.VOTE = new Vote
       step: step
       voter: user._id
       stage: Session.get('stage')
   ""
 
-voteFor = (cand, grade) ->
+@voteFor = (cand, grade) ->
   slog "voteFor", cand, grade
   VOTE.vote[cand] = grade
 
-exclusiveVoteFor = (cand, rank, clearUI) ->
+@exclusiveVoteFor = (cand, rank, clearUI) ->
   slog "exclusiveVoteFor", cand, rank
   oldRank = VOTE.vote[cand]
   if -rank isnt oldRank
@@ -135,7 +137,7 @@ exclusiveVoteFor = (cand, rank, clearUI) ->
         VOTE.vote[otherCand] = undefined
         
       
-pluralityVoteFor = (cand) ->
+@pluralityVoteFor = (cand) ->
   slog "pluralityVoteFor", cand
   VOTE.vote = cand
   
