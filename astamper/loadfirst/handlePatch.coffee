@@ -1,4 +1,4 @@
-if Meteor.isClient
+if no #Meteor.isClient
   Handlebars._registerHelper = Handlebars.registerHelper
   Handlebars.registerHelper = (name, helper) ->
     _helper = ->
