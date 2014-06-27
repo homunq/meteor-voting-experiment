@@ -93,6 +93,18 @@
 			<p>The candidate site with the most votes wins.</p>
 </template>
 
+
+<template name="score_blurb">
+		<h2>Election Method: Score Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>You may give each candidate a score from 0 (worst) to 10 (best).</strong> 
+			You may give two candidates the same rating if you wish. 
+			Leaving a candidate blank is equivalent cto scoring them 0.</p>
+		<h3>Counting</h3>
+			<p>The candidate with the most votes wins. </p>
+</template>
+
+
 <template name="ballot">
 	{{call "ballotSetup" step}}
 	{{#if stepWaiting}}

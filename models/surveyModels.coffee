@@ -114,7 +114,8 @@ class @SurveyResponse extends VersionedInstance
   
   questions = [
       yes and method: (new Section "Voting System", 
-        "The questions in this section relate to the voting system itself, not the web design of this experiment. When answering them, imagine you had been voting using paper ballots.")
+        """The questions in this section relate to the voting system itself, not the web design of this experiment. 
+        When answering them, <strong>imagine</strong> you had been voting using <strong>paper ballots</strong>.""")
       yes and sysUnderstand: (new MandatoryScaleQuestion Template?.sysUnderstand, 
         "incomprehensible", "crystal clear")
       yes and sysEasy: (new MandatoryScaleQuestion Template?.sysEasy,#"How easy was it to figure out how you wanted to vote in {{methName}}?", 
@@ -123,23 +124,32 @@ class @SurveyResponse extends VersionedInstance
         "unfair", "fair")
       yes and sysFree: new TextboxQuestion Template?.sysFree #"Do you have any other comments about {{methName}}? (About the explanation, the system, whether you'd like to use it in real elections, or whatever)"
       yes and experiment: (new Section "Experiment", 
-        "The following questions deal with the experiment. They may be used to fix the experiment for future runs. Since you have already participated in the experiment, you will not be allowed to participate again, so please be honest.")
-      yes and expEasy: (new ScaleQuestion "What do you think of the web design and interface for this experiment?", 
+        """The following questions deal with the experiment. They may be used to fix the experiment for future runs. 
+        Since you have already participated in the experiment, 
+        you will not be allowed to participate again, so <strong>please be honest</strong>.""")
+      yes and expEasy: (new ScaleQuestion """What do you think of the <strong>web design and interface</strong> 
+      for this experiment?""", 
         "bad/difficult/buggy", "good/easy/reliable")  
-      yes and expBasePay: (new ScaleQuestion "What do you think about the base payment ($1.00) for participating in this experiment", 
+      yes and expBasePay: (new ScaleQuestion Template?.expBasePay, 
         "much too low", "much higher than necessary")  
-      yes and expBonusPay: (new ScaleQuestion "What do you think about the bonus payments ($0-$1.08) for participating in this experiment", 
+      yes and expBonusPay: (new ScaleQuestion Template?.expBonusPay, 
         "much too low to be a good motivator", "much higher than necessary")  
-      yes and expComments: new TextboxQuestion "Do you have any comments or suggestions? (problems you experienced, ideas how this experiment could work better, suggestions for further research, etc.)"  
+      yes and politics: (new RadioQuestion """What is two plus two? (If you get this one wrong, we'll know
+        you're not paying attention)""", 
+        ["3","4","5","6","7"])
+      yes and expComments: new TextboxQuestion """Do you have any comments or suggestions? (problems you experienced, 
+        ideas how this experiment could work better, suggestions for further research, etc.)""" 
       yes and notify: (new RadioQuestion "Do you wish to be notified (via Amazon Mechanical Turk) about the findings of this research?", 
         ["yes","no"])  
       yes and demographics: new Section "Demographics"
       yes and politics: (new RadioQuestion "How would you characterize your politics from left (liberal) to right (conservative)?", 
         ["Strongly left","Center-left","Center","Center-right","Strongly right"])
       yes and gender: (new RadioQuestion "Choose your gender.", ["male","female"])
-      yes and country: new TextQuestion "What is your home country?"
+      yes and country: new TextQuestion "What is your home country (nationality)?"
       yes and education: (new RadioQuestion "What's the highest level in school you've reached?", 
         ["primary", "secondary/middle school", "high school", "some college/associate", "bachelors", "graduate"])
+      yes and age: (new RadioQuestion "How old are you?", 
+        ["0-18", "19-29", "30-39", "40-59", "60+"])
        ]
   
   questions: questions

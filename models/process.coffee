@@ -1,3 +1,31 @@
+###
+This is the structure that controls the sequence of steps in the experiment. However, the early and last stages happen
+in interaction with the AMT interface, so here is an explanation of what the user should see and do through the process
+
+Step -1: On MT, user sees hit summary
+  click on hit to see detail
+0: static URL with "overview"
+  click on "next"
+1: switch URL; consent form
+  click "next"
+1.99: "now take the HIT"
+  take HIT
+2: scenario
+  "next"
+3-10: etc
+  "submit"
+999: "Thanks"
+
+so, only 2-10 should have workerId in url. If you take the HIT prematurely, you should get told to give it back, and 
+there MAY be another chance on another identical HIT. If you are on step 2-9 without a HIT, you should be told to take it.
+
+In all cases, reloading should get you the same step of the same experiment.
+
+
+
+###
+
+
 Snobind = (f) ->
   f.nobind = true
   f
@@ -248,7 +276,8 @@ class @StepRecord extends VersionedInstance
         
         if PROCESS.step(@step).prereqForNextStage
           slog "It's a prereq"
-          election.stage.should.equal PROCESS.step(@step).stage
+          if election.stage != PROCESS.step(@step).stage
+            slog "...but stage isn't what it should be!!!!!!!!!!!", election.stage, PROCESS.step(@step).stage
           election.setTimerIf election.stage, stepDoneBy
           if (stepDoneBy >= election.scen().numVoters() or #full scenario
                 (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
@@ -281,6 +310,7 @@ class @StepRecord extends VersionedInstance
       newStep = step + (if really then 1 else 0)
       if Meteor.isClient
         Session.set "step", newStep #ugly hack for greater responsiveness... but remember not to get step from Meteor.user()
+        Session.set "stepLastStep", [newStep, step] #ugly hack for greater responsiveness... but remember not to get step from Meteor.user()
       else
         Meteor.users.update
           _id: voter
@@ -290,6 +320,9 @@ class @StepRecord extends VersionedInstance
             lastStep: step
         ,
           multi: false
+        , (r, e) ->
+          slog "moved on", r, e
+          
               
   moveOn: (really) ->
     @.constructor._moveOnServer @step, @voter, really

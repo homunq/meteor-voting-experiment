@@ -1,5 +1,5 @@
-$baseRate = 100
-$bonusUnit = 36
+@$baseRate = 150
+@$bonusUnit = 40
 
 if (Handlebars?.registerHelper?) 
   Handlebars.registerHelper "baseRate", ->

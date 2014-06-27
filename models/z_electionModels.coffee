@@ -172,14 +172,17 @@ class @Election extends VersionedInstance
       slog "addVote", vote, @userId
       uid = @userId
       if @stage != vote.stage
+        slog "wrong stage"
         throw new Meteor.Error 403, "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
       if uid != vote.voter
+        slog "not you"
         throw Meteor.Error 403, "That's not you"
       oldVote = Votes.findOne
         voter: vote.voter
         stage: @stage
         election: @_id
       if oldVote
+        slog "already voted"
         throw new Meteor.Error 403, "You've already voted"
       faction = @factionOf uid #throws error on failure
       
@@ -523,7 +526,7 @@ Election.admin()
 echo 'Election', Election
     
   
-Outcomes = new Meteor.Collection 'outcomes', null
+@Outcomes = new Meteor.Collection 'outcomes', null
 
 class @Outcome extends VersionedInstance
   __name__: "Outcome"

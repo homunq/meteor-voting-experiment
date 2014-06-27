@@ -12,9 +12,9 @@ uniqueId = (length=8) ->
     loginThen cb
 
 loginThen = (cb) ->
-  user = Meteor.user()
-  if !user
-    slog "I wasn't logged in, let's create a user."
+  loggingIn = Meteor.loggingIn()
+  if !loggingIn
+    slog "I wasn't logged(ing) in, let's create a user."
     newuser =
       username: uniqueId()
       password: uniqueId()
@@ -32,10 +32,11 @@ loginThen = (cb) ->
             slog err, result
           else
             slog "subscribing to userData", Meteor.user()
-            Meteor.subscribe("userData", Meteor.user()._id)
+            Meteor.subscribe("userData")
             slog "cb is ", cb
             cb()
         slog 'user loginWithPassword attempted', err, result, newuser
+  else
     slog "seems I was logged in from the start"
     awaiter = ->
       user =  Meteor.user()
@@ -44,8 +45,9 @@ loginThen = (cb) ->
         slog "time to stop. Next line should be 'subscribing to userData'"
         Deps.currentComputation.stop()
         
-        slog "subscribing to userData"
-        Meteor.subscribe("userData", Meteor.user()._id)
+        Deps.nonreactive ->
+          slog "subscribing to old userData"
+          Meteor.subscribe("userData")
         cb()
     Deps.autorun awaiter
   

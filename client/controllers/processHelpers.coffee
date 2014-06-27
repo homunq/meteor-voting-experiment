@@ -125,14 +125,14 @@ if (Handlebars?)
     e = (Session.get 'election') and ELECTION
     if not e
       slog "No election for outcome!!!"
-      return {}
+      return []
     faction = Session.get 'faction'
     outcome = Outcomes.findOne
       election: e._id
       stage: e.stage - 1
     if not outcome
       slog "No outcome!!!"
-      return {}
+      return []
     outcome = new Outcome outcome
     slog "Outcome", outcome
     losers = _.range e.scen().numCands()

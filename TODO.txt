@@ -6,17 +6,25 @@
 	
 .....
 
+Once first voter has actually entered election, others see "waiting" rather than "enter?"
+
+x		Exception from Deps recompute function: Error: {{#each}} only accepts arrays, cursors, or falsey values. You passed: [object Object]
+		early on
+		persists on reload
+		failure in "losers" helper -- because election failed
+
 
 Borda ballot lines are blank
 		also score
 
-faction is sometimes null (second reload?)
+x		faction is sometimes null (second reload?)
 		eid and step are "correct"
 		picture is broken (duh)
 		also, all payoffs are $1.08
 		after "wasntMe" is one of various times it can happen
+		x		subscribe and allow fixed
 		
-loading second user with a pre-used workerId into a new election can hang on "loading" 
+x		loading second user with a pre-used workerId into a new election can hang on "loading" 
 			(about 10 lines of debugging - up to "isServer: false timeOffset 2"... 
 			user has just id and username....
 			straight reload fixes...)
@@ -33,10 +41,11 @@ x		Chrome freezes on "waiting for 1 other voter, or until ...."
 		after timer, before findAndJoin
 			Resolution: was continually recreating StepRecord in 1st processHelpers autosubscribe
 			
-doesn't jump past consent when you take HIT
+x		doesn't jump past consent when you take HIT
 		has to do with processHelpers autosubscribes
 		
-2 vote, one is "waiting", other is "you already voted" but doesn't register, both stuck.
+x		2 vote, one is "waiting", other is "you already voted" but doesn't register, both stuck.
+		exception MersenneTwister global
 
 after "wasntMe", 
 

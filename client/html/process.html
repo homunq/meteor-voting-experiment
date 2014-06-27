@@ -43,7 +43,7 @@
 </template>
 	
 <template name="overview">
-
+  <h4>Please do not take this HIT until you are told to. Press "Next" below when you're ready to.</h4>
 	<h2>Voting Experiment</h2>
 	<p>This is an experiment on voting. 18 voters like you, divided into three groups, will
 	decide between three options. Depending on the winning option, participants will 
@@ -59,8 +59,8 @@
 		form and countdown. If you leave this
 		window open, when the countdown completes, a sound will play ("voting experiment starting")
 		and a "consent
-		and join" button will appear. The first 18 people to press that button
-		will be admitted into the experiment. We ask that you only "accept" the HIT with Amazon
+		and join" button will appear. At that point, we will accept only 18 subjects per experiment run,
+		on a first-come first-served basis. We ask that you only "accept" the HIT with Amazon
 		<b>after</b> you are allowed into
 		the experiment. (But we have made more than 18 HITs available for idiot-proofing.)
 		<b>Only the 18 workers allowed in will be paid for each run of 
@@ -76,7 +76,10 @@
 	{{{renderWith "nextStep" "Next"}}}</div>
 </template>
 	
-<template name="consent"><div class="well">
+<template name="consent">
+	<h4>Please do not take this HIT until you are told to. Press "Next" below when the countdown finishes and you're ready.</h4>
+	<div class="well">
+  
 	<h2>Consent statement</h2>
 	<p>The following is an experiment in voting behavior. Should you choose to participate,
 the experiment will take under 25 minutes total, and you will be paid a base rate of 
@@ -125,6 +128,9 @@ in case of research-related harm, please contact Committee on the Use of Human
 Subjects in Research at Harvard University, 1414 Mass. Ave., Second Floor,
 Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.png"/></p></div>
 
+	<p>Again: when the countdown finishes, you may press the button below to enter the experiment.
+		Subjects will be accepted on a first-come, first-served basis. Please do not take the HIT
+		now; if you are accepted into the experiment, this screen will change to tell you to take it then.</p>
 
 	{{> countdownWithSound}}
 </template>
@@ -157,7 +163,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
       <!--Body content-->
 			{{> scenarioTable}}
 	</div>
-	{{{renderWith "nextStep" "Next"}}}
+	{{{renderWith "nextStep" "Next Step (all slides finished)"}}}
 </template>
 
 <template name="practice">

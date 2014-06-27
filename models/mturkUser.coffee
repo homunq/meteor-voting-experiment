@@ -22,8 +22,7 @@ class @MtUser extends VersionedInstance
     hitId: undefined
     nonunique: undefined
     _wasntMe: undefined
-    _paid: undefined
-    
+    _paid: undefined    
     
   
   @register
@@ -116,14 +115,30 @@ class @MtUser extends VersionedInstance
           outcome = new Outcome outcome
           cents += outcome.payFactionCents @faction
     cents
+    
+@getUser = -> 
+  (new MtUser Meteor.user())
                 
 @wasntMe = ->
-  (new MtUser Meteor.user()).wasntMe()
+  getUser().wasntMe()
 
 if Meteor.isServer
-  #slog "server publishing userData!"
-  Meteor.publish "userData", (uid) ->
-    #slog "now someone subscribed to userData for", uid
-    Meteor.users.find 
-      _id: uid
-      
+  userFields = {}
+  for k, v of MtUser.prototype._fields
+    userFields[k] = 1
+  slog "server publishing userData!", userFields# server
+  Meteor.users.allow
+    update: (uid, doc) ->
+      slog "updating user", uid, doc
+      doc._id is uid
+  Meteor.publish "userData", ->
+    if @userId
+      slog "publishing uid", @userId #, Meteor.users.findOne({_id:@userId}).step
+      return Meteor.users.find
+        _id: @userId
+      ,
+        fields: userFields
+  
+    else
+      @ready()
+    
