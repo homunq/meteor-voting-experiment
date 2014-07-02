@@ -1,7 +1,7 @@
 [isArray, isString, isDate] = _
 
 echo = (args...) ->
-  #slog args...
+  #debug args...
 
 echo "echo", echo
 
@@ -43,13 +43,13 @@ Vote.admin()
 
 @MainElection = new Meteor.Collection 'mainElection', null
 if Meteor.isServer && !MainElection.findOne()
-  #slog "setting up MainElection..."
+  #debug "setting up MainElection..."
   MainElection.insert
     eid: null
-  #slog "...setting up MainElection..."
+  #debug "...setting up MainElection..."
 
 backToHour = (aTime, roundBackTo) ->
-  slog "backToHour", aTime, roundBackTo
+  debug "backToHour", aTime, roundBackTo
   aTime.setMinutes(aTime.getMinutes() - roundBackTo)
   aTime.setMinutes(0,0,0) #rounded back to on-the-hour
   aTime.setMinutes(aTime.getMinutes() + roundBackTo)
@@ -85,7 +85,7 @@ class @Election extends VersionedInstance
       #now = new Date
       #later = backToHour minutesFromNow 100
       #evenLater = later.getTime() + PROCESS.minsForStage(1) * 60 * 1000
-      #slog "evenLater", evenLater
+      #debug "evenLater", evenLater
       #[now.getTime(), later.getTime(), evenLater]
       
     seed: ->
@@ -98,7 +98,7 @@ class @Election extends VersionedInstance
     
   @register
     make: @static (options, promote, delay, roundBackTo)->
-      slog "new election"#, options 
+      debug "new election"#, options 
       options ?= {}
       options = _(options).pick "scenario", "method"
       if delay
@@ -122,7 +122,7 @@ class @Election extends VersionedInstance
       if Meteor.isServer
         e.factions = e.scen().shuffledFactions()
       e.save()
-      slog "new election 2"#, options 
+      debug "new election 2"#, options 
       if promote
         e.promote()
       
@@ -133,56 +133,56 @@ class @Election extends VersionedInstance
       if !election
         throw Meteor.Error 404, "no such election"
       election = new Election election
-      #slog election
+      #debug election
       if (_.indexOf election.voters, uid) == -1
         election.addVoterAndSave(uid)
         
     watchMain: @static ->
-      slog 'watchMain yo server is ', Meteor.isServer
+      debug 'watchMain yo server is ', Meteor.isServer
       if Meteor.isServer
-        slog 'watchMain 2'
+        debug 'watchMain 2'
         eid = MainElection.findOne()?.eid
-        slog MainElection.find().fetch()
+        debug MainElection.find().fetch()
         if eid
-          slog 'wm3', eid
+          debug 'wm3', eid
           @watch eid
         else
-          slog 'no elections pending'
+          debug 'no elections pending'
       #return "yes you got watchMain babe"     
      
         
       
     watch: @static (eid) ->
-      slog 'watch ', eid, @userId
+      debug 'watch ', eid, @userId
       uid = @userId
       election = Elections.findOne
         _id: eid
-      #slog 'watch 2', eid
+      #debug 'watch 2', eid
       if !election
         throw Meteor.Error 404, "no such election"
       election = new Election election
-      #slog election
+      #debug election
       #if (_.indexOf election.watchers, uid) == -1
       election.addWatcherAndSave(uid)
       #else
-        #slog uid, " is already in ", election.watchers
+        #debug uid, " is already in ", election.watchers
           
         
     addVote: (vote) ->
-      slog "addVote", vote, @userId
+      debug "addVote", vote, @userId
       uid = @userId
       if @stage != vote.stage
-        slog "wrong stage"
+        debug "wrong stage"
         throw new Meteor.Error 403, "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
       if uid != vote.voter
-        slog "not you"
+        debug "not you"
         throw Meteor.Error 403, "That's not you"
       oldVote = Votes.findOne
         voter: vote.voter
         stage: @stage
         election: @_id
       if oldVote
-        slog "already voted"
+        debug "already voted"
         throw new Meteor.Error 403, "You've already voted"
       faction = @factionOf uid #throws error on failure
       
@@ -191,7 +191,7 @@ class @Election extends VersionedInstance
       #@inc
       #stagesDoneBy[@stage] += 1
       #@save()
-      #slog "@stagesDoneBy[@stage]", @stage, @stagesDoneBy, @stagesDoneBy[@stage],  @scen().numVoters()
+      #debug "@stagesDoneBy[@stage]", @stage, @stagesDoneBy, @stagesDoneBy[@stage],  @scen().numVoters()
       #done = (@stagesDoneBy[@stage] >= @scen().numVoters())
   
       if vote.vote.length or _.isNumber vote.vote #Don't add null votes, but do move on regardless
@@ -204,24 +204,24 @@ class @Election extends VersionedInstance
           
         Votes.insert vote
       
-      #slog "Vote added; stage done?:", done
+      #debug "Vote added; stage done?:", done
       #if done then @finishStage() #@stage
       
-      #slog "newVote update"
+      #debug "newVote update"
       
     clearAll: @static ->
-      #slog "clearAll"
+      #debug "clearAll"
       Elections.remove {}
       
     addWatcherAndSave: (vid) ->
-      slog "addWatcherAndSave "+vid + "     ;     ", @_id
+      debug "addWatcherAndSave "+vid + "     ;     ", @_id
       #if (_.indexOf @watchers, vid) == -1
       #  @watchers.push vid
       #eid = @save()
       voter = Meteor.users.findOne
         _id: vid
       if voter?.eid isnt @_id
-        slog "eid", @_id, vid
+        debug "eid", @_id, vid
         Meteor.users.update
           _id: vid
         ,
@@ -234,11 +234,11 @@ class @Election extends VersionedInstance
         @_id
       
     findAndJoin: @static (eid, options) ->
-      slog "findAndJoin "+@userId + "     ;     ", @_id
+      debug "findAndJoin "+@userId + "     ;     ", @_id
       vid = @userId
       
       while true
-        slog "findAndJoin 2 ", eid
+        debug "findAndJoin 2 ", eid
         try
           if not eid?
             eid = MainElection.findOne().eid
@@ -249,13 +249,13 @@ class @Election extends VersionedInstance
             election.addVoterAndSave vid
             return eid
           else
-            slog "findAndJoin can't find ", eid
+            debug "findAndJoin can't find ", eid
             throw new Meteor.Error 404, "null election"
         catch e
-          slog "addWatcherAndSave make new ", e
+          debug "addWatcherAndSave make new ", e
           if e instanceof Meteor.Error
             if e.error is 403
-              slog "...but it's just a wasntMe error"
+              debug "...but it's just a wasntMe error"
               break
             else
               eid = undefined
@@ -265,13 +265,13 @@ class @Election extends VersionedInstance
         Session.set 'error', e.message
             
     addVoterAndSave: (vid) ->
-      #slog "addVoterAndSave "+vid + "     ;     "
+      #debug "addVoterAndSave "+vid + "     ;     "
       if Meteor.isServer
-        #slog @factions
-        slog "Adding voter ", vid, "to an election with voters", @voters, "?"
+        #debug @factions
+        debug "Adding voter ", vid, "to an election with voters", @voters, "?"
         if (_.indexOf @voters, vid) >= 0
           err = "Sorry, you cannot participate in this same election twice. (How did you do that?)"
-          slog err
+          debug err
           throw new Meteor.Error 403, err
         user = new MtUser Meteor.users.findOne
           _id: vid
@@ -281,17 +281,17 @@ class @Election extends VersionedInstance
           throw new Meteor.Error 403, "Experiment already in progress; cannot join."
         numVoters = @scen().numVoters()
         if @voters.length >= numVoters
-          slog "FULL", @voters
+          debug "FULL", @voters
           throw new Meteor.Error 403, "Election full."
         @push
           voters: vid
         , =>
           if @stage is 0
             @nextStage("timerOnly")
-          #slog "voter pushed", @, user
+          #debug "voter pushed", @, user
           vIndex = _.indexOf @voters, vid
           if vIndex < 0
-            slog "Adding voter failed mysteriously... BAD BAD BAD"
+            debug "Adding voter failed mysteriously... BAD BAD BAD"
             user.pushError "Joining election failed."
           if vIndex >= numVoters
             user.pushError "Election filled up."
@@ -311,20 +311,20 @@ class @Election extends VersionedInstance
             multi: false
       
     promote: ->
-      #slog "promote"
+      #debug "promote"
       if Meteor.isServer
         mainElection = MainElection.findOne({})
         mainElection.eid = @._id
         MainElection.update
           _id: mainElection._id
         , mainElection
-        #slog mainElection, MainElection.findOne({})
+        #debug mainElection, MainElection.findOne({})
         
     robovotes: (stage) ->
-      slog "robovotes", stage
+      debug "robovotes", stage
       robofactions = @factions.slice(@voters.length)
       factionCounts = _.countBy robofactions, (x)->x
-      slog "robovotes", robofactions, factionCounts, @factions
+      debug "robovotes", robofactions, factionCounts, @factions
       votesByFaction = for faction, numVotes of factionCounts
         faction = parseInt faction #!@#$#@!$ _.countby converts to strings, damne its eyes.
         for vote in @robovotesForFaction(faction, numVotes, stage)
@@ -332,7 +332,7 @@ class @Election extends VersionedInstance
       return _.flatten votesByFaction, yes #shallow flatten to go from votesByFaction to votes.
     
     robovotesForFaction: (faction, numVotes, stage) ->
-      slog "robovotesForFaction", faction, numVotes, stage
+      debug "robovotesForFaction", faction, numVotes, stage
       searchKey =
         prevWinner: @winners[stage - 1]
         faction: faction
@@ -348,16 +348,16 @@ class @Election extends VersionedInstance
       robovotes = for voter in [1..numVotes]
         oldVote = oldVotes[randomTo oldVotes.length+1] #a 1/n chance of an "honestVote"
         if oldVote?
-          slog "oldVote", oldVote.vote, faction
+          debug "oldVote", oldVote.vote, faction
           oldVote.vote
         else
           honestVote ?= @meth().honestVote(@scen().payoffsForFaction(faction).payoffs)
-          slog "honestVote", honestVote.vote, faction
+          debug "honestVote", honestVote.vote, faction
           honestVote
             
         
     recordRobovote: (vote, faction) ->
-      slog "recordRobovote", vote, faction
+      debug "recordRobovote", vote, faction
       liveVote = new Vote
         vote: vote
         
@@ -377,12 +377,12 @@ class @Election extends VersionedInstance
     finishStage: () ->
       stage = @stage
       if stage >= 1
-        slog "finishStage", stage
+        debug "finishStage", stage
         fullRobovotes = @robovotes stage
         [votesForStage, fullVotes] = @votesForStage stage, undefined, "noRobos"
         votesForStage = votesForStage.concat (robo.vote for robo in fullRobovotes)
         
-        slog "finishStage fullVotes = fullVotes.concat fullRobovotes", fullVotes, fullRobovotes
+        debug "finishStage fullVotes = fullVotes.concat fullRobovotes", fullVotes, fullRobovotes
         fullVotes = fullVotes.concat fullRobovotes
         tiebreakerGen = new MersenneTwister(@seed + stage)
         tiebreakers = (tiebreakerGen.random() for cand in _.range @scen().numCands())
@@ -398,7 +398,7 @@ class @Election extends VersionedInstance
           if tiebreakers[oneWinner] > best
             winner = oneWinner
             best = tiebreakers[oneWinner]
-        slog "winners, winner, tiebreakers: ", winners, winner, tiebreakers
+        debug "winners, winner, tiebreakers: ", winners, winner, tiebreakers
         factionCounts = for faction in @scen().factions()
           votesForFaction = (v.vote for v in fullVotes when v.faction is faction)
           [fwinners, fcounts] = @meth().resolveVotes @scen(), votesForFaction, tiebreakers
@@ -413,23 +413,23 @@ class @Election extends VersionedInstance
           method: @method
           scenario: @scenario
           voters: v.voter for v in fullVotes
-        slog "My new outcome is", outcome
+        debug "My new outcome is", outcome
         outcome.save()
-        slog "and I just saved it:", outcome._id, Outcomes.findOne
+        debug "and I just saved it:", outcome._id, Outcomes.findOne
           _id: outcome._id
         @winners[stage] = winner
         @outcomes[stage] = outcome._id
         @save()
       
     nextStage: (timerOnly) ->
-      slog "election.nextStage", @_id, @stage, @sTimes
+      debug "election.nextStage", @_id, @stage, @sTimes
       stage = @stage
       if not timerOnly
         stage += 1
       if Meteor.isServer 
         now = (new Date).getTime()
         if nullOrAfterNow(@sTimes[stage])
-          slog "election.nextStage 12", stage, @sTimes
+          debug "election.nextStage 12", stage, @sTimes
           @sTimes[stage] = now
         @setTimerIf stage, 0
       if not timerOnly
@@ -441,20 +441,21 @@ class @Election extends VersionedInstance
         now = (new Date).getTime()
         delay = PROCESS.minsForStage(stage) * 60 * 1000
         if (not @sTimes[stage + 1]) and delay > 0
-          slog "poss setting stage timeout (voters,done,slackers)", @numVoters(), numDone, @numSlackers()
+          debug "poss setting stage timeout (voters,done,slackers)", @numVoters(), numDone, @numSlackers()
           if (@numVoters() - numDone) <= @numSlackers()
             @sTimes[stage + 1] = now + delay
             sT = (ms, fn) ->
               Meteor.setTimeout fn, ms
               
             sT delay, =>
+              debug "advance if stage <", stage
               @.constructor.nextForTime @_id, stage
               
     nextForTime: @static (eid, stage) ->
       election = new Election Elections.findOne
         _id: eid
       if election.stage <= stage
-        slog "Stage timeout! Advancing stage\n!\n!\n!", eid, stage + 1
+        debug "Stage timeout! Advancing stage\n!\n!\n!", eid, stage + 1
         election.stage = stage
         election.finishStage()
         election.nextStage()
@@ -506,11 +507,11 @@ class @Election extends VersionedInstance
       searchKey.robo = false
     vCursor = Votes.find searchKey
     fullVotes = vCursor.fetch()
-    slog "votesForStage", stage, fullVotes
+    debug "votesForStage", stage, fullVotes
     [v.vote for v in fullVotes, fullVotes]
   
   isFull: ->
-    slog "isFull", @voters.length, @scen().numVoters()
+    debug "isFull", @voters.length, @scen().numVoters()
     @voters.length >= @scen().numVoters()
     
   numVoters: ->
@@ -565,8 +566,8 @@ if Meteor.isServer
         #voters: 0
         factions: 0
         
-  #slog "----published elections"
-  #slog (Elections.find {}).count()
+  #debug "----published elections"
+  #debug (Elections.find {}).count()
   
   Meteor.publish 'done_votes', (eid) ->
     Votes.find
@@ -580,15 +581,15 @@ if Meteor.isServer
     #JUST DEBUGGING - reactivity failing - DELETE WHEN DONE
     Outcomes.find().fetch()
     #---------------------
-    slog "(re-)publishing outcomes", eid
+    debug "(re-)publishing outcomes", eid
     Outcomes.find
       election: eid
       
-  #slog "gonna .autorun"
+  #debug "gonna .autorun"
   #Meteor.autorun ->
   #  Outcomes.find().fetch({},{reactive: true})
     #---------------------
-  #  slog "should be (re-)publishing outcomes"
+  #  debug "should be (re-)publishing outcomes"
   
   Outcomes.allow
     insert: ->
@@ -600,12 +601,12 @@ else if Meteor.isClient
   @OLD_ELECTION = undefined
   @OLD_USER = undefined
   @OLD_STEP_COMPLETED_NUM = undefined
-  slog 'Autosubscribing...', OLD_ELECTION, OLD_USER
+  debug 'Autosubscribing...', OLD_ELECTION, OLD_USER
   Meteor.autosubscribe ->
-    slog 'autosubscribe (re)new'
+    debug 'autosubscribe (re)new'
     if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
       user = Meteor.user()
-      slog "got new user", user
+      debug "got new user", user
       if user?.faction isnt OLD_USER?.faction
         Session.set 'faction', user?.faction
       if user?.step isnt OLD_USER?.step
@@ -616,11 +617,11 @@ else if Meteor.isClient
       
       
       eid = user?.eid
-      slog "election (re)loading", eid
+      debug "election (re)loading", eid
       if eid
         e = Elections.findOne
           _id: eid
-        slog "really (re)loading",Meteor.user().eid,  e
+        debug "really (re)loading",Meteor.user().eid,  e
         global.ELECTION = new Election e
         Session.set 'election', e
         Session.set 'stage', ELECTION.stage
@@ -634,10 +635,10 @@ else if Meteor.isClient
             playSound "hurry"
         #subscribe
         Meteor.subscribe 'done_votes', eid, ->
-          #slog "done_votes (re)loaded"
-        slog "subscribing outcomes", eid
+          #debug "done_votes (re)loaded"
+        debug "subscribing outcomes", eid
         Meteor.subscribe 'outcomes', eid, ->
-          slog "outcomes (re)loaded"
+          debug "outcomes (re)loaded"
         if eid isnt OLD_ELECTION?._id #don't obsessively reload stable values
             
           #set session vars  
@@ -649,4 +650,4 @@ else if Meteor.isClient
             Session.set 'method', ELECTION.method
           OLD_ELECTION = ELECTION
                 
-          slog "fully (re)loaded ",Meteor.user().eid,  e
+          debug "fully (re)loaded ",Meteor.user().eid,  e

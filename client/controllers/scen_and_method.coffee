@@ -2,14 +2,14 @@ if (Handlebars?.registerHelper?)
 
   Handlebars.registerHelper 'meth_subtemplate', (sub, data) ->
     template =  Template["#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"]
-    slog "meth_subtemplate", "#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"
+    debug "meth_subtemplate", "#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"
     if template
       new Handlebars.SafeString template(data)
     else
       new Handlebars.SafeString "<!--#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }-->"
       
   Handlebars.registerHelper 'methName', ->
-    slog "methName", (Session.get 'method')
+    debug "methName", (Session.get 'method')
     return Methods[(Session.get 'method')]?.longName
     
   Handlebars.registerHelper 'gradeOf', (gmj) ->
@@ -35,7 +35,7 @@ if (Handlebars?.registerHelper?)
     
   Handlebars.registerHelper 'scen', ->
     scen = (Session.get 'scenario') and SCENARIO
-    slog "candNames", scen.candNames
+    debug "candNames", scen.candNames
     if scen
       return scen
     {}
@@ -57,7 +57,7 @@ if (Handlebars?.registerHelper?)
     scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       result = scenario.candInfos Session.get 'faction'
-    slog "scenCandInfo", Session.get 'faction', (((Session.get 'scenario') and SCENARIO)), result
+    debug "scenCandInfo", Session.get 'faction', (((Session.get 'scenario') and SCENARIO)), result
     result
     
   Handlebars.registerHelper 'scenNumVoters', ->

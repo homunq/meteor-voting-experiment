@@ -99,64 +99,64 @@ class @MyRouter extends ReactiveRouter
     'admin/payments/:password/:eid': 'payments'
     
   electionMaker: () ->
-    slog 'maker loaded'
+    debug 'maker loaded'
     @goto 'electionMaker'
   
   watchElection2: (newUser, params) ->
     @watchElection params, newUser
     
   watchElection: (params, newUser) ->
-    #slog 'watch'
-    slog Backbone.history.getFragment()
+    #debug 'watch'
+    debug Backbone.history.getFragment()
     if params
       xparams = deparam params
-    slog "watchElection params", params
+    debug "watchElection params", params
     for k, v of xparams
-      slog "one param", k, v
-    if xparams?.slogNum
-      global.slogNum = parseInt xparams.slogNum
-    slog "gonna login_then 1"
+      debug "one param", k, v
+    if xparams?.debugNum
+      global.debugNum = parseInt xparams.debugNum
+    debug "gonna login_then 1"
     login_then newUser, =>
-      slog "did login_then 1"
+      debug "did login_then 1"
       user = new MtUser Meteor.user()
       if not user.eid
         user.setParams xparams
-        #slog "About to watchMain", user._id
+        #debug "About to watchMain", user._id
         Election.watchMain (error, result) =>
-          #slog "watchmain e=", error
-          #slog "watchmain r=", result
+          #debug "watchmain e=", error
+          #debug "watchmain r=", result
         
           @goto 'loggedIn'
       else
         @goto 'loggedIn'
-        #slog 'qwpr' + JSON.stringify Meteor.user()
+        #debug 'qwpr' + JSON.stringify Meteor.user()
     #@navigate 'election/new',
     #  trigger: true
 
   inElection: (eid) =>
-    #slog "route: election"
-    slog "gonna login_then 2"
+    #debug "route: election"
+    debug "gonna login_then 2"
     login_then =>
-      slog "did login_then 1"
-      #slog "route: election; logged in"
+      debug "did login_then 1"
+      #debug "route: election; logged in"
       Election.watch eid, =>
         @goto 'loggedIn' #use that template
         
   clearAll: ->
-    slog "clear all"
+    debug "clear all"
     Election.clearAll()
     
   goto: (where) ->
-    #slog "going to", where
+    #debug "going to", where
     if where is 'loggedIn'
-      #slog "yes, going to", where, $('#loading').hide()
+      #debug "yes, going to", where, $('#loading').hide()
       $('#loading').hide()
     super arguments...
     
   makeElection: (scenario, method, delay=100, roundBackTo=-1) ->
-    slog "makeElection", scenario, method, delay, roundBackTo
+    debug "makeElection", scenario, method, delay, roundBackTo
     delay = parseInt delay
-    #slog "makeElection q", scenario, method, delay, roundBackTo
+    #debug "makeElection q", scenario, method, delay, roundBackTo
     roundBackTo = parseInt roundBackTo
     Election.make
       scenario: scenario
@@ -165,18 +165,18 @@ class @MyRouter extends ReactiveRouter
       Session.set "madeEid", result
       @goto 'madeElection' #use that template
       
-    #slog "makeElection 3", scenario, method, delay, roundBackTo
+    #debug "makeElection 3", scenario, method, delay, roundBackTo
     @goto 'madeElection' #use that template
     Meteor.logout()
     
   electionsReport: (password, fromVersion) ->
     Session.set 'password', password
     Session.set 'fromVersion', (parseFloat fromVersion) or 0.93
-    #slog "going to elections report..."
+    #debug "going to elections report..."
     @goto 'electionsReport'
     
   payments: (password, eid) ->
-    #slog "payments"
+    #debug "payments"
     if eid is "x"
       latestElection = Elections.findOne {},
         sort: [["sTimes.0", "desc"]]
@@ -192,15 +192,15 @@ if Meteor.isClient
   Session.set 'router', true
 
 Meteor.startup ->
-  #slog "I should maybe $('#loading').hide()"
+  #debug "I should maybe $('#loading').hide()"
   old_eid = null
-  slog "startup router"
+  debug "startup router"
   Backbone.history.start
      pushState: true
   #Meteor.autosubscribe ->
-  #  slog "should I??? $('#loading').hide()", router?.current_page()
+  #  debug "should I??? $('#loading').hide()", router?.current_page()
   #  if ((Session.get 'router') and router?.current_page()) is 'loggedIn'
-  #    slog "$('#loading').hide()"
+  #    debug "$('#loading').hide()"
   #    $('#loading').hide()
   #  else
-  #    slog "NOT     $('#loading').hide()", (Session.get 'router'), router?.current_page()
+  #    debug "NOT     $('#loading').hide()", (Session.get 'router'), router?.current_page()

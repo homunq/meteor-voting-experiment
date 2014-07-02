@@ -33,12 +33,12 @@ do ->
   intervalStage = null
   untilTime = null
   Handlebars.registerHelper 'countdownToStage', (stage, before, after) ->
-    #slog "countdownToStage", stage, intervalStage, intervalDone, intervaller
+    #debug "countdownToStage", stage, intervalStage, intervalDone, intervaller
     election = (Session.get 'election') and ELECTION
     if stage isnt intervalStage
       Session.set 'error', ''
     if untilTime isnt election?.sTimes[stage]
-      #slog "intervalStage"
+      #debug "intervalStage"
       clearInterval intervaller
       if untilTime and (intervalStage is stage)
         playSound 'ahem'
@@ -47,7 +47,7 @@ do ->
       intervalStage = stage
     if election?
       untilTime = election.sTimes[stage]
-      #slog "untilTime", untilTime, stage, election.sTimes
+      #debug "untilTime", untilTime, stage, election.sTimes
       #untilTime = inTenSeconds()
       if not intervaller and not intervalDone
         Session.set 'countDown', no
@@ -55,7 +55,7 @@ do ->
           setInterval fn, ms
         intervaller = sI 2000, ->
           countDown = untilSTime untilTime
-          #slog "countDown", countDown
+          #debug "countDown", countDown
           if countDown >= 0
             Session.set 'countDown', countDown
           else
@@ -65,27 +65,27 @@ do ->
             intervalDone = yes
       displayCount = Session.get 'countDown'
       if displayCount isnt no
-        #slog "displayCount", displayCount, seconds2time displayCount/1000
+        #debug "displayCount", displayCount, seconds2time displayCount/1000
         
         displayAbsoluteTime = (sTimeHere untilTime).toLocaleTimeString()
         displayAbsoluteTime = displayAbsoluteTime.substr(0, displayAbsoluteTime.length - 3)
-        #slog "displayCount", displayCount
+        #debug "displayCount", displayCount
         if displayCount and displayCount >= 0
           val = Template[before] 
             displayCount: seconds2roughTime displayCount/1000
             displayAbsoluteTime: displayAbsoluteTime
-          #slog "before?:", val, displayCount
+          #debug "before?:", val, displayCount
           return val
         else #if displayCount?
           val = Template[after]
             displayCount: seconds2roughTime displayCount/1000
             displayAbsoluteTime: displayAbsoluteTime
-          slog "after?:", val
+          debug "after?:", val
           return val
         #else
         #  return "no displayCount???"
     else
-      slog "No experiment currently pending"
+      debug "No experiment currently pending"
       return "No experiment currently pending"
           
 Handlebars.registerHelper 'call', (funcName, data) ->
@@ -120,11 +120,11 @@ global.VOTE = null
   ""
 
 @voteFor = (cand, grade) ->
-  slog "voteFor", cand, grade
+  debug "voteFor", cand, grade
   VOTE.vote[cand] = grade
 
 @exclusiveVoteFor = (cand, rank, clearUI) ->
-  slog "exclusiveVoteFor", cand, rank
+  debug "exclusiveVoteFor", cand, rank
   oldRank = VOTE.vote[cand]
   if -rank isnt oldRank
     if 0 > oldRank
@@ -138,7 +138,7 @@ global.VOTE = null
         
       
 @pluralityVoteFor = (cand) ->
-  slog "pluralityVoteFor", cand
+  debug "pluralityVoteFor", cand
   VOTE.vote = cand
   
 

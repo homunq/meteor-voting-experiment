@@ -149,7 +149,7 @@ class @SurveyResponse extends VersionedInstance
       yes and education: (new RadioQuestion "What's the highest level in school you've reached?", 
         ["primary", "secondary/middle school", "high school", "some college/associate", "bachelors", "graduate"])
       yes and age: (new RadioQuestion "How old are you?", 
-        ["0-18", "19-29", "30-39", "40-59", "60+"])
+        ["0-17", "18-21", "22-29", "30-39", "40-59", "60+"])
        ]
   
   questions: questions
@@ -188,10 +188,10 @@ class @SurveyResponse extends VersionedInstance
   
 SurveyResponse.admin()
 
-slog "creating @setupSurvey function"
+debug "creating @setupSurvey function"
 @setupSurvey = ->
   #Note: This is getting called redundantly when survey answers are repainted. Tolerable for now but yucky.
-  slog "@setupSurvey"
+  debug "@setupSurvey"
   if not window.SURVEY?
     window.SURVEY = new SurveyResponse
   
@@ -204,6 +204,6 @@ slog "creating @setupSurvey function"
     cb err, undefined #callback, as if there had been an error server-side
   
 @surveyAnswer = (q, a) ->
-  slog "surveyAnswer", q, a
+  debug "surveyAnswer", q, a
   SURVEY[q] = a
 

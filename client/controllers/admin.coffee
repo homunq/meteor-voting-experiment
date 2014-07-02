@@ -12,7 +12,7 @@ Meteor.startup ->
         method: $('#methPicker option:selected').attr('value')
       Election.make attrs, true, 0, false, (result, error) =>
         Session.set "madeEid", result
-        slog 'madeElection',  attrs#use that template
+        debug 'madeElection',  attrs#use that template
     
   Handlebars.registerHelper 'allMethods', ->
     return (name for name, meth of Methods)
@@ -21,7 +21,7 @@ Meteor.startup ->
     return (name for name, scen of Scenarios)
     
   Handlebars.registerHelper 'elections', ->
-    slog "reporting on electionsEOE"
+    debug "reporting on electionsEOE"
     password = Session.get 'password'
     versionQuery =
       version: Session.get 'fromVersion'
@@ -68,7 +68,7 @@ Meteor.startup ->
       created: (new Date stepRecord.created).toLocaleTimeString()
   
   Handlebars.registerHelper 'payments', ->
-    slog "payments helper"
+    debug "payments helper"
     eid = Session.get 'adminEid'
     voters = Session.get "voters"
     if voters is undefined
@@ -80,15 +80,15 @@ Meteor.startup ->
       paymentList = for voter in voters
         brainyVoter = new MtUser voter
         do (i) ->
-          slog "brainyVoter", i
+          debug "brainyVoter", i
           brainyVoter.serverCentsDue (error, result) ->
-            slog "brainyVoter reply", i, error, result
+            debug "brainyVoter reply", i, error, result
             paymentList = (Session.get "paymentList") or ("xx" for voter in voters)
             paymentList[i] = result
             Session.set "paymentList", paymentList
     payments = for voter, i in voters
       _.extend voter,
         paymentDue: paymentList[i]
-    slog "paymentList", payments, paymentList
+    debug "paymentList", payments, paymentList
     payments
         

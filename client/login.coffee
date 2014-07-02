@@ -5,7 +5,7 @@ uniqueId = (length=8) ->
   
 @login_then = (newUser, cb) ->
   if newUser
-    slog "Logging out to log back in"
+    debug "Logging out to log back in"
     Meteor.logout ->
       loginThen cb
   else
@@ -14,39 +14,39 @@ uniqueId = (length=8) ->
 loginThen = (cb) ->
   loggingIn = Meteor.loggingIn()
   if !loggingIn
-    slog "I wasn't logged(ing) in, let's create a user."
+    debug "I wasn't logged(ing) in, let's create a user."
     newuser =
       username: uniqueId()
       password: uniqueId()
     Accounts.createUser _(newuser).clone(), (err, result) ->
-      slog 'user created?', err, result, newuser
+      debug 'user created?', err, result, newuser
       if err
-        slog 'user creation failed'
-        slog err
+        debug 'user creation failed'
+        debug err
       else
         Meteor.loginWithPassword
           username: newuser.username
         , newuser.password, (err, result) ->
           if err
-            slog "couldn't login: "
-            slog err, result
+            debug "couldn't login: "
+            debug err, result
           else
-            slog "subscribing to userData", Meteor.user()
+            debug "subscribing to userData", Meteor.user()
             Meteor.subscribe("userData")
-            slog "cb is ", cb
+            debug "cb is ", cb
             cb()
-        slog 'user loginWithPassword attempted', err, result, newuser
+        debug 'user loginWithPassword attempted', err, result, newuser
   else
-    slog "seems I was logged in from the start"
+    debug "seems I was logged in from the start"
     awaiter = ->
       user =  Meteor.user()
-      slog "checking user: it's ", user
+      debug "checking user: it's ", user
       if user and not user.loading
-        slog "time to stop. Next line should be 'subscribing to userData'"
+        debug "time to stop. Next line should be 'subscribing to userData'"
         Deps.currentComputation.stop()
         
         Deps.nonreactive ->
-          slog "subscribing to old userData"
+          debug "subscribing to old userData"
           Meteor.subscribe("userData")
         cb()
     Deps.autorun awaiter

@@ -53,14 +53,14 @@ makeMethods = (methods) ->
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        #slog "resolveVotes", numCands, votes
+        #debug "resolveVotes", numCands, votes
         empty = (0 for cand in [1..numCands])
         counts = _.map (_.zip empty, votes...), (cvotes) ->
           _.reduce cvotes, (a,b) ->
             b ?= 0
             a + b
           , 0
-        #slog "resolveVotes2", counts
+        #debug "resolveVotes2", counts
         winners = []
         winningVotes = 0
         for count, cand in counts
@@ -89,7 +89,7 @@ makeMethods = (methods) ->
   
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        #slog "resolveVotes", numCands, votes
+        #debug "resolveVotes", numCands, votes
         sums = _.map (_.zip votes...), (scores) ->
           _.reduce scores, (tallyA, tallyB) ->
             (tallyA or 0) + (tallyB or 0) + (numCands)
@@ -122,7 +122,7 @@ makeMethods = (methods) ->
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
         lastCand = numCands - 1
-        #slog "resolveVotes", numCands, votes
+        #debug "resolveVotes", numCands, votes
         tallies = ((0 for cand in [0..lastCand]) for cand in [0..lastCand])
         for vote in votes
           for winCand in [0..lastCand]
@@ -170,7 +170,7 @@ makeMethods = (methods) ->
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        #slog "resolveVotes", numCands, votes
+        #debug "resolveVotes", numCands, votes
         tallies = for cand in [0...numCands]
           0 for score in [1..@grades.length]
         for vote in votes
@@ -214,7 +214,7 @@ makeMethods = (methods) ->
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        #slog "resolveVotes", numCands, votes
+        #debug "resolveVotes", numCands, votes
         ballots = for vote in votes
           ballot = []
           for rank, cand in vote
@@ -242,7 +242,7 @@ makeMethods = (methods) ->
                   losers.push cand
           if winner is null
             if losers.length is 0
-              slog "IRV fuckup, everybody wins", piles, numVotes, round
+              debug "IRV fuckup, everybody wins", piles, numVotes, round
               return [(cand for cand in [0..numCands - 1]), piles]
             loser = losers[Math.floor(Math.random() * losers.length)]
             resort = piles[loser]
@@ -269,7 +269,7 @@ makeMethods = (methods) ->
             piles[vote[0]].push vote
           else
             elims += 1
-        #slog "sortAndElim", votes, piles
+        #debug "sortAndElim", votes, piles
         elims    
         
       honestVotes: [-3,-2,-2,-1]
@@ -287,7 +287,7 @@ makeMethods = (methods) ->
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        #slog "resolveVotes", numCands, votes
+        #debug "resolveVotes", numCands, votes
         nullVote = (0 for score in [1..@grades.length])
         voteTallies = for vote in votes
           for score in vote
@@ -331,7 +331,7 @@ makeMethods = (methods) ->
         if not vote?
           return true #abstaining is OK 
         if not (0 <= vote < numCands)
-          slog "invalid plurality vote:", vote, numcands
+          debug "invalid plurality vote:", vote, numcands
           return false
         true
             
@@ -367,7 +367,7 @@ makeMethods = (methods) ->
         
       resolveVotes: (scen, votes) ->
         numCands = scen.numCands()
-        slog "resolveVotes", numCands, votes
+        debug "resolveVotes", numCands, votes
         sums = _.map (_.zip votes...), (scores) ->
           _.reduce scores, (tallyA, tallyB) ->
             (tallyA or 0) + (tallyB or 0)
