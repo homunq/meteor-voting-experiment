@@ -14,8 +14,11 @@
    height="1052.3622047"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.1 r9760"
-   sodipodi:docname="WCW map 2pairs slides.svg">
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="WCW map 2pairs slides.svg"
+   inkscape:export-filename="/Volumes/files/Users/chema/mydev/meteorcount/public/images/WCW map 2pairs slides.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4">
     <marker
@@ -155,10 +158,10 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
-     inkscape:window-width="998"
-     inkscape:window-height="986"
-     inkscape:window-x="15"
-     inkscape:window-y="651"
+     inkscape:window-width="866"
+     inkscape:window-height="832"
+     inkscape:window-x="145"
+     inkscape:window-y="396"
      inkscape:window-maximized="0"
      objecttolerance="1"
      gridtolerance="1"
@@ -179,7 +182,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -214,76 +217,6 @@
          style="fill:none;stroke:#000000;stroke-width:3.88283086;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
          d="m 314.35395,385.08539 43.49357,-32.72321"
          id="path5639"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cc" />
-    </g>
-    <g
-       id="g3538">
-      <path
-         sodipodi:nodetypes="cc"
-         inkscape:connector-curvature="0"
-         id="path4800"
-         d="M 203.80774,392.36218 424.29386,606.35224"
-         style="fill:none;stroke:#000000;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text3175"
-         y="352.36218"
-         x="156.68011"
-         style="font-size:19.25536728px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           y="352.36218"
-           x="156.68011"
-           id="tspan3177"
-           sodipodi:role="line">4 voters,</tspan><tspan
-           id="tspan5544"
-           y="376.4314"
-           x="156.68011"
-           sodipodi:role="line">including you,</tspan><tspan
-           id="tspan3179"
-           y="400.50061"
-           x="156.68011"
-           sodipodi:role="line">live here.</tspan></text>
-    </g>
-    <g
-       id="g3529"
-       transform="translate(-2.87239,8.1127026)">
-      <text
-         transform="scale(0.99070942,1.0093777)"
-         sodipodi:linespacing="125%"
-         id="text5565"
-         y="261.90076"
-         x="80.878601"
-         style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
-         xml:space="preserve"><tspan
-           id="tspan3169"
-           y="261.90076"
-           x="80.878601"
-           sodipodi:role="line">Your town is voting</tspan><tspan
-           id="tspan3252"
-           y="284.40076"
-           x="80.878601"
-           sodipodi:role="line">between 3 possible</tspan><tspan
-           id="tspan3262"
-           y="306.90076"
-           x="80.878601"
-           sodipodi:role="line">library sites.</tspan></text>
-      <path
-         style="fill:#808080;stroke:#000000;stroke-width:3.88283086;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
-         d="M 205.82764,308.22989 260,292.36218"
-         id="path5611"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cc" />
-      <path
-         sodipodi:nodetypes="cc"
-         inkscape:connector-curvature="0"
-         id="path5617"
-         d="M 198.66253,322.36218 318.76351,589.29734"
-         style="fill:#808080;stroke:#000000;stroke-width:3.88283086;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)" />
-      <path
-         style="fill:#808080;stroke:#000000;stroke-width:3.88283086;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
-         d="m 182.87239,324.24948 47.24444,330"
-         id="path5619"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="cc" />
     </g>
@@ -567,9 +500,9 @@
        height="553.85205"
        x="-521.24915"
        y="244.14339"
-       inkscape:export-filename="/Users/chema/Pictures/4pairsText.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"
+       inkscape:export-filename="4pairs3.png"
+       inkscape:export-xdpi="80.971657"
+       inkscape:export-ydpi="80.971657"
        transform="scale(-1,1)" />
     <text
        xml:space="preserve"
@@ -1105,131 +1038,6 @@
            x="228.95351"
            id="tspan3156"
            sodipodi:role="line">($0.72)</tspan></text>
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="80"
-       y="451.34396"
-       id="text3336"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         x="80"
-         y="451.34396"
-         id="tspan3340">You're testing a new voting system.</tspan><tspan
-         sodipodi:role="line"
-         x="80"
-         y="473.84396"
-         id="tspan3350">There will be one practice vote and </tspan><tspan
-         sodipodi:role="line"
-         x="80"
-         y="496.34396"
-         id="tspan3352">then two voting rounds for money. </tspan><tspan
-         sodipodi:role="line"
-         x="80"
-         y="518.84399"
-         id="tspan3354">In each of the last two rounds, </tspan><tspan
-         sodipodi:role="line"
-         x="80"
-         y="541.34399"
-         id="tspan3344">you'll get a bonus if a site near </tspan><tspan
-         sodipodi:role="line"
-         x="80"
-         y="563.84399"
-         id="tspan3346">&quot;your house&quot; wins.</tspan></text>
-    <g
-       id="g3552">
-      <text
-         sodipodi:linespacing="125%"
-         id="text3316"
-         y="485.42407"
-         x="256.42432"
-         style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           y="485.42407"
-           x="256.42432"
-           id="tspan3318"
-           sodipodi:role="line">Everyone wants the library </tspan><tspan
-           id="tspan3320"
-           y="507.92407"
-           x="256.42432"
-           sodipodi:role="line">close to their house.</tspan></text>
-      <g
-         style="fill:#000080"
-         id="g3375-1"
-         transform="translate(-2.0947266e-6,18)">
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000080;fill-opacity:1;stroke:none;font-family:Sans"
-           x="277.12738"
-           y="339.35226"
-           id="text3146-8"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3148-5"
-             x="277.12738"
-             y="339.35226">($0)</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000080;fill-opacity:1;stroke:none;font-family:Sans"
-           x="328.02481"
-           y="666.35223"
-           id="text3150-8"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3152-9"
-             x="328.02481"
-             y="666.35223">($0.72)</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000080;fill-opacity:1;stroke:none;font-family:Sans"
-           x="228.95351"
-           y="748.85223"
-           id="text3154-9"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3156-9"
-             x="228.95351"
-             y="748.85223">($1.08)</tspan></text>
-      </g>
-      <g
-         style="fill:#ff0000"
-         id="g3375-1-7"
-         transform="translate(-2.0947266e-6,35.999999)">
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="277.12738"
-           y="339.35226"
-           id="text3146-8-7"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3148-5-3"
-             x="277.12738"
-             y="339.35226">($1.08)</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="328.02481"
-           y="666.35223"
-           id="text3150-8-2"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3152-9-5"
-             x="328.02481"
-             y="666.35223">($0.36)</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="228.95351"
-           y="748.85223"
-           id="text3154-9-6"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3156-9-3"
-             x="228.95351"
-             y="748.85223">($0)</tspan></text>
-      </g>
     </g>
   </g>
 </svg>

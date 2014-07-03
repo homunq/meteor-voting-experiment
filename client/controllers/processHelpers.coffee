@@ -9,7 +9,7 @@ global = @
 global.STEP_RECORD = undefined
 
 Meteor.startup ->
-  ##slog _.keys Meteor
+  ##debug _.keys Meteor
   if Meteor.isClient
     Meteor.autosubscribe ->
       #setup STEP_RECORD
@@ -17,7 +17,7 @@ Meteor.startup ->
         step = Session.get 'step'
         if step?
           if step != STEP_RECORD?.step
-            #slog "New step"
+            #debug "New step"
             global.STEP_RECORD = new StepRecord()
             
             
@@ -29,7 +29,7 @@ Meteor.startup ->
       if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
           #is again separate autosubscribe?
         if STEP_RECORD?
-          slog "stepLastStep", step, lastStep, stage
+          debug "stepLastStep", step, lastStep, stage
           if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
             playSound 'next'
             STEP_RECORD.moveOn(yes)
@@ -38,18 +38,18 @@ Meteor.startup ->
       
 @nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
-  slog "beforeFinish", beforeFinish
+  debug "beforeFinish", beforeFinish
   if beforeFinish
     beforeFinish (error, result) ->
-      #slog "beforeFinish done", error, result
+      #debug "beforeFinish done", error, result
       if !error
-        #slog "NextStep"
+        #debug "NextStep"
         STEP_RECORD.finish()
       else
-        #slog error
+        #debug error
         Session.set 'error', error.reason
   else
-    #slog "NextStep direct"
+    #debug "NextStep direct"
     STEP_RECORD.finish()
     Session.set 'error', undefined
 
@@ -79,41 +79,41 @@ if (Handlebars?)
     METHOD.name
     
   Handlebars.registerHelper 'winner', ->
-    slog "getting winner"
+    debug "getting winner"
     e = (Session.get 'election') and ELECTION
     if not e
-      slog "No election for outcome!!!"
+      debug "No election for outcome!!!"
       return {}
     faction = Session.get 'faction'
     outcome = Outcomes.findOne
       election: e._id
       stage: e.stage - 1
     if not outcome
-      slog "No outcome!!!"
+      debug "No outcome!!!"
       return {}
-    slog "Outcome", outcome
+    debug "Outcome", outcome
     outcome = new Outcome outcome
     e.scen().candInfo outcome.winner, faction, outcome, e.scen()
     
   Handlebars.registerHelper 'tied', ->
-    slog "getting tied"
+    debug "getting tied"
     e = (Session.get 'election') and ELECTION
     if not e
-      slog "No election for outcome!!!"
+      debug "No election for outcome!!!"
       return {}
     outcome = Outcomes.findOne
       election: e._id
       stage: e.stage - 1
     if not outcome
-      slog "No outcome!!!"
+      debug "No outcome!!!"
       return {}
     return outcome.ties
     
   Handlebars.registerHelper 'userVoted', ->
-    slog "getting userVoted"
+    debug "getting userVoted"
     e = (Session.get 'election') and ELECTION
     if not e
-      slog "No election for outcome!!!"
+      debug "No election for outcome!!!"
       return {}
     outcome = Outcomes.findOne
       election: e._id
@@ -121,20 +121,20 @@ if (Handlebars?)
     return Meteor.user()._id in (outcome?.voters or [])
     
   Handlebars.registerHelper 'losers', ->
-    slog "getting losers"
+    debug "getting losers"
     e = (Session.get 'election') and ELECTION
     if not e
-      slog "No election for outcome!!!"
+      debug "No election for outcome!!!"
       return []
     faction = Session.get 'faction'
     outcome = Outcomes.findOne
       election: e._id
       stage: e.stage - 1
     if not outcome
-      slog "No outcome!!!"
+      debug "No outcome!!!"
       return []
     outcome = new Outcome outcome
-    slog "Outcome", outcome
+    debug "Outcome", outcome
     losers = _.range e.scen().numCands()
     losers.splice outcome.winner, 1
     for loser in losers
@@ -169,11 +169,11 @@ if (Handlebars?)
     
     
   Handlebars.registerHelper 'stage', ->
-    slog 'stage'
+    debug 'stage'
     return Session.get 'stage'
     
   Handlebars.registerHelper 'nextStage', ->
-    slog 'helper nextStage'
+    debug 'helper nextStage'
     return (Session.get 'stage') + 1
     
   Handlebars.registerHelper 'steps', (subTemplate) ->
@@ -187,7 +187,7 @@ if (Handlebars?)
     new Handlebars.SafeString steps.join ""
     
   Handlebars.registerHelper 'stepPopover', (stepName) ->
-    slog stepName
+    debug stepName
     new Handlebars.SafeString Template["#{ stepName }_popover"]()
     
   Handlebars.registerHelper 'stepExplanations', ->
@@ -208,9 +208,9 @@ if (Handlebars?)
     
     
   Handlebars.registerHelper 'stepName', ->
-    slog 'stepName'
+    debug 'stepName'
     step = Session.get 'step'
-    slog step
+    debug step
     if step?
       return PROCESS.steps[step].name
     "init"
