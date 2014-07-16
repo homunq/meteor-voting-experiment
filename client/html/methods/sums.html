@@ -1,0 +1,68 @@
+<!--  
+Includes the following systems: 
+	approval, score, plurality, SODA 
+-->
+
+<template name="approval_blurb">
+		<h2>Election Method: Approval Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>The ballot will ask you to approve or disapprove of each
+		candidate.</strong> You may approve of any number of candidates. If you approve of all candidates or
+		no candidates, your ballot will not affect the election. If you do not click either option, that
+		counts as disapproval.</p>
+		<h3>Counting</h3>
+		<p>The winner will be the site with the most approvals</p>
+</template>
+
+
+
+<template name="plurality_blurb">
+		<h2>Election Method: Plurality Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>You may vote for exactly one candidate.</strong> </p>
+		<h3>Counting</h3>
+			<p>The candidate site with the most votes wins.</p>
+</template>
+
+
+<template name="score_blurb">
+		<h2>Election Method: Score Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>You may give each candidate a score from 0 (worst) to 10 (best).</strong> 
+			You may give two candidates the same rating if you wish. 
+			Leaving a candidate blank is equivalent to scoring them 0.</p>
+		<h3>Counting</h3>
+			<p>The candidate with the highest total score wins. </p>
+</template>
+
+
+<template name="approval_ballotLine">
+	<input type="radio" name="{{name}}" value="approve" onclick="voteFor({{num}},1);">Approve<br>
+	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
+</template>
+
+
+<template name="plurality_ballotLine">
+	<input type="radio" id="cand{{num}}rank1" name="vote" onclick="pluralityVoteFor({{num}});">
+</template>
+
+<template name="approval_resultHead">
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="approval_resultHeadInner">
+	Totals
+</template>
+<template name="approval_result">
+	{{count}}
+</template>
+
+
+<template name="plurality_resultHead">
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="plurality_resultHeadInner">
+	Totals
+</template>
+<template name="plurality_result">
+	{{count}}
+</template>

@@ -1,0 +1,45 @@
+<!--  
+Includes the following systems: 
+	borda, condorcet, IRV 
+-->
+
+<template name="IRV_blurb">
+		<h2>Election Method: Instant Runoff Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>The ballot will ask you to rank the candidates in order of preference.</strong> 
+		So you would rank the candidate you wish to help the most as 1, the next as 2, and so on.
+		Any candidate whom you do not explicitly rank will never get your vote.</p>
+		<h3>Counting</h3>
+		<p>Each candidate will get a pile of all the ballots that rank them first. If no pile is more than half
+			the votes, then the ballots in the smallest pile will be reassigned
+			to the candidate they rank next, if any. Any of these ballots which do not include a next choice will
+			be counted as "exhausted". This process will repeat until one candidate has more than half
+			of the non-exhausted ballots.</p>
+			<p>The first candidate to get more than half of the remaining ballots wins.</p>
+</template>
+
+
+<template name="IRV_ballotLine">
+	{{#each candRanks}}
+	<input type="radio" id="cand{{../num}}rank{{rank}}" name="rank{{rank}}" onclick="exclusiveVoteFor({{../num}},{{rank}},true);">{{ord}}&nbsp;
+	{{/each}}
+</template>
+
+<template name="IRV_resultHead">
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="IRV_resultHeadInner">
+	Outcome
+</template>
+<template name="IRV_hypothetical">
+	<small>(Hypothetical)</small><br/>
+</template>
+<template name="IRV_result">
+	{{#if count.length}}
+		{{count.length}} votes (in final count)
+	{{else}}{{#if count}}
+		Eliminated in round {{count}}
+	{{else}}
+		0
+	{{/if}}{{/if}}
+</template>

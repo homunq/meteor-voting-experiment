@@ -116,7 +116,7 @@ class @Election extends VersionedInstance
         watchers: []
         voters: []
         factions: []
-        sTimes: [(new Date).getTime(), later] #, evenLater]
+        sTimes: [later] #, evenLater]
         
       e = new Election options
       if Meteor.isServer

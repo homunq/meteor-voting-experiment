@@ -1,14 +1,8 @@
+<!--  
+Includes the following systems: 
+	 GMJ, MAV 
+-->
 
-<template name="approval_blurb">
-		<h2>Election Method: Approval Voting</h2>
-		<h3>Ballot</h3>
-		<p><strong>The ballot will ask you to approve or disapprove of each
-		candidate.</strong> You may approve of any number of candidates. If you approve of all candidates or
-		no candidates, your ballot will not affect the election. If you do not click either option, that
-		counts as disapproval.</p>
-		<h3>Counting</h3>
-		<p>The winner will be the site with the most approvals</p>
-</template>
 
 <template name="MAV_blurb">
 		<h2>Election Method: Majority Approval Voting</h2>
@@ -69,66 +63,6 @@
 		changed from a "C" to an "F".</p>
 </template>
 
-<template name="IRV_blurb">
-		<h2>Election Method: Instant Runoff Voting</h2>
-		<h3>Ballot</h3>
-		<p><strong>The ballot will ask you to rank the candidates in order of preference.</strong> 
-		So you would rank the candidate you wish to help the most as 1, the next as 2, and so on.
-		Any candidate whom you do not explicitly rank will never get your vote.</p>
-		<h3>Counting</h3>
-		<p>Each candidate will get a pile of all the ballots that rank them first. If no pile is more than half
-			the votes, then the ballots in the smallest pile will be reassigned
-			to the candidate they rank next, if any. Any of these ballots which do not include a next choice will
-			be counted as "exhausted". This process will repeat until one candidate has more than half
-			of the non-exhausted ballots.</p>
-			<p>The first candidate to get more than half of the remaining ballots wins.</p>
-</template>
-
-
-<template name="plurality_blurb">
-		<h2>Election Method: Plurality Voting</h2>
-		<h3>Ballot</h3>
-		<p><strong>You may vote for exactly one candidate.</strong> </p>
-		<h3>Counting</h3>
-			<p>The candidate site with the most votes wins.</p>
-</template>
-
-
-<template name="score_blurb">
-		<h2>Election Method: Score Voting</h2>
-		<h3>Ballot</h3>
-		<p><strong>You may give each candidate a score from 0 (worst) to 10 (best).</strong> 
-			You may give two candidates the same rating if you wish. 
-			Leaving a candidate blank is equivalent cto scoring them 0.</p>
-		<h3>Counting</h3>
-			<p>The candidate with the most votes wins. </p>
-</template>
-
-
-<template name="ballot">
-	{{call "ballotSetup" step}}
-	{{#if stepWaiting}}
-		<p>Vote submitted.</p>
-	{{else}}
-		<table class="table">
-			<tr><td >Candidate</td><td>Your payoff<br/><small>(if this candidate wins)</small></td><td>Vote</td></tr>
-			{{#each scenCandInfo}}
-			<tr style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">
-				<td>{{name}}</td>
-				<td>{{bonus myPayoff}}</td>
-				<td>{{{meth_subtemplate "ballotLine" this}}}</td>
-			</tr>
-			{{/each}}
-		</table>
-	{{/if}}
-	{{meth_subtemplate "postBlurb"}}
-</template>
-
-
-<template name="approval_ballotLine">
-	<input type="radio" name="{{name}}" value="approve" onclick="voteFor({{num}},1);">Approve<br>
-	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
-</template>
 
 <template name="GMJ_ballotLine">
 	<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},4);">A
@@ -155,27 +89,6 @@
 </template>
 
 
-<template name="IRV_ballotLine">
-	{{#each candRanks}}
-	<input type="radio" id="cand{{../num}}rank{{rank}}" name="rank{{rank}}" onclick="exclusiveVoteFor({{../num}},{{rank}},true);">{{ord}}&nbsp;
-	{{/each}}
-</template>
-
-
-<template name="plurality_ballotLine">
-	<input type="radio" id="cand{{num}}rank1" name="vote" onclick="pluralityVoteFor({{num}});">
-</template>
-
-<template name="approval_resultHead">
-	<td>{{meth_subtemplate "resultHeadInner"}}</td>
-</template>
-<template name="approval_resultHeadInner">
-	Totals
-</template>
-<template name="approval_result">
-	{{count}}
-</template>
-
 <template name="GMJ_resultHead">
 	<td>{{meth_subtemplate "resultHeadInner"}}</td>
 </template>
@@ -194,34 +107,4 @@
 </template>
 <template name="MAV_result">
 	{{gradeOf count}} ({{count}})
-</template>
-
-<template name="IRV_resultHead">
-	<td>{{meth_subtemplate "resultHeadInner"}}</td>
-</template>
-<template name="IRV_resultHeadInner">
-	Outcome
-</template>
-<template name="IRV_hypothetical">
-	<small>(Hypothetical)</small><br/>
-</template>
-<template name="IRV_result">
-	{{#if count.length}}
-		{{count.length}} votes (in final count)
-	{{else}}{{#if count}}
-		Eliminated in round {{count}}
-	{{else}}
-		0
-	{{/if}}{{/if}}
-</template>
-
-
-<template name="plurality_resultHead">
-	<td>{{meth_subtemplate "resultHeadInner"}}</td>
-</template>
-<template name="plurality_resultHeadInner">
-	Totals
-</template>
-<template name="plurality_result">
-	{{count}}
 </template>
