@@ -1,0 +1,22 @@
+
+<template name="ballot">
+	{{call "ballotSetup" step}}
+	{{#if stepWaiting}}
+		<p>Vote submitted.</p>
+	{{else}}
+		<table class="table">
+			<tr><td >Candidate</td><td>Your payoff<br/><small>(if this candidate wins)</small></td><td>Vote</td></tr>
+			{{#each scenCandInfo}}
+			<tr style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">
+				<td>{{name}}</td>
+				<td>{{bonus myPayoff}}</td>
+				<td>{{{meth_subtemplate "ballotLine" this}}}</td>
+			</tr>
+			{{/each}}
+		</table>
+	{{/if}}
+	{{meth_subtemplate "postBlurb"}}
+</template>
+
+
+
