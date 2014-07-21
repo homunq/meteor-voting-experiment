@@ -78,6 +78,9 @@ if (Handlebars?.registerHelper?)
         rank: rank
         ord: ''+ rank + (if rank <= 3 then ['st','nd','rd'][rank-1] else 'th')
     
+  Handlebars.registerHelper 'legalScores', ->
+    Method.score.scores.slice().reverse()
+    
   
 @carousel = ->
   Meteor.setTimeout (-> $(".carousel").carousel

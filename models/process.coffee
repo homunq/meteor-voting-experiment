@@ -35,6 +35,8 @@ chai.should()
 class @Step
   constructor: (@name, @num, options) ->
     _.extend @, options
+    if @payout? and Meteor.isClient
+      @payout = new Handlebars.SafeString @payout()
     
   canFinish: (stepRecord) -> #can be overloaded at instance level in options+
     true 
@@ -84,7 +86,7 @@ class @Process
 @PROCESS = new Process "Base",
   overview:
     suggestedMins: 0
-    maxMins: 0
+    maxMins: 0.5
     stage: -1
     hit: off
     longName: "Overview"
@@ -92,7 +94,7 @@ class @Process
 ,
   consent:
     suggestedMins: 0
-    maxMins: 0
+    maxMins: 2.5
     stage: 0
     hit: off
     longName: "Consent"
@@ -110,12 +112,13 @@ class @Process
     stage: 0
     hit: on
     longName: "Scenario"
-    blurb: "Understand how much you and other voters will earn depending on which of the virtual candidates wins."
+    blurb: "Understand how much you and other voters will earn depending on which of the virtual candidates wins.\
+ Also, wait until the experiment fills up before proceeding (a sound will play when ready)."
     popover: true
 , 
   practice:
     suggestedMins: 1
-    maxMins: 1.08333
+    maxMins: 1.5
     stage: 1
     hit: on
     prereqForNextStage: true
@@ -135,7 +138,7 @@ class @Process
 , 
   voting:
     suggestedMins: 0.5
-    maxMins: 1.08333
+    maxMins: 1
     stage: 2
     hit: on
     prereqForNextStage: true
@@ -147,16 +150,17 @@ class @Process
 , 
   payouts:
     suggestedMins: 0.5
-    maxMins: 0
+    maxMins: 0.5
     stage: 3
     hit: on
-    payout: "$0-$1.08"
+    payout: ->
+      Template.oneRoundPay() #"$0-{{bonus 3}}"
     longName: "Payout round 1"
     blurb: "See results of the round 1 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
   voting:
     suggestedMins: 0.5
-    maxMins: 1.08333
+    maxMins: 1
     stage: 3
     hit: on
     prereqForNextStage: true
@@ -171,17 +175,19 @@ class @Process
     maxMins: 0.5
     stage: 4
     hit: on
-    payout: "$0-$1.08"
+    payout: ->
+      Template.oneRoundPay() #"$0-{{bonus 3}}"
     prereq: -1 #a full set of voters must be through the step 1 earlier before anyone starts this step
     longName: "Payout round 2"
     blurb: "See results of the round 2 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
   survey:
     suggestedMins: 2
-    maxMins: 4
+    maxMins: 5
     stage: 4
     hit: on
-    payout: "$1.00"
+    payout: ->
+      Template.baseRate() #"{{baseRate}}"
     prereqForNextStage: false
     longName: "Survey"
     blurb: "4-5 simple questions each about:<ul><li>you (gender, country, etc)</li><li>the voting system you used (on a 0-7 scale)</li><li>your general comments about the experiment</li></ul>"

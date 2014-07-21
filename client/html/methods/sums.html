@@ -34,6 +34,15 @@ Includes the following systems:
 		<h3>Counting</h3>
 			<p>The candidate with the highest total score wins. </p>
 </template>
+<template name="SODA_blurb">
+		<h2>Election Method: SODA (Simple Optionally-Delegated Approval) Voting</h2>
+		<h3>Ballot</h3>
+		<p><strong>You may give each candidate a score from 0 (worst) to 10 (best).</strong> 
+			You may give two candidates the same rating if you wish. 
+			Leaving a candidate blank is equivalent to scoring them 0.</p>
+		<h3>Counting</h3>
+			<p>The candidate with the highest total score wins. </p>
+</template>
 
 
 <template name="approval_ballotLine">
@@ -44,6 +53,13 @@ Includes the following systems:
 
 <template name="plurality_ballotLine">
 	<input type="radio" id="cand{{num}}rank1" name="vote" onclick="pluralityVoteFor({{num}});">
+</template>
+
+
+<template name="score_ballotLine">
+	{{#each legalScores}}
+		<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},{{this}});">{{this}}
+	{{/each}}
 </template>
 
 <template name="approval_resultHead">

@@ -200,10 +200,11 @@ if (Handlebars?)
     steps.push Spark.labelBranch ("stepExplanationsTotal"), ->
       Template.oneStepExplanation
         num: "Total"
-        blurb: "The total time will mostly depend on how quick the other turkers in the experiment are."
+        blurb: "The total time will mostly depend on how quick the other turkers in the experiment are. \
+(15 minutes are allowed on step 2 for the experiment to fill, but that is usually much quicker.)"
         suggestedMins: PROCESS.suggestedMins
-        maxMins: PROCESS.maxMins - 60
-        payout: "$1.00-$3.16"
+        maxMins: PROCESS.maxMins - 12
+        payout: new Handlebars.SafeString Template.fullPay() #"{{baseRate}}-{{maxPay}}"
     new Handlebars.SafeString steps.join ""
     
     
