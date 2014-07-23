@@ -177,6 +177,8 @@ class @MyRouter extends ReactiveRouter
     
   payments: (password, eid) ->
     #debug "payments"
+    Session.set 'password', password
+    Meteor.subscribe('allElections', password)
     if eid is "x"
       latestElection = Elections.findOne {},
         sort: [["sTimes.0", "desc"]]

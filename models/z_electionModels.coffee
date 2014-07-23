@@ -560,30 +560,33 @@ global = @
 if Meteor.isServer
   Elections.r
   # publish all the non-full elections.
-  Meteor.publish 'elections', ->
-    Elections.find {},
-      fields:
-        #voters: 0
-        factions: 0
+  Meteor.publish 'allElections', (password) ->
+    if password is PASSWORD
+      return Elections.find {},
+        fields:
+          #voters: 0
+          factions: 0
+    this.ready()
+    
+  
+  Meteor.publish 'oneElection', (eid) ->
+    [
+      Elections.find {eid:eid},
+        fields:
+          #voters: 0
+          factions: 0
+      Votes.find
+          eid: eid
+          done: true
+        ,
+          voter: 0
+      Outcomes.find
+        election: eid
+    ]
         
+    
   #debug "----published elections"
   #debug (Elections.find {}).count()
-  
-  Meteor.publish 'done_votes', (eid) ->
-    Votes.find
-      eid: eid
-      done: true
-    ,
-      voter: 0
-      #faction: 0 #do not hide this, even though it wouldn't be visible IRL
-      
-  Meteor.publish 'outcomes', (eid) ->
-    #JUST DEBUGGING - reactivity failing - DELETE WHEN DONE
-    Outcomes.find().fetch()
-    #---------------------
-    debug "(re-)publishing outcomes", eid
-    Outcomes.find
-      election: eid
       
   #debug "gonna .autorun"
   #Meteor.autorun ->
@@ -634,11 +637,9 @@ else if Meteor.isClient
           if votersLeft <= ELECTION.scen().hurryNumber and (user.step isnt user.lastStep)
             playSound "hurry"
         #subscribe
-        Meteor.subscribe 'done_votes', eid, ->
-          #debug "done_votes (re)loaded"
-        debug "subscribing outcomes", eid
-        Meteor.subscribe 'outcomes', eid, ->
-          debug "outcomes (re)loaded"
+        debug "subscribing oneElection", eid
+        Meteor.subscribe 'oneElection', eid, ->
+          debug "oneElection (re)loaded"
         if eid isnt OLD_ELECTION?._id #don't obsessively reload stable values
             
           #set session vars  

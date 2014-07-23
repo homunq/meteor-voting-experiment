@@ -233,7 +233,8 @@ if false ###############################
       if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
         user = Meteor.user()
         if user?
-          Meteor.subscribe 'stepRecords', user._id
+          #Meteor.subscribe 'stepRecords', user._id
+          0 #subscription to stepRecords is not needed, I think
           ############################
 
 class @StepRecord extends VersionedInstance
