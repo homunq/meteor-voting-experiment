@@ -571,7 +571,7 @@ if Meteor.isServer
   
   Meteor.publish 'oneElection', (eid) ->
     [
-      Elections.find {eid:eid},
+      Elections.find {_id:eid},
         fields:
           #voters: 0
           factions: 0
@@ -599,7 +599,7 @@ if Meteor.isServer
       yes
 
 else if Meteor.isClient
-  Meteor.subscribe 'elections'
+  #Meteor.subscribe 'elections'
 
   @OLD_ELECTION = undefined
   @OLD_USER = undefined
@@ -624,6 +624,16 @@ else if Meteor.isClient
       if eid
         e = Elections.findOne
           _id: eid
+        #important for reactivity to try finding before subscribing/disconnecting
+        if not global.SUBSCRIBED?
+          Meteor.subscribe 'oneElection', eid, ->
+            debug "oneElection (re)loaded"
+          global.SUBSCRIBED = yes
+          debug "subscribed"
+          return 1
+        if not e?
+          debug "no election for eid", eid
+          return 1
         debug "really (re)loading",Meteor.user().eid,  e
         global.ELECTION = new Election e
         Session.set 'election', e
@@ -638,8 +648,6 @@ else if Meteor.isClient
             playSound "hurry"
         #subscribe
         debug "subscribing oneElection", eid
-        Meteor.subscribe 'oneElection', eid, ->
-          debug "oneElection (re)loaded"
         if eid isnt OLD_ELECTION?._id #don't obsessively reload stable values
             
           #set session vars  
