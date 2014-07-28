@@ -10,6 +10,7 @@ class @MtUser extends VersionedInstance
   
   @fields
     username: undefined
+    token: undefined
     eid: undefined
     watcher: undefined
     step: undefined

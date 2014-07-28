@@ -1,3 +1,5 @@
+global = @
+
 uniqueId = (length=8) ->
   id = ""
   id += Math.random().toString(36).substr(2) while id.length < length
@@ -46,9 +48,11 @@ loginThen = (cb) ->
         Deps.currentComputation.stop()
         
         Deps.nonreactive ->
+          
           debug "subscribing to old userData"
-          Meteor.subscribe("userData")
-        cb()
+          global.USER_INCOMPLETE = on
+          Meteor.subscribe "userData", ->
+            cb()
     Deps.autorun awaiter
   
   
