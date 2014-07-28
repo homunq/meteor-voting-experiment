@@ -58,7 +58,7 @@ Includes the following systems:
 
 <template name="score_ballotLine">
 	{{#each legalScores}}
-		<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},{{this}});">{{this}}
+		<input type="radio" name="{{../name}}" value="4" onclick="voteFor({{../num}},{{this}});">{{this}}
 	{{/each}}
 </template>
 

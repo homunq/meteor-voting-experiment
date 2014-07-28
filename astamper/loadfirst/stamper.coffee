@@ -105,7 +105,7 @@ class @StamperInstance
             else
               cur_instance = new self obj
             if not cur_instance
-              throw Meteor.Error 404, "No such object on #{ if Meteor.isServer then 'server'  else 'client' }"
+              throw Meteor.Error 404, "NotFound", "No such object on #{ if Meteor.isServer then 'server'  else 'client' }"
               
             cur_instance.userId = @userId #sneak in a method for current userId
             cur_instance[smname].apply cur_instance, args
@@ -205,7 +205,7 @@ class @StamperInstance
   inc: (incer, cb) -> #incer is a {field: inc} object
     if not @_id
       #can't atomically increment a record that's never been saved
-      cb new Meteor.Error(404, "Can't atomically increment a record that's never been saved")
+      cb new Meteor.Error(404, "nullPlusOne", "Can't atomically increment a record that's never been saved")
       return
     @collection.update
       _id: @_id
@@ -219,7 +219,7 @@ class @StamperInstance
   push: (pusher, cb) -> #pusher is a {field: item} object
     if not @_id
       #can't atomically push to a record that's never been saved
-      cb new Meteor.Error(404, "Can't atomically push to a record that's never been saved")
+      cb new Meteor.Error(404, "nullPush", "Can't atomically push to a record that's never been saved")
       return
     @collection.update
       _id: @_id
@@ -234,7 +234,7 @@ class @StamperInstance
   pull: (puller, cb) -> #puller is a {field: item} object
     if not @_id
       #can't atomically pull from a record that's never been saved
-      cb new Meteor.Error(404, "Can't atomically pull from a record that's never been saved")
+      cb new Meteor.Error(404, "nullPull", "Can't atomically pull from a record that's never been saved")
       return
     @collection.update
       _id: @_id

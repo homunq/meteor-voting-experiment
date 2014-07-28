@@ -35,7 +35,7 @@ if (Handlebars?.registerHelper?)
     
   Handlebars.registerHelper 'scen', ->
     scen = (Session.get 'scenario') and SCENARIO
-    debug "candNames", scen.candNames
+    debug "candNames", scen?.candNames
     if scen
       return scen
     {}
@@ -79,7 +79,7 @@ if (Handlebars?.registerHelper?)
         ord: ''+ rank + (if rank <= 3 then ['st','nd','rd'][rank-1] else 'th')
     
   Handlebars.registerHelper 'legalScores', ->
-    Method.score.scores.slice().reverse()
+    Methods.score.scores.slice().reverse()
     
   
 @carousel = ->

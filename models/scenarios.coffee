@@ -112,7 +112,7 @@ class @Scenario
       
     
 @Scenarios =
-  chicken: new Scenario
+  chicken9: new Scenario
     factSizes: [4, 2, 3]
     factNames: ['Red', 'Green', 'Blue']
     factColors: ["#D40000", "#00D400", "#0000D4"]
@@ -122,7 +122,7 @@ class @Scenario
     payoffs: [[3, 0, 0],
               [1, 3, 2],
               [0, 2, 3]]
-  doubleChicken: new Scenario
+  doubleChicken18: new Scenario
     factSizes: [8, 4, 6]
     factNames: ['Red', 'Green', 'Blue']
     factColors: ["#D40000", "#00D400", "#0000D4"]
@@ -132,7 +132,17 @@ class @Scenario
     payoffs: [[3, 0, 0],
               [1, 3, 2],
               [0, 2, 3]]
-  simple: new Scenario
+  four4: new Scenario
+    factSizes: [2, 1, 1]
+    factNames: ['Red', 'Green', 'Blue']
+    factColors: ["#D40000", "#00D400", "#0000D4"]
+    factPngs: ["4pairs", "2pairs", "3pairs"]
+    candNames: ['X', 'Y', 'Z']
+    candColors: ["#D40000", "#47D48E", "#008ED4"]
+    payoffs: [[3, 0, 0],
+              [1, 3, 2],
+              [0, 2, 3]]
+  simple3: new Scenario
     factSizes: [2, 1]
     factNames: ['Red', 'Blue']
     factColors: ["#D40000", "#00D400"]
@@ -142,7 +152,7 @@ class @Scenario
     payoffs: [[3, 0],
               [2, 2],
               [0, 3]]
-  mini: new Scenario
+  mini2: new Scenario
     factSizes: [1, 1]
     factNames: ['Red', 'Blue']
     factColors: ["#D40000", "#00D400"]
@@ -152,7 +162,7 @@ class @Scenario
     payoffs: [[3, 0],
               [2, 2],
               [0, 3]]
-  one: new Scenario
+  one1: new Scenario
     factSizes: [1]
     factNames: ['Red']
     factColors: ["#D40000"]

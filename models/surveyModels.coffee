@@ -200,7 +200,7 @@ debug "creating @setupSurvey function"
   if not err
     SURVEY.save cb
   else
-    err = new Meteor.Error 0, err
+    err = new Meteor.Error 0, "surveyError", err
     cb err, undefined #callback, as if there had been an error server-side
   
 @surveyAnswer = (q, a) ->

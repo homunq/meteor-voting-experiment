@@ -29,7 +29,7 @@ Meteor.startup ->
       if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
           #is again separate autosubscribe?
         if STEP_RECORD?
-          debug "stepLastStep", step, lastStep, stage
+          debug "stepLastStep", step, lastStep, stage #, Elections.findOne({})
           if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
             playSound 'next'
             STEP_RECORD.moveOn(yes)
@@ -47,7 +47,7 @@ Meteor.startup ->
         STEP_RECORD.finish()
       else
         #debug error
-        Session.set 'error', error.reason
+        Session.set 'error', error.details
   else
     #debug "NextStep direct"
     STEP_RECORD.finish()
@@ -221,7 +221,7 @@ if (Handlebars?)
     faction = Session.get 'faction'
     if faction?
       scenario = (Session.get 'scenario') and SCENARIO
-      return scenario.factPngs[faction]
+      return scenario?.factPngs[faction]
     'noFaction'
 
   Handlebars.registerHelper 'error', ->

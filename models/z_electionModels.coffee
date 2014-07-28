@@ -39,7 +39,7 @@ class @Vote extends VersionedInstance
     
 Vote.admin()
 
-@Elections = new Meteor.Collection 'elections', null
+@Elections = new Meteor.Collection 'Elections', null
 
 @MainElection = new Meteor.Collection 'mainElection', null
 if Meteor.isServer && !MainElection.findOne()
@@ -131,7 +131,7 @@ class @Election extends VersionedInstance
       election = Elections.findOne
         _id: eid
       if !election
-        throw Meteor.Error 404, "no such election"
+        throw Meteor.Error 404, "notElection", "no such election"
       election = new Election election
       #debug election
       if (_.indexOf election.voters, uid) == -1
@@ -159,7 +159,7 @@ class @Election extends VersionedInstance
         _id: eid
       #debug 'watch 2', eid
       if !election
-        throw Meteor.Error 404, "no such election"
+        throw Meteor.Error 404, "notElection", "no such election"
       election = new Election election
       #debug election
       #if (_.indexOf election.watchers, uid) == -1
@@ -173,17 +173,17 @@ class @Election extends VersionedInstance
       uid = @userId
       if @stage != vote.stage
         debug "wrong stage"
-        throw new Meteor.Error 403, "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
+        throw new Meteor.Error 403, "wrongStage", "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
       if uid != vote.voter
         debug "not you"
-        throw Meteor.Error 403, "That's not you"
+        throw Meteor.Error 403, "notYou", "That's not you"
       oldVote = Votes.findOne
         voter: vote.voter
         stage: @stage
         election: @_id
       if oldVote
         debug "already voted"
-        throw new Meteor.Error 403, "You've already voted"
+        throw new Meteor.Error 403, "already", "You've already voted"
       faction = @factionOf uid #throws error on failure
       
       #comment out the following non-atomic mess because it should be handled in process.coffee
@@ -237,7 +237,7 @@ class @Election extends VersionedInstance
       debug "findAndJoin "+@userId + "     ;     ", @_id
       vid = @userId
       
-      while true
+      while Meteor.isServer
         debug "findAndJoin 2 ", eid
         try
           if not eid?
@@ -250,11 +250,11 @@ class @Election extends VersionedInstance
             return eid
           else
             debug "findAndJoin can't find ", eid
-            throw new Meteor.Error 404, "null election"
+            throw new Meteor.Error 404, "nullElection", "null election"
         catch e
           debug "addWatcherAndSave make new ", e
           if e instanceof Meteor.Error
-            if e.error is 403
+            if e.reason is "duplicate"
               debug "...but it's just a wasntMe error"
               break
             else
@@ -272,23 +272,23 @@ class @Election extends VersionedInstance
         if (_.indexOf @voters, vid) >= 0
           err = "Sorry, you cannot participate in this same election twice. (How did you do that?)"
           debug err
-          throw new Meteor.Error 403, err
+          throw new Meteor.Error 403, "duplicate", err
         user = new MtUser Meteor.users.findOne
           _id: vid
         if user.nonunique
-          throw new Meteor.Error 403, "Sorry, you cannot participate in this experiment twice."
+          throw new Meteor.Error 403, "nonunique", "Sorry, you cannot participate in this experiment twice."
         if @stage > 1
-          throw new Meteor.Error 403, "Experiment already in progress; cannot join."
+          throw new Meteor.Error 403, "tooLate", "Experiment already in progress; cannot join."
         numVoters = @scen().numVoters()
         if @voters.length >= numVoters
           debug "FULL", @voters
-          throw new Meteor.Error 403, "Election full."
+          throw new Meteor.Error 403, "full", "Election full."
         @push
           voters: vid
         , =>
           if @stage is 0
             @nextStage("timerOnly")
-          #debug "voter pushed", @, user
+          debug "voter added", @_id, vid
           vIndex = _.indexOf @voters, vid
           if vIndex < 0
             debug "Adding voter failed mysteriously... BAD BAD BAD"
@@ -490,7 +490,7 @@ class @Election extends VersionedInstance
     i = _.indexOf @voters, voter
     if i == -1
       if throwerr
-        throw Meteor.Error 403, "Not a voter in this election"
+        throw Meteor.Error 403, "nonvoter", "Not a voter in this election"
       return i
     return @factions[i]  
     
@@ -570,6 +570,7 @@ if Meteor.isServer
     
   
   Meteor.publish 'oneElection', (eid) ->
+    debug "publishing oneElection", eid
     [
       Elections.find {_id:eid},
         fields:
@@ -625,11 +626,11 @@ else if Meteor.isClient
         e = Elections.findOne
           _id: eid
         #important for reactivity to try finding before subscribing/disconnecting
+        Meteor.subscribe 'oneElection', eid, ->
+          debug "oneElection (re)loaded"
         if not global.SUBSCRIBED?
-          Meteor.subscribe 'oneElection', eid, ->
-            debug "oneElection (re)loaded"
           global.SUBSCRIBED = yes
-          debug "subscribed"
+          debug "subscribed", eid
           return 1
         if not e?
           debug "no election for eid", eid

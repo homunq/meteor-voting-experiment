@@ -80,7 +80,7 @@ do ->
           val = Template[after]
             displayCount: seconds2roughTime displayCount/1000
             displayAbsoluteTime: displayAbsoluteTime
-          debug "after?:", val
+          debug "Countdown complete"
           return val
         #else
         #  return "no displayCount???"
