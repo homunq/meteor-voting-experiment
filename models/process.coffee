@@ -71,7 +71,7 @@ class @Process
       return -1
     mins = 0
     stepToTime = @firstForStages[stage]
-    while @steps[stepToTime] and @steps[stepToTime].stage <= stage
+    while @steps[stepToTime]? and (@steps[stepToTime].stage <= stage)
       maxMins = @steps[stepToTime].realMaxMins ? @steps[stepToTime].maxMins
       mins += maxMins
       stepToTime += 1
@@ -94,7 +94,7 @@ class @Process
 ,
   consent:
     suggestedMins: 0
-    maxMins: 2.5
+    maxMins: 15
     stage: 0
     hit: off
     longName: "Consent"
@@ -108,7 +108,7 @@ class @Process
 , 
   scenario:
     suggestedMins: 1 
-    maxMins: 15
+    maxMins: 2.5
     stage: 0
     hit: on
     longName: "Scenario"
@@ -129,8 +129,8 @@ class @Process
       election.addVote VOTE.raw(), cb
 , 
   results:
-    suggestedMins: 1
-    maxMins: 0
+    suggestedMins: 0.5
+    maxMins: 0.5
     stage: 2
     hit: on
     longName: "Practice results"
@@ -285,7 +285,7 @@ class @StepRecord extends VersionedInstance
           slog "It's a prereq"
           if election.stage != PROCESS.step(@step).stage
             slog "...but stage isn't what it should be!!!!!!!!!!!", election.stage, PROCESS.step(@step).stage
-          election.setTimerIf election.stage, stepDoneBy
+          election.setTimerIf (PROCESS.step(@step + 1).stage), stepDoneBy
           if (stepDoneBy >= election.scen().numVoters() or #full scenario
                 (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
             

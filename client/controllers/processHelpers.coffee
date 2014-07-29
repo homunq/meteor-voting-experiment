@@ -46,7 +46,7 @@ Meteor.startup ->
         #debug "NextStep"
         STEP_RECORD.finish()
       else
-        #debug error
+        debug "Error in process:", error
         Session.set 'error', error.details
   else
     #debug "NextStep direct"
@@ -232,7 +232,7 @@ if (Handlebars?)
     step = Session.get 'step'
     if step? and not PROCESS.steps[step].hit
       user= Meteor.user()
-      return user.workerId
+      return user?.workerId
     false
     
   Handlebars.registerHelper 'hitLate', ->

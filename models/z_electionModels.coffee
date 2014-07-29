@@ -173,17 +173,17 @@ class @Election extends VersionedInstance
       uid = @userId
       if @stage != vote.stage
         debug "wrong stage"
-        throw new Meteor.Error 403, "wrongStage", "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
+        throw new Meteor.Error 403, 'wrongStage', "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
       if uid != vote.voter
         debug "not you"
-        throw Meteor.Error 403, "notYou", "That's not you"
+        throw Meteor.Error 403, 'notYou', "That's not you"
       oldVote = Votes.findOne
         voter: vote.voter
         stage: @stage
         election: @_id
       if oldVote
         debug "already voted"
-        throw new Meteor.Error 403, "already", "You've already voted"
+        throw new Meteor.Error 403, 'already', "You've already voted"
       faction = @factionOf uid #throws error on failure
       
       #comment out the following non-atomic mess because it should be handled in process.coffee
@@ -254,15 +254,14 @@ class @Election extends VersionedInstance
         catch e
           debug "addWatcherAndSave make new ", e
           if e instanceof Meteor.Error
-            if e.reason is "duplicate"
+            if e.reason is 'duplicate'
               debug "...but it's just a wasntMe error"
               break
-            else
+            else if e.reason is 'full' and election.makeNew
               eid = undefined
               @make(options, true, 0, false)
-          else
-            throw e
-        Session.set 'error', e.message
+              break
+          throw e
             
     addVoterAndSave: (vid) ->
       #debug "addVoterAndSave "+vid + "     ;     "
@@ -272,17 +271,17 @@ class @Election extends VersionedInstance
         if (_.indexOf @voters, vid) >= 0
           err = "Sorry, you cannot participate in this same election twice. (How did you do that?)"
           debug err
-          throw new Meteor.Error 403, "duplicate", err
+          throw new Meteor.Error 403, 'duplicate', err
         user = new MtUser Meteor.users.findOne
           _id: vid
         if user.nonunique
-          throw new Meteor.Error 403, "nonunique", "Sorry, you cannot participate in this experiment twice."
+          throw new Meteor.Error 403, 'nonunique', "Sorry, you cannot participate in this experiment twice."
         if @stage > 1
-          throw new Meteor.Error 403, "tooLate", "Experiment already in progress; cannot join."
+          throw new Meteor.Error 403, 'tooLate', "Experiment already in progress; cannot join."
         numVoters = @scen().numVoters()
         if @voters.length >= numVoters
           debug "FULL", @voters
-          throw new Meteor.Error 403, "full", "Election full."
+          throw new Meteor.Error 403, 'full', "Election full."
         @push
           voters: vid
         , =>
@@ -438,11 +437,12 @@ class @Election extends VersionedInstance
         
     setTimerIf: (stage, numDone) ->
       if Meteor.isServer 
+        debug "setTimerIf", stage, numDone
         now = (new Date).getTime()
         delay = PROCESS.minsForStage(stage) * 60 * 1000
         if (not @sTimes[stage + 1]) and delay > 0
           debug "poss setting stage timeout (voters,done,slackers)", @numVoters(), numDone, @numSlackers()
-          if (@numVoters() - numDone) <= @numSlackers()
+          if true #(@numVoters() - numDone) <= @numSlackers()
             @sTimes[stage + 1] = now + delay
             sT = (ms, fn) ->
               Meteor.setTimeout fn, ms
@@ -490,7 +490,7 @@ class @Election extends VersionedInstance
     i = _.indexOf @voters, voter
     if i == -1
       if throwerr
-        throw Meteor.Error 403, "nonvoter", "Not a voter in this election"
+        throw Meteor.Error 403, 'nonvoter', "Not a voter in this election"
       return i
     return @factions[i]  
     

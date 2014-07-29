@@ -119,8 +119,8 @@ class @MyRouter extends ReactiveRouter
     login_then newUser, =>
       debug "did login_then 1"
       user = new MtUser Meteor.user()
+      user.setParams xparams
       if not user.eid
-        user.setParams xparams
         #debug "About to watchMain", user._id
         Election.watchMain (error, result) =>
           #debug "watchmain e=", error

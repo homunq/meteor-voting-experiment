@@ -53,7 +53,7 @@ class @MtUser extends VersionedInstance
       @turkSubmitTo = params.turkSubmitTo
       
       @save =>
-        #debug "setParams complete"
+        debug "setParams complete"
   
     wasntMe: (yesItWas) ->
       #debug "Setting nonunique for testing.", !yesItWas

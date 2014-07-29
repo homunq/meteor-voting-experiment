@@ -1,12 +1,14 @@
+global = @
 if (Handlebars?.registerHelper?) 
 
   Handlebars.registerHelper 'meth_subtemplate', (sub, data) ->
-    template =  Template["#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"]
-    debug "meth_subtemplate", "#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }"
-    if template
-      new Handlebars.SafeString template(data)
-    else
-      new Handlebars.SafeString "<!--#{ ((Session.get 'method') and METHOD)?.name }_#{ sub }-->"
+    m = Session.get('method')
+    if m
+      template =  Template["#{ METHOD?.name }_#{ sub }"]
+      debug "meth_subtemplate", "#{ METHOD?.name }_#{ sub }"
+      if template
+        return new Handlebars.SafeString template(data)
+    new Handlebars.SafeString "<!--method name-->"
       
   Handlebars.registerHelper 'methName', ->
     debug "methName", (Session.get 'method')
