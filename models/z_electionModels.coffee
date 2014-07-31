@@ -127,7 +127,7 @@ class @Election extends VersionedInstance
         e.promote()
       
     join: @static (eid) ->
-      uid = @userId()
+      uid = @userId
       election = Elections.findOne
         _id: eid
       if !election
