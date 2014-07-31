@@ -142,6 +142,16 @@ class @Scenario
     payoffs: [[3, 0, 0],
               [1, 3, 2],
               [0, 2, 3]]
+  allfac3: new Scenario
+    factSizes: [1, 1, 1]
+    factNames: ['Red', 'Green', 'Blue']
+    factColors: ["#D40000", "#00D400", "#0000D4"]
+    factPngs: ["4pairs", "2pairs", "3pairs"]
+    candNames: ['X', 'Y', 'Z']
+    candColors: ["#D40000", "#47D48E", "#008ED4"]
+    payoffs: [[3, 0, 0],
+              [1, 3, 2],
+              [0, 2, 3]]
   simple3: new Scenario
     factSizes: [2, 1]
     factNames: ['Red', 'Blue']
