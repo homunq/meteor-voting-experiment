@@ -94,7 +94,7 @@ class @Process
 ,
   consent:
     suggestedMins: 0
-    maxMins: 15
+    maxMins: 10
     stage: 0
     hit: off
     longName: "Consent"

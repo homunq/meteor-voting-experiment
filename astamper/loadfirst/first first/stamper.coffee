@@ -4,8 +4,8 @@ console.log "LOADING STAMPER"
 @console ?=
   log: ->
 
-@DEBUG = false 
-#@DEBUG ?= true
+#@DEBUG = false 
+@DEBUG ?= true
 
 if DEBUG
   @debug = ->

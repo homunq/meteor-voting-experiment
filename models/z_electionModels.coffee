@@ -557,6 +557,8 @@ class @Outcome extends VersionedInstance
 Outcome.admin()
 
 global = @
+debug "set global...................", global
+
 if Meteor.isServer
   Elections.r
   # publish all the non-full elections.
@@ -605,6 +607,17 @@ else if Meteor.isClient
   @OLD_ELECTION = undefined
   @OLD_USER = undefined
   @OLD_STEP_COMPLETED_NUM = undefined
+  
+  #on auto-reloads, session variables can be left over, but global variables aren't. Clear them out if so.
+  if Session.get 'election'
+    debug "resetting session variables"
+    Session.set 'election', undefined
+    Session.set 'scenario', undefined
+    #but only the ones that are object-oriented. Static data should still be OK.
+    #Session.set 'stage', undefined
+    #Session.set 'stepCompletedNums', undefined
+    Session.set 'method', undefined
+  
   debug 'Autosubscribing...', OLD_ELECTION, OLD_USER
   Meteor.autosubscribe ->
     debug 'autosubscribe (re)new'
@@ -637,9 +650,10 @@ else if Meteor.isClient
           return 1
         debug "really (re)loading",Meteor.user().eid,  e
         global.ELECTION = new Election e
+        debug "set ELECTION", e, global.ELECTION, "global", global, "Election", Election
         Session.set 'election', e
         Session.set 'stage', ELECTION.stage
-        Session.set "stepCompletedNums", ELECTION.stepsDoneBy
+        Session.set 'stepCompletedNums', ELECTION.stepsDoneBy
         stepCompletedNum = ELECTION.stepsDoneBy[user?.step] ? 0
         if stepCompletedNum isnt OLD_STEP_COMPLETED_NUM
           OLD_STEP_COMPLETED_NUM = stepCompletedNum
@@ -655,6 +669,7 @@ else if Meteor.isClient
           if ELECTION.scen() isnt OLD_ELECTION?.scen()     
             global.SCENARIO = ELECTION.scen()
             Session.set 'scenario', ELECTION.scenario
+            debug "set scenario", ELECTION.scenario
           if ELECTION.meth() isnt OLD_ELECTION?.meth()       
             global.METHOD = ELECTION.meth()        
             Session.set 'method', ELECTION.method

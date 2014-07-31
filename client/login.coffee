@@ -1,4 +1,4 @@
-global = @
+global = if window? then window else @
 
 uniqueId = (length=8) ->
   id = ""
@@ -52,6 +52,7 @@ loginThen = (cb) ->
           debug "subscribing to old userData"
           global.USER_INCOMPLETE = on
           Meteor.subscribe "userData", ->
+            global.USER_INCOMPLETE = off
             cb()
     Deps.autorun awaiter
   

@@ -37,10 +37,10 @@ class @MtUser extends VersionedInstance
         #debug "I should report you but I won't because you're probably me."
       
       if params.workerId
-        nonunique = Meteor.users.findOne
+        likeMe = Meteor.users.findOne
           stickyWorkerId: params.workerId
-        @nonunique = (nonunique and (nonunique._id isnt @_id))
-        if @_wasntMe or nonunique?._wasntMe
+        @nonunique = (likeMe and (likeMe._id isnt @_id))
+        if @_wasntMe or likeMe?._wasntMe
           @_wasntMe = true
           @nonunique = false
         if @nonunique and @eid
