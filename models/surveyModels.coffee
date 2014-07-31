@@ -159,16 +159,15 @@ class @SurveyResponse extends VersionedInstance
   for qName, q of questionObject
     q.setName qName
     
-  _.extend questionObject,
-    voter: ->
-      if Meteor.isClient
-        Meteor.user()._id
-    election: ->
-      if Meteor.isClient
-        Session.get("election")._id
-    method: ->
-      if Meteor.isClient
-        Session.get("method")
+  if Meteor.isClient
+    Deps.autorun ->
+      _.extend questionObject,
+        voter: ->
+          Meteor.user()?._id
+        election: ->
+          Session.get("election")?._id
+        method: ->
+          Session.get("method")
     
     
   @fields questionObject
