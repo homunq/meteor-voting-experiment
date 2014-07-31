@@ -557,7 +557,6 @@ class @Outcome extends VersionedInstance
 Outcome.admin()
 
 global = @
-debug "set global...................", global
 
 if Meteor.isServer
   Elections.r
