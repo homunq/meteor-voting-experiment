@@ -66,7 +66,7 @@ class @Process
     @steps[num]
     
   minsForStage: (stage) ->
-    #slog "minsForStage", stage
+    #debug "minsForStage", stage
     if stage >= @firstForStages.length - 2
       return -1
     mins = 0
@@ -78,7 +78,7 @@ class @Process
     mins
     
   shouldMoveOn: (step, lastStep, stage) ->
-    #slog "shouldMoveOn", step, @firstForStages[stage], @step(step)?.stage, stage
+    #debug "shouldMoveOn", step, @firstForStages[stage], @step(step)?.stage, stage
     if (step >= 2) 
       return ((step < @firstForStages[stage]) or (lastStep is step and @step(step)?.stage < stage))
     return false
@@ -264,7 +264,7 @@ class @StepRecord extends VersionedInstance
     
   @register
     finished: ->
-      slog "finished StepRecord."
+      debug "finished StepRecord."
       if Meteor.isClient and OPTIMIZE? #faster but harder to debug
         election = (Session.get 'election') and ELECTION
       else
@@ -278,42 +278,42 @@ class @StepRecord extends VersionedInstance
             ).count()
             
         
-        slog "It's been done by ", stepDoneBy
+        debug "It's been done by ", stepDoneBy
         election.stepsDoneBy[@step] = stepDoneBy
         
         if PROCESS.step(@step).prereqForNextStage
-          slog "It's a prereq"
+          debug "It's a prereq"
           if election.stage != PROCESS.step(@step).stage
-            slog "...but stage isn't what it should be!!!!!!!!!!!", election.stage, PROCESS.step(@step).stage
+            debug "...but stage isn't what it should be!!!!!!!!!!!", election.stage, PROCESS.step(@step).stage
           election.setTimerIf (PROCESS.step(@step + 1).stage), stepDoneBy
           if (stepDoneBy >= election.scen().numVoters() or #full scenario
                 (election.stage > 0 and stepDoneBy >= election.voters.length)) #well at least everyone we have
             
-            slog "save StepRecord finishStage"
+            debug "save StepRecord finishStage"
             if election.stage >= 1
               election.finishStage()
               
             election.nextStage()
             
            
-        #slog "save StepRecord 6", election
+        #debug "save StepRecord 6", election
         election.save() 
           
       #move along if we can
       stageForNextStep = PROCESS.step(@step + 1).stage
       if election.stage >= stageForNextStep
         
-        slog "stageForNextStep"
+        debug "stageForNextStep"
         @.constructor._moveOnServer(@step, @voter, yes)
           
       else
         
-        slog "Time to wait...", election.stage, @step
+        debug "Time to wait...", election.stage, @step
         @.constructor._moveOnServer(@step, @voter, no)
           
     
     _moveOnServer: @static (step, voter, really) ->
-      slog "moving on ", step, really, voter
+      debug "moving on ", step, really, voter
       newStep = step + (if really then 1 else 0)
       if Meteor.isClient
         Session.set "step", newStep #ugly hack for greater responsiveness... but remember not to get step from Meteor.user()
@@ -328,7 +328,7 @@ class @StepRecord extends VersionedInstance
         ,
           multi: false
         , (r, e) ->
-          slog "moved on", r, e
+          debug "moved on", r, e
           
               
   moveOn: (really) ->
@@ -339,11 +339,11 @@ class @StepRecord extends VersionedInstance
       now = new Date
       @done = now.getTime()
       @save =>
-        slog "finished::::::::::::::::"#, @
+        debug "finished::::::::::::::::"#, @
         @finished()
         @after()
     else #can't finish
-      #slog "can't finish stepRecord!"
+      #debug "can't finish stepRecord!"
   
   after: ->
     if PROCESS.step(@step).after?
