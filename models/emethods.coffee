@@ -225,6 +225,7 @@ makeMethods = (methods) ->
         numVotes = votes.length
         numVotes -= @sortAndElim ballots, piles
         round = 1
+        losers = [] #in case there are no votes
         while winner is null and numVotes
           losers = []
           losingScore = winningScore = numVotes/2

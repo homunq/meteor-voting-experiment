@@ -444,12 +444,14 @@ class @Election extends VersionedInstance
           debug "poss setting stage timeout (voters,done,slackers)", @numVoters(), numDone, @numSlackers()
           if true #(@numVoters() - numDone) <= @numSlackers()
             @sTimes[stage + 1] = now + delay
+            #@save
             sT = (ms, fn) ->
               Meteor.setTimeout fn, ms
               
             sT delay, =>
               debug "advance if stage <", stage
               @.constructor.nextForTime @_id, stage
+            
               
     nextForTime: @static (eid, stage) ->
       election = new Election Elections.findOne

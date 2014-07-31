@@ -31,10 +31,13 @@ Meteor.startup ->
         if STEP_RECORD?
           debug "stepLastStep", step, lastStep, stage #, Elections.findOne({})
           if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
+            debug "so let's move on"
             playSound 'next'
             STEP_RECORD.moveOn(yes)
           if step is 0
             nextStep()
+        else
+          debug "not moving on; no STEP_RECORD"
       
 @nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish

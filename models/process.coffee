@@ -24,7 +24,7 @@ In all cases, reloading should get you the same step of the same experiment.
 
 
 ###
-
+global = @
 
 Snobind = (f) ->
   f.nobind = true
@@ -318,6 +318,8 @@ class @StepRecord extends VersionedInstance
       if Meteor.isClient
         Session.set "step", newStep #ugly hack for greater responsiveness... but remember not to get step from Meteor.user()
         Session.set "stepLastStep", [newStep, step] #ugly hack for greater responsiveness... but remember not to get step from Meteor.user()
+        if newStep != STEP_RECORD?.step
+          global.STEP_RECORD = new StepRecord()
       else
         Meteor.users.update
           _id: voter
