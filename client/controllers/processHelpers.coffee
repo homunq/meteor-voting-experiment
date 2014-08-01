@@ -1,6 +1,4 @@
 
-            
-@STEP_RECORD ?= undefined
 @SCENARIO ?= undefined
 @ELECTION ?= undefined
 

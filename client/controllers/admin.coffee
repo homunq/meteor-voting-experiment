@@ -72,7 +72,7 @@ Meteor.startup ->
     eid = Session.get 'adminEid'
     voters = Session.get "voters"
     if voters is undefined
-      User.forElection eid, (error, result) ->
+      MtUser.forElection eid, (error, result) ->
         Session.set "voters", result
       voters = []
     paymentList = Session.get "paymentList"
