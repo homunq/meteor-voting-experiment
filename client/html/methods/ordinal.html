@@ -14,7 +14,7 @@ Includes the following systems:
 			<p>The first candidate to get more than half of the remaining ballots wins.</p>
 </template>
 
-<template name="Borda_blurb">
+<template name="borda_blurb">
 		<h2>Election Method: Borda Voting</h2>
 		<h3>Ballot</h3>
 		<p><strong>The ballot will ask you to rank the candidates in order of preference.</strong> 
@@ -35,7 +35,7 @@ Includes the following systems:
 </template>
 
 
-<template name="Borda_ballotLine">
+<template name="borda_ballotLine">
 	{{{IRV_ballotline}}}
 </template>
 
@@ -46,9 +46,10 @@ Includes the following systems:
 	Outcome
 </template>
 
-<template name="Borda_resultHead">
+<template name="borda_resultHead">
 	<td>Score</td>
 </template>
+
 <template name="IRV_hypothetical">
 	<small>(Hypothetical)</small><br/>
 </template>
@@ -61,4 +62,8 @@ Includes the following systems:
 	{{else}}
 		0
 	{{/if}}{{/if}}
+</template>
+
+<template name="borda_result">
+	{{count}}
 </template>

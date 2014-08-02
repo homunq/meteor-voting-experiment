@@ -102,16 +102,18 @@ class @MtUser extends VersionedInstance
       if Meteor.isServer
         if @submitted
           return no
-        @submitted = true
+        @submitted = yes
         @save()
         if not @workerId
           return no
         similar = USERS.find
           stickyWorkerId: @workerId
+          submitted: yes
         if similar.count() isnt 1
           return no
         similar = USERS.find
           workerId: @workerId
+          submitted: yes
         if similar.count() isnt 1
           return no
         return IS_LEGIT

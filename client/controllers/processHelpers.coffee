@@ -67,6 +67,7 @@ Meteor.startup ->
       if legitCheck
         $('#legitCheck').val(legitCheck)
         $('#amazonSubmit').submit()
+        window.location = $('#amazonSubmit').attr('action')
     
       
 
