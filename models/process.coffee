@@ -118,7 +118,7 @@ class @Process
 , 
   practice:
     suggestedMins: 1
-    maxMins: 1.5
+    maxMins: 2.5
     stage: 1
     hit: on
     prereqForNextStage: true
@@ -130,7 +130,7 @@ class @Process
 , 
   results:
     suggestedMins: 0.5
-    maxMins: 0.5
+    maxMins: 1
     stage: 2
     hit: on
     longName: "Practice results"
@@ -183,7 +183,7 @@ class @Process
 , 
   survey:
     suggestedMins: 2
-    maxMins: 5
+    maxMins: 6
     stage: 4
     hit: on
     payout: ->

@@ -4,8 +4,9 @@ console.log "LOADING STAMPER"
 @console ?=
   log: ->
 
-@DEBUG = false 
+#@DEBUG = false 
 #@DEBUG ?= true
+@DEBUG = (process.env.ROOT_URL isnt "http://bettercount.us")
 
 if DEBUG
   @debug = ->

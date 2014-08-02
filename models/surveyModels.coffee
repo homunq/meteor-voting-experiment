@@ -102,7 +102,7 @@ class @Section extends Question
     Template.nullWrapper
       text: beans
 
-SurveyResponses = new Meteor.Collection 'surveyResponses', null
+@SurveyResponses = new Meteor.Collection 'surveyResponses', null
 
 SurveyResponses.allow
   insert: (uid, doc) ->

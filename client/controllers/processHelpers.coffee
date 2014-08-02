@@ -53,6 +53,22 @@ Meteor.startup ->
     #debug "NextStep direct"
     STEP_RECORD.finish()
     Session.set 'error', undefined
+  
+@SUBMITTING = false  
+@amazonSubmit = ->
+  
+  getUser().serverSubmittable (err, valid) ->
+    if valid
+      Session.set 'legitCheck', valid
+  if not SUBMITTING
+    global.SUBMITTING = true
+    Deps.autorun ->
+      legitCheck = Session.get 'legitCheck'
+      if legitCheck
+        $('#legitCheck').val(legitCheck)
+        $('#amazonSubmit').submit()
+    
+      
 
 if (Handlebars?) 
   #a simple handlebars function that lets you render a page based a reactive var
@@ -253,3 +269,4 @@ if (Handlebars?)
   Handlebars.registerHelper 'currentPageIsnt', (page) ->
     currentPage = ROUTER.current_page.get()
     currentPage isnt page
+    

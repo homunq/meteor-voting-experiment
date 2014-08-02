@@ -10,13 +10,41 @@
 
 <template name="payments">
 	<table>
+		
+		<tr>
+			<td>workerId</td>
+			<td>stickyWorkerId</td>
+			<td>faction</td>
+			<td>steps</td>
+			<td>votedRounds</td>
+			<td>paymentDue</td>
+		</tr>
 	{{#each payments}}
 		<tr>
 			<td>{{workerId}}</td>
-			<td>stickyWorkerId: {{stickyWorkerId}}</td>
-			<td>faction: {{faction}}</td>
-			<td>votedRounds: {{votedRounds}}</td>
-			<td>paymentDue: {{paymentDue}}</td>
+			<td>{{stickyWorkerId}}</td>
+			<td>{{faction}}</td>
+			<td>{{nSteps}}</td>
+			<td>{{nVoted}}</td>
+			<td>{{paymentDue}}</td>
+		</tr>
+	{{/each}}
+	
+	</table>
+</template>
+		
+<template name="answers">
+	<table>
+		<tr>
+	{{#each questions}}
+			<td>{{name}}</td>
+	{{/each}}
+		</tr>
+	{{#each answerers}}
+		<tr>
+		{{#each this}}
+				<td>{{this}}</td>
+		{{/each}}
 		</tr>
 	{{/each}}
 	</table>

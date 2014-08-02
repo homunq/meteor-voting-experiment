@@ -76,19 +76,74 @@ Meteor.startup ->
         Session.set "voters", result
       voters = []
     paymentList = Session.get "paymentList"
+    nvoteList = Session.get "nvoteList"
+    nvoteList ?= (["xx","yy"] for voter in voters)
     if paymentList is undefined
-      paymentList = for voter in voters
+      paymentList = for voter, i in voters
         brainyVoter = new MtUser voter
         do (i) ->
           debug "brainyVoter", i
+          brainyVoter.serverNumVoted (error, result) ->
+            nvoteList[i] = result
+            debug "brainyVoter replyN", i, error, result
+            Session.set "nvoteList", nvoteList
+            
           brainyVoter.serverCentsDue (error, result) ->
             debug "brainyVoter reply", i, error, result
             paymentList = (Session.get "paymentList") or ("xx" for voter in voters)
             paymentList[i] = result
+            debug "brainyVoter reply", i, error, result, paymentList
             Session.set "paymentList", paymentList
     payments = for voter, i in voters
       _.extend voter,
         paymentDue: paymentList[i]
+        nSteps: nvoteList[i][0]
+        nVoted: nvoteList[i][1]
+      sorryPaymentDue = voter.paymentDue + (if (parseInt(voter.nSteps) > 3) then 80 else 0)
+      debug "#next voter", voter.paymentDue, voter.nSteps, voter.nVoted
+      prefix = if voter.assignmentId is "ASSIGNMENT_ID_NOT_AVAILABLE" then "#" else ""
+      debug prefix, "./approveWork.sh -assignment", voter.assignmentId
+      if sorryPaymentDue > 0
+        debug( prefix, "./grantBonus.sh -assignment", voter.assignmentId, 
+            "-amount", accounting.formatMoney(sorryPaymentDue/100,""), 
+            "-workerid", voter.stickyWorkerId,
+            '-reason "Good work. We\'re adding $0.80 to the advertised payouts, because some workers\' delay meant that others were unable to vote in the second round."'
+        )
+      voter
+             
+        
     debug "paymentList", payments, paymentList
     payments
         
+  Handlebars.registerHelper 'questions', ->
+    SURVEY = new SurveyResponse
+    questions = ({name:Object.keys(question)[0]} for question in SURVEY.questions)
+    debug "questions", questions
+    questions
+    
+  Handlebars.registerHelper 'answerers', ->
+    SURVEY = new SurveyResponse
+    debug "answerers helper"
+    eid = Session.get 'adminEid'
+    voters = Session.get "avoters"
+    if voters is undefined
+      MtUser.forElection eid, (error, result) ->
+        Session.set "avoters", result
+      voters = []
+    if voters?.length
+      answerersList = Session.get "answerersList"
+      if answerersList is undefined
+        answerersList = (("xxx" for question in SURVEY.questions) for voter in voters)
+        
+        for voter, i in voters
+          brainyVoter = new MtUser voter
+          do (i) ->
+            brainyVoter.serverAnswers (error, result) ->
+              answerersList[i] = result
+              debug "brainyVoter replyN", i, error, result
+              Session.set "answerersList", answerersList
+              
+               
+          
+      debug "answererslist", answerersList
+      answerersList

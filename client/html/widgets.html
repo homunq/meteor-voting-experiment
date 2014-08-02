@@ -97,13 +97,18 @@
 
 
 <template name="AmazonSubmit">
-	<form action="{{user.turkSubmitTo}}/mturk/externalSubmit" >
+	{{#if user.submitted}}
+		You've already submitted. Thank you for participating.
+	{{else}}
+	<form id="amazonSubmit" action="{{user.turkSubmitTo}}/mturk/externalSubmit" onSubmit="">
 		<input type="hidden" name="workerId" value="{{user.workerId}}">
 		<input type="hidden" name="assignmentId" value="{{user.assignmentId}}">
 		<input type="hidden" name="hitId" value="{{user.hitId}}">
 		<input type="hidden" name="voterId" value="{{user._id}}">
-		<input id="submitButton" type="submit" name="Submit" value="Submit" class="btn btn-primary btn-large">
+		<input type="hidden" name="legitCheck" id="legitCheck" value="">
+		<a href="#" onclick="amazonSubmit();return false;" id="submitButton" name="submitButton" class="btn btn-primary btn-large">Submit</a>
 	</form>
+	{{/if}}
 </template>
 
 

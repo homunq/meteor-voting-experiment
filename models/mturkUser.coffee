@@ -22,6 +22,7 @@ class @MtUser extends VersionedInstance
     assignmentId: undefined
     hitId: undefined
     nonunique: undefined
+    submitted: false
     _wasntMe: undefined
     _paid: undefined    
     
@@ -49,6 +50,8 @@ class @MtUser extends VersionedInstance
         @stickyWorkerId = params.workerId
       @workerId = params.workerId
       @assignmentId = params.assignmentId
+      if params.assignmentId isnt 'ASSIGNMENT_ID_NOT_AVAILABLE'
+        @stickyAssignmentId = params.assignmentId
       @hitId = params.hitId
       @turkSubmitTo = params.turkSubmitTo
       
@@ -79,6 +82,40 @@ class @MtUser extends VersionedInstance
     serverCentsDue: ->
       @centsDue()
       
+    serverNumVoted: ->
+      steps = StepRecords.find
+        voter: @_id
+      votes = Votes.find
+        voter: @_id
+      [steps.count(), votes.count()]
+      
+    serverAnswers: ->
+      
+      SURVEY = new SurveyResponse
+      answers = SurveyResponses.findOne
+        voter: @_id
+      debug answers
+      for question in SURVEY.questions
+        answers[Object.keys(question)[0]]
+        
+    serverSubmittable: ->
+      if Meteor.isServer
+        if @submitted
+          return no
+        @submitted = true
+        @save()
+        if not @workerId
+          return no
+        similar = USERS.find
+          stickyWorkerId: @workerId
+        if similar.count() isnt 1
+          return no
+        similar = USERS.find
+          workerId: @workerId
+        if similar.count() isnt 1
+          return no
+        return IS_LEGIT
+     
     forElection: @static (eid) ->
       election = Elections.findOne
         _id: eid

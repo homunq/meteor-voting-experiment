@@ -14,7 +14,7 @@ uniqueId = (length=8) ->
     loginThen cb
 
 loginThen = (cb) ->
-  loggingIn = Meteor.loggingIn()
+  loggingIn = Meteor.loggingIn() or Meteor.user()
   if !loggingIn
     debug "I wasn't logged(ing) in, let's create a user."
     newuser =

@@ -97,6 +97,7 @@ class @MyRouter extends ReactiveRouter
     'elections/makeOne/:scenario/:method/:delay/:roundBackTo': 'makeElection'
     'admin/elections/:password/:fromVersion': 'electionsReport'
     'admin/payments/:password/:eid': 'payments'
+    'admin/answers/:password/:eid': 'answers'
     
   electionMaker: () ->
     debug 'maker loaded'
@@ -186,6 +187,18 @@ class @MyRouter extends ReactiveRouter
     Outcomes.adminSubscribe(password)
     Session.set 'adminEid', eid
     @goto 'payments'
+    
+  answers: (password, eid) ->
+    #debug "payments"
+    Session.set 'password', password
+    Meteor.subscribe('allElections', password)
+    if eid is "x"
+      latestElection = Elections.findOne {},
+        sort: [["sTimes.0", "desc"]]
+      eid = latestElection._id
+    Outcomes.adminSubscribe(password)
+    Session.set 'adminEid', eid
+    @goto 'answers'
           
 
 ROUTER = global.ROUTER = new MyRouter()
