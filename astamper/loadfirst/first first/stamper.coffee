@@ -6,7 +6,7 @@ console.log "LOADING STAMPER"
 
 #@DEBUG = false 
 #@DEBUG ?= true
-@DEBUG = (process.env.ROOT_URL isnt "http://bettercount.us")
+@DEBUG = (Meteor.settings.public? and (Meteor.settings.public is "test"))
 
 if DEBUG
   @debug = ->
