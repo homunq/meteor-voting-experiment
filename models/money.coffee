@@ -6,8 +6,10 @@ if (Handlebars?.registerHelper?)
     
     accounting.formatMoney($baseRate / 100)
   Handlebars.registerHelper "bonus", (mult) ->
-    mult ?= 3
-    accounting.formatMoney($bonusUnit * mult / 100)
+    if _.isNumber(mult)
+      mult ?= 3
+      return accounting.formatMoney($bonusUnit * mult / 100)
+    mult
   Handlebars.registerHelper "minAverage", ->
     accounting.formatMoney(($baseRate + ($bonusUnit * 2 * 12 / 9)) / 100)
   Handlebars.registerHelper "maxAverage", ->

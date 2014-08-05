@@ -114,14 +114,18 @@ class @SurveyResponse extends VersionedInstance
   
   questions = [
       yes and method: (new Section "Voting System", 
-        """The questions in this section relate to the voting system itself, not the web design of this experiment. 
-        When answering them, <strong>imagine</strong> you had been voting using <strong>paper ballots</strong>.""")
+        """The questions in this section relate to the voting system itself, not the web design of this experiment
+        or the payoff structure. 
+        When answering them, <strong>imagine</strong> you had been voting using <strong>paper ballots</strong> in a
+        normal political election.""")
       yes and sysUnderstand: (new MandatoryScaleQuestion Template?.sysUnderstand, 
         "incomprehensible", "crystal clear")
       yes and sysEasy: (new MandatoryScaleQuestion Template?.sysEasy,#"How easy was it to figure out how you wanted to vote in {{methName}}?", 
         "impossible", "easy")
       yes and sysFair: (new MandatoryScaleQuestion Template?.sysFair,#"How fair did {{methName}} seem to you?", 
         "unfair", "fair")
+      yes and sysImportant: (new RadioQuestion "Which of the above characteristics would you consider most <strong>important</strong> for a country's voting system?",#"How fair did {{methName}} seem to you?", 
+        ["understandable","easy to vote","fair","all equally important","other (explain below)"])
       yes and sysFree: new TextboxQuestion Template?.sysFree #"Do you have any other comments about {{methName}}? (About the explanation, the system, whether you'd like to use it in real elections, or whatever)"
       yes and experiment: (new Section "Experiment", 
         """The following questions deal with the experiment. They may be used to fix the experiment for future runs. 
@@ -144,8 +148,11 @@ class @SurveyResponse extends VersionedInstance
       yes and demographics: new Section "Demographics"
       yes and politics: (new RadioQuestion "How would you characterize your politics from left (liberal) to right (conservative)?", 
         ["Strongly left","Center-left","Center","Center-right","Strongly right"])
+      yes and politics: (new RadioQuestion "How often do you vote?", 
+        ["Every election","Most elections","Occasionally (every 2-4 years)","Rarely","Never","I'm not allowed to"])
+      yes and politics: (new RadioQuestion "Where did you grow up? <em>(Choose the first option which applies)</em>", 
+        ["USA","Anglophone country","Latin America","Africa/Middle East","Asia/Pacific","Europe","Not on Earth"])
       yes and gender: (new RadioQuestion "Choose your gender.", ["male","female"])
-      yes and country: new TextQuestion "What is your home country (nationality)?"
       yes and education: (new RadioQuestion "What's the highest level in school you've reached?", 
         ["primary", "secondary/middle school", "high school", "some college/associate", "bachelors", "graduate"])
       yes and age: (new RadioQuestion "How old are you?", 

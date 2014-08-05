@@ -20,7 +20,7 @@
 </template>
 
 <template name="answerRadio">
-	{{lowEnd}} &nbsp;&nbsp;
+	{{#if lowEnd}}<span style="width:150px; 	display:inline-block; text-align:right;">{{lowEnd}}</span> &nbsp;&{{/if}}
 	{{#each this.optionInfos}}
 	<input type="radio" name="{{../qName}}" id="{{../qName}}{{this.num}}" onclick="surveyAnswer('{{../qName}}',{{this.num}});">&nbsp;{{this.text}} &nbsp;&nbsp;
 	{{/each}}

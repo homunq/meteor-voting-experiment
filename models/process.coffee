@@ -94,17 +94,23 @@ class @Process
 ,
   consent:
     suggestedMins: 0
-    maxMins: 10
+    maxMins: 11
     stage: 0
     hit: off
     longName: "Consent"
     blurb: "Understand your rights, wait for the experiment to begin, and informed consent."
     prereqForNextStage: true
-    beforeFinish: (cb) ->
-      election = (Session.get 'election') and ELECTION
-      options = _.pick(election, ['scenario', 'method'])
+    beforeFinish: (stepRecord, cb) ->
+      election = ELECTION or {}
+      options = _.pick(election, ['scenario', 'method', 'howManyMore'])
       options.method = nextMethodInWheel options.method
-      Election.findAndJoin election._id, options, cb
+      debug "in beforeFinish"
+      Election.findAndJoin election._id, options, (error, eid) ->
+        Session.set "stage", 0
+        debug "Setting STEP_RECORD.election", stepRecord, eid
+        stepRecord.election = eid
+        if cb
+          cb()
 , 
   scenario:
     suggestedMins: 1 
@@ -124,7 +130,7 @@ class @Process
     prereqForNextStage: true
     longName: "Election method practice"
     blurb: "Learn and practice the election method to be used."
-    beforeFinish: (cb) ->
+    beforeFinish: (stepRecord, cb) ->
       election = (Session.get 'election') and ELECTION
       election.addVote VOTE.raw(), cb
 , 
@@ -144,7 +150,7 @@ class @Process
     prereqForNextStage: true
     longName: "Voting round 1"
     blurb: "Vote. You will be paid based on results."
-    beforeFinish: (cb) ->
+    beforeFinish: (stepRecord, cb) ->
       election = (Session.get 'election') and ELECTION
       election.addVote VOTE.raw(), cb
 , 
@@ -166,7 +172,7 @@ class @Process
     prereqForNextStage: true
     longName: "Voting round 2"
     blurb: "Vote. You will be paid again based on results."
-    beforeFinish: (cb) ->
+    beforeFinish: (stepRecord, cb) ->
       election = (Session.get 'election') and ELECTION
       election.addVote VOTE.raw(), cb
 , 
@@ -190,8 +196,8 @@ class @Process
       Template.baseRate() #"{{baseRate}}"
     prereqForNextStage: false
     longName: "Survey"
-    blurb: "4-5 simple questions each about:<ul><li>you (gender, country, etc)</li><li>the voting system you used (on a 0-7 scale)</li><li>your general comments about the experiment</li></ul>"
-    beforeFinish: (cb) ->
+    blurb: "5-6 simple questions each about:<ul><li>you (gender, age, etc)</li><li>your feelings on the voting system you used</li><li>your general comments about the experiment</li></ul>"
+    beforeFinish: (stepRecord, cb) ->
       sendSurvey cb
 , 
   debrief:
@@ -265,11 +271,11 @@ class @StepRecord extends VersionedInstance
   @register
     finished: ->
       debug "finished StepRecord."
-      if Meteor.isClient and OPTIMIZE? #faster but harder to debug
-        election = (Session.get 'election') and ELECTION
-      else
-        election = new Election Elections.findOne
-          _id: @election
+      #if Meteor.isClient and OPTIMIZE? #faster but harder to debug
+      #  election = (Session.get 'election') and ELECTION
+      #else
+      election = new Election Elections.findOne
+        _id: @election
           
       if Meteor.isServer
         stepDoneBy = StepRecords.find(
@@ -278,7 +284,7 @@ class @StepRecord extends VersionedInstance
             ).count()
             
         
-        debug "It's been done by ", stepDoneBy
+        debug "It's been done by ", stepDoneBy, @step, @election
         election.stepsDoneBy[@step] = stepDoneBy
         
         if PROCESS.step(@step).prereqForNextStage
