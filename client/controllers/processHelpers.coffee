@@ -39,10 +39,11 @@ Meteor.startup ->
       
 @nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
-  debug "beforeFinish", beforeFinish
   if beforeFinish
-    beforeFinish (error, result) ->
+    debug "calling beforeFinish"
+    beforeFinish STEP_RECORD, (error, result) ->
       #debug "beforeFinish done", error, result
+      debug "beforeFinish returned", error, result
       if !error
         #debug "NextStep"
         STEP_RECORD.finish()
@@ -191,7 +192,7 @@ if (Handlebars?)
     return Session.get 'stage'
     
   Handlebars.registerHelper 'nextStage', ->
-    debug 'helper nextStage'
+    #debug 'helper nextStage'
     return (Session.get 'stage') + 1
     
   Handlebars.registerHelper 'steps', (subTemplate) ->
@@ -251,6 +252,12 @@ if (Handlebars?)
     if step? and not PROCESS.steps[step].hit
       user= Meteor.user()
       return user?.workerId
+    false
+    
+  Handlebars.registerHelper 'preConsent', ->
+    step = Session.get 'step'
+    if step? and not PROCESS.steps[step].hit
+      return true
     false
     
   Handlebars.registerHelper 'hitLate', ->

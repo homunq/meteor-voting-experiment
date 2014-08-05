@@ -47,11 +47,12 @@
 				{{/if}}
 			{{else}} {{! snippet below }}
 					{{#if hitPremature}}
-					<h4>Thank you for taking the hit. Please proceed past steps 0 and 1 immediately.</h4>
-					<div>If you do not get a space in the experiment, you will be unable to submit the HIT.</div>
-					{{else}}
-					<h4>Whether or not you take this HIT, you can only complete it if you have been assigned a slot</h4>
-  				<div>Slots are given first-come, first served. You get a slot by clicking "consent and next" below.</div>
+						<h4>Thank you for taking the HIT. Please proceed past steps 0 and 1 immediately.</h4>
+						<div>If you do not get a space in the experiment, you will be unable to submit the HIT.</div>
+					{{else}} {{#if preConsent}}
+							<h4>Whether or not you take this HIT, you can only complete it if you have been assigned a slot</h4>
+		  				<div>Slots are given first-come, first served. You get a slot by clicking "consent and next" below.</div>
+  					{{/if}}
 					{{/if}}
 				{{{render stepName}}} 
 			{{/if}}{{/if}}			{{!--	/if	--}}
