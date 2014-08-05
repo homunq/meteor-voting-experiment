@@ -138,9 +138,9 @@ class @SurveyResponse extends VersionedInstance
         "much too low", "much higher than necessary")  
       yes and expBonusPay: (new ScaleQuestion Template?.expBonusPay, 
         "much too low to be a good motivator", "much higher than necessary")  
-      yes and politics: (new RadioQuestion """What is two plus two? (If you get this one wrong, we'll know
+      yes and politics: (new ScaleQuestion """What is two plus two? (If you get this one wrong, we'll know
         you're not paying attention)""", 
-        ["3","4","5","6","7"])
+        "lower", "higher")
       yes and expComments: new TextboxQuestion """Do you have any comments or suggestions? (problems you experienced, 
         ideas how this experiment could work better, suggestions for further research, etc.)""" 
       yes and notify: (new RadioQuestion "Do you wish to be notified (via Amazon Mechanical Turk) about the findings of this research?", 
