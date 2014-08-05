@@ -395,6 +395,14 @@ makeMethods = (methods) ->
         if (_(vote).without 0,1,undefined) isnt [] then return false
         true
         
+      processCandInfo: (candInfo) ->
+        candInfo.push
+          color: "#000000"
+          myPayoff: "(cannot win)"
+          name: "DND (Do Not Delegate)"
+          num: 3
+        candInfo
+        
       resolveVotes: (scen, votes, seed) ->
         numCands = scen.numCands()
         approvals = (0 for cand in [0..numCands - 1])
@@ -466,7 +474,7 @@ makeMethods = (methods) ->
 #expose for Node testing        
 exports = Methods unless Meteor?
 
-METHOD_WHEEL = ["approval", "plurality", "GMJ", "IRV"]
+@METHOD_WHEEL = ["borda", "condorcet", "SODA"]#["approval", "plurality", "MAV", "IRV"]
 
 @nextMethodInWheel = (method) ->
   i = METHOD_WHEEL.indexOf method

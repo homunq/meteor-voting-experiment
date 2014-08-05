@@ -93,14 +93,14 @@ class @Election extends VersionedInstance
     rtime:[] #time since start, floor 5
     winners: []
     outcomes: []
-    
+    howManyMore: 0
     
     
   @register
     make: @static (options, promote, delay, roundBackTo)->
       debug "new election"#, options 
       options ?= {}
-      options = _(options).pick "scenario", "method"
+      options = _(options).pick "scenario", "method", "howManyMore"
       if delay
         later = minutesFromNow delay
         if roundBackTo >= 0
@@ -234,7 +234,7 @@ class @Election extends VersionedInstance
         @_id
       
     findAndJoin: @static (eid, options) ->
-      debug "findAndJoin "+@userId + "     ;     ", @_id
+      debug "findAndJoin for uid:"+@userId + "     ;     ", @_id
       vid = @userId
       
       while Meteor.isServer
@@ -247,6 +247,7 @@ class @Election extends VersionedInstance
           if election
             election = new Election election
             election.addVoterAndSave vid
+            debug "findAndJoin done"
             return eid
           else
             debug "findAndJoin can't find ", eid
@@ -257,11 +258,19 @@ class @Election extends VersionedInstance
             if e.reason is 'duplicate'
               debug "...but it's just a wasntMe error"
               break
-            else if e.reason is 'full' and election.makeNew
-              eid = undefined
-              @make(options, true, 0, false)
-              break
-          throw e
+            else if (e.reason is 'full') or (e.reason is 'tooLate')
+              if options.howManyMore > 0
+                options.howManyMore = options.howManyMore - 1
+                eid = undefined
+                @make(options, true, 0, false)
+                continue
+              else
+                throw e
+            else
+              throw e
+          else
+            throw e
+      debug "findAndJoin AAAK"
             
     addVoterAndSave: (vid) ->
       #debug "addVoterAndSave "+vid + "     ;     "
@@ -430,25 +439,26 @@ class @Election extends VersionedInstance
         if nullOrAfterNow(@sTimes[stage])
           debug "election.nextStage 12", stage, @sTimes
           @sTimes[stage] = now
-        @setTimerIf stage, 0
+        @setTimerIf stage, 0, timerOnly
       if not timerOnly
         @stage = stage
         do @save
         
-    setTimerIf: (stage, numDone) ->
+    setTimerIf: (stage, numDone, save) ->
       if Meteor.isServer 
         debug "setTimerIf", stage, numDone
         now = (new Date).getTime()
         delay = PROCESS.minsForStage(stage) * 60 * 1000
-        if (not @sTimes[stage + 1]) and delay > 0
+        if delay > 0
           debug "poss setting stage timeout (voters,done,slackers)", @numVoters(), numDone, @numSlackers()
-          if true #(@numVoters() - numDone) <= @numSlackers()
-            @sTimes[stage + 1] = now + delay
-            #@save
+          if (not @sTimes[stage + 1]?) or (@sTimes[stage + 1] < now) #(@numVoters() - numDone) <= @numSlackers()
+            @sTimes[stage + 1] = max(now, @sTimes[stage]) + delay
+            if save
+              @save()
             sT = (ms, fn) ->
               Meteor.setTimeout fn, ms
               
-            sT delay, =>
+            sT @sTimes[stage + 1] - now, =>
               debug "advance if stage <", stage
               @.constructor.nextForTime @_id, stage
             

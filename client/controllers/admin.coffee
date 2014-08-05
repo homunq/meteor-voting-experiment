@@ -10,6 +10,7 @@ Meteor.startup ->
       attrs = 
         scenario: $('#scenPicker option:selected').attr('value')
         method: $('#methPicker option:selected').attr('value')
+        howManyMore: parseInt($('#howManyMore').val())
       Election.make attrs, true, 0, false, (result, error) =>
         Session.set "madeEid", result
         debug 'madeElection',  attrs#use that template
