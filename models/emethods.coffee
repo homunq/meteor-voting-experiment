@@ -474,7 +474,8 @@ makeMethods = (methods) ->
 #expose for Node testing        
 exports = Methods unless Meteor?
 
-@METHOD_WHEEL = ["borda", "condorcet", "SODA"]#["approval", "plurality", "MAV", "IRV"]
+@METHOD_WHEEL = ["approval", "borda", "condorcet", "SODA", "plurality", "MAV", "IRV"]
+@METHOD_WHEEL = _.sample(METHOD_WHEEL, 999) #shuffle
 
 @nextMethodInWheel = (method) ->
   i = METHOD_WHEEL.indexOf method
