@@ -10,8 +10,12 @@ Includes the following systems:
 		So you would rank the candidate you wish to help the most as 1, the next as 2, and so on.
 		Any candidate(s) whom you do not explicitly rank will be ranked last.</p>
 		<h3>Counting</h3>
-		<p>Each candidate will get 2 points for </p>
-			<p>The first candidate to get more than half of the remaining ballots wins.</p>
+		<p>For each candidate, the votes which ranked that candidate 1 are tallied. If any candidate tallies over
+			half the votes, they win. Otherwise, the candidate site with the lowest tally is eliminated, and its votes
+			are re-tallied for whichever they ranked second.</p>
+			<p><strong>The first candidate to get more than half of the remaining ballots wins.</strong></p>
+			<p><small>Fine print: If a ballot ranked the eliminated candidate first but does not have a second-ranked candidate, 
+				that ballot is discarded. If there are two candidates equally eligible for elimination, one is chosen randomly.</small></p>
 </template>
 
 <template name="borda_blurb">
@@ -22,11 +26,24 @@ Includes the following systems:
 		Any candidate(s) whom you do not explicitly rank will be ranked last.</p>
 		<h3>Counting</h3>
 		<p>The candidate you rank first will get 2 points from you; the one you rank second will get one point.</p>
-			<p>The candidate with the most points wins.</p>
+			<p><strong>The candidate with the most points wins.</strong></p>
 			<p>(In Borda voting each rank is always worth 1 more point than the one below, so if there were 10 candidates,
 				first place would be worth 9 points.)</p>
 </template>
 
+<template name="condorcet_blurb">
+		<h2>Election Method: Condorcet Voting (minimax)</h2>
+		<h3>Ballot</h3>
+		<p><strong>The ballot will ask you to rank the candidates in order of preference.</strong> 
+		So you would rank the candidate you wish to help the most as 1, the next as 2, and so on.
+		Any candidate(s) whom you do not explicitly rank will be ranked last.</p>
+		<h3>Counting</h3>
+		<p>Each candidate will be compared to each other candidate to see which is preferred by more voters.</p>
+			<p><strong>If there is one candidate which wins against each of the others, that site wins.</strong> 
+				Otherwise, the candidate which loses by the least will win.</p>
+			<p>For instance, if you vote X:1, Y:2, Z:3, your vote will be tallied for X in the X vs Y race and the X vs Z race,
+				 and for Y in the Y vs Z race.</p>
+</template>
 
 <template name="IRV_ballotLine">
 	{{#each candRanks}}
@@ -36,7 +53,10 @@ Includes the following systems:
 
 
 <template name="borda_ballotLine">
-	{{{IRV_ballotline}}}
+	{{> IRV_ballotLine}}
+</template>
+<template name="condorcet_ballotLine">
+	{{> IRV_ballotLine}}
 </template>
 
 <template name="IRV_resultHead">
@@ -47,7 +67,17 @@ Includes the following systems:
 </template>
 
 <template name="borda_resultHead">
-	<td>Score</td>
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="borda_resultHeadInner">
+	Score
+</template>
+
+<template name="condorcet_resultHead">
+	<td>{{meth_subtemplate "resultHeadInner"}}</td>
+</template>
+<template name="condorcet_resultHeadInner">
+	Result
 </template>
 
 <template name="IRV_hypothetical">
@@ -67,3 +97,7 @@ Includes the following systems:
 <template name="borda_result">
 	{{count}}
 </template>
+<template name="condorcet_result">
+	{{count}}
+</template>
+

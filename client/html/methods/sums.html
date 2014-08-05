@@ -11,7 +11,7 @@ Includes the following systems:
 		no candidates, your ballot will not affect the election. If you do not click either option, that
 		counts as disapproval.</p>
 		<h3>Counting</h3>
-		<p>The winner will be the site with the most approvals</p>
+		<p><strong>The candidate with the most approvals wins.</strong></p>
 </template>
 
 
@@ -21,7 +21,7 @@ Includes the following systems:
 		<h3>Ballot</h3>
 		<p><strong>You may vote for exactly one candidate.</strong> </p>
 		<h3>Counting</h3>
-			<p>The candidate site with the most votes wins.</p>
+			<p><strong>The candidate site with the most votes wins.</strong></p>
 </template>
 
 
@@ -32,16 +32,30 @@ Includes the following systems:
 			You may give two candidates the same rating if you wish. 
 			Leaving a candidate blank is equivalent to scoring them 0.</p>
 		<h3>Counting</h3>
-			<p>The candidate with the highest total score wins. </p>
+			<p><strong>The candidate with the highest total score wins.</strong></p>
 </template>
 <template name="SODA_blurb">
 		<h2>Election Method: SODA (Simple Optionally-Delegated Approval) Voting</h2>
 		<h3>Ballot</h3>
-		<p><strong>You may give each candidate a score from 0 (worst) to 10 (best).</strong> 
-			You may give two candidates the same rating if you wish. 
-			Leaving a candidate blank is equivalent to scoring them 0.</p>
+		<p><strong>The ballot will ask you to approve or disapprove of each
+		candidate.</strong> You may approve of any number of candidates. If you approve of all candidates or
+		no candidates, your ballot will not affect the election. If you do not click either option, that
+		counts as disapproval.</p>
+		<p><strong>If you approve of exactly one candidate, you are delegating your vote
+			to that candidate;</strong> that is, they may add
+		additional approvals to your ballot to help influence the result in case they cannot win.
+		If you want to approve only one, but do not want to delegate, you may "approve" of the fake candidate
+		"Do Not Delegate".</p>
 		<h3>Counting</h3>
-			<p>The candidate with the highest total score wins. </p>
+			<p>All approvals are tallied for each candidate site. Separately, each candidate's delegated ballots 
+				(those which approve only it) are counted.
+				Then, each site, in order from most approvals to least, may, if it chooses, add its delegated
+				ballot count to the
+				next closest site's approval tally (as if those ballots had also approved the nearby site). 
+				This will happen automatically, and the candidates are programmed
+				to behave rationally, so they will only assign votes to another candidate if they cannot win themselves. 
+				When this is finished, <strong>the candidate with the highest 
+					final approval tally wins.</strong></p>
 </template>
 
 
@@ -60,6 +74,11 @@ Includes the following systems:
 	{{#each legalScores}}
 		<input type="radio" name="{{../name}}" value="4" onclick="voteFor({{../num}},{{this}});">{{this}}
 	{{/each}}
+</template>
+
+<template name="SODA_ballotLine">
+	<input type="radio" name="{{name}}" value="approve" onclick="voteFor({{num}},1);">Approve<br>
+	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
 </template>
 
 <template name="approval_resultHead">
@@ -90,5 +109,15 @@ Includes the following systems:
 	Total scores
 </template>
 <template name="score_result">
+	{{count}}
+</template>
+
+<template name="SODA_resultHead">
+	<td>{{meth_subtemplate "resultHeadInner"}}<br/>(direct + indirect)</td>
+</template>
+<template name="SODA_resultHeadInner">
+	Final scores
+</template>
+<template name="SODA_result">
 	{{count}}
 </template>

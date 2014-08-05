@@ -55,12 +55,22 @@ if (Handlebars?.registerHelper?)
     if scenario
       scenario.payoffsExceptFaction Session.get 'faction'
     
-  Handlebars.registerHelper 'scenCandInfo', ->
+  scenCandInfo = ->
     scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario
       result = scenario.candInfos Session.get 'faction'
     debug "scenCandInfo", Session.get 'faction', (((Session.get 'scenario') and SCENARIO)), result
     result
+    
+  Handlebars.registerHelper 'scenCandInfo', scenCandInfo
+  
+  Handlebars.registerHelper 'ballotCandInfo', ->
+    candInfo = scenCandInfo()
+    processCandInfo = Methods[ELECTION.method].processCandInfo
+    if processCandInfo
+      return processCandInfo candInfo
+    candInfo
+  
     
   Handlebars.registerHelper 'scenNumVoters', ->
     scenario = ((Session.get 'scenario') and SCENARIO)
