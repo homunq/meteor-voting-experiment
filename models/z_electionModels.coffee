@@ -452,7 +452,7 @@ class @Election extends VersionedInstance
         if delay > 0
           debug "poss setting stage timeout (voters,done,slackers)", @numVoters(), numDone, @numSlackers()
           if (not @sTimes[stage + 1]?) or (@sTimes[stage + 1] < now) #(@numVoters() - numDone) <= @numSlackers()
-            @sTimes[stage + 1] = max(now, @sTimes[stage]) + delay
+            @sTimes[stage + 1] = _.max([now, @sTimes[stage]]) + delay
             if save
               @save()
             sT = (ms, fn) ->
