@@ -253,11 +253,11 @@ class @Election extends VersionedInstance
             debug "findAndJoin can't find ", eid
             throw new Meteor.Error 404, "nullElection", "null election"
         catch e
-          debug "addWatcherAndSave make new ", e
+          debug "findAndJoin make new ", e
           if e instanceof Meteor.Error
             if e.reason is 'duplicate'
               debug "...but it's just a wasntMe error"
-              break
+              continue
             else if (e.reason is 'full') or (e.reason is 'tooLate')
               if options.howManyMore > 0
                 options.howManyMore = options.howManyMore - 1
