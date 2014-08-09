@@ -460,9 +460,9 @@ makeMethods = (methods) ->
               laterDelegations = delegations
               totals = totals
           #console.log "hi2", subWinner, winner, subWinnerIndex, numSubAssigns
-        console.log "totals", (totals for [subWinner, totals, delegations] in subWinners)...
+        debug "totals", (totals for [subWinner, totals, delegations] in subWinners)...
         #console.log "delegator is", delegator, filteredApprovals, noDelegations, delegations
-        console.log "delegator, winner, numAssigns, totals, laterDelegations", delegator, winner, numAssigns, totals, laterDelegations
+        debug "delegator, winner, numAssigns, totals, laterDelegations", delegator, winner, numAssigns, totals, laterDelegations
         return [[winner], totals, [[delegator, numAssigns]].concat laterDelegations]
         
       winnerOf: (scores) ->
