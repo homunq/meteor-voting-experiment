@@ -98,4 +98,4 @@ if (Handlebars?.registerHelper?)
   Meteor.setTimeout (-> $(".carousel").carousel
     pause: "hover"
     interval: 10000
-  ), 0
+  ), 20000
