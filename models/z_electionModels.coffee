@@ -1,5 +1,17 @@
 [isArray, isString, isDate] = _
 
+if Meteor.isServer
+  Meteor.startup =>
+    @Future = Npm.require('fibers/future')
+    @sleep = (untilWhen) ->
+      waiter = new Future()
+      if _.isFunction untilWhen
+        untilWhen (val) ->
+          waiter['return'](val)
+      else
+        setTimeout (-> waiter['return']()), untilWhen
+      return waiter.wait()
+
 echo = (args...) ->
   #debug args...
 
@@ -94,8 +106,10 @@ class @Election extends VersionedInstance
     winners: []
     outcomes: []
     howManyMore: 0
+    nextElection: undefined
     
     
+        
   @register
     make: @static (options, promote, delay, roundBackTo)->
       debug "new election"#, options 
@@ -125,6 +139,34 @@ class @Election extends VersionedInstance
       debug "new election 2"#, options 
       if promote
         e.promote()
+      e._id
+      
+    makeNext: @static (eid, options, promote, delay, roundBackTo, cb) ->
+      #sleep 100 #TESTING! REMOVE REMOVE REMOVE!
+      #debug "You idiot, remove the line above."
+      #it never worked perfectly with above, but close enough. Someday, I may fix this.
+      if Meteor.isClient
+        return undefined #sorry, no can do.
+      gotSemaphore = Elections.update
+        _id: eid
+        nextElection: undefined
+        yes and
+          $set:
+            nextElection: true
+      if not gotSemaphore
+        me = Elections.findOne
+          _id: eid
+        if me?.nextElection is true #in progress
+          sleep 100
+          return undefined
+        return me.nextElection
+      #make it ourselves
+      eid = @make options, promote, delay, roundBackTo
+      if not eid
+        eid = undefined
+      @nextElection = eid
+      @save
+      cb eid
       
     join: @static (eid) ->
       uid = @userId
@@ -235,6 +277,7 @@ class @Election extends VersionedInstance
       
     findAndJoin: @static (eid, options) ->
       debug "findAndJoin for uid:"+@userId + "     ;     ", @_id
+      old_eid = eid
       vid = @userId
       
       while Meteor.isServer
@@ -263,8 +306,7 @@ class @Election extends VersionedInstance
               if options.howManyMore > 0
                 debug "yes"
                 options.howManyMore = options.howManyMore - 1
-                eid = undefined
-                @make(options, true, 0, false)
+                eid = @makeNext(old_eid, options, true, 0, false)
                 continue
               else
                 debug "no"
@@ -489,7 +531,6 @@ class @Election extends VersionedInstance
         if Meteor.isServer
           @factions.push faction
         @save()
-        
         
         
   
