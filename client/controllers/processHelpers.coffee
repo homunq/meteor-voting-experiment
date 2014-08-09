@@ -61,14 +61,18 @@ Meteor.startup ->
   getUser().serverSubmittable (err, valid) ->
     if valid
       Session.set 'legitCheck', valid
+    else
+      Session.set("holdSubmitForm", false)
   if not SUBMITTING
     global.SUBMITTING = true
+    Session.set("holdSubmitForm", true)
     Deps.autorun ->
       legitCheck = Session.get 'legitCheck'
       if legitCheck
         $('#legitCheck').val(legitCheck)
         $('#amazonSubmit').submit()
-        window.location = $('#amazonSubmit').attr('action')
+      
+        
     
       
 
@@ -277,4 +281,16 @@ if (Handlebars?)
   Handlebars.registerHelper 'currentPageIsnt', (page) ->
     currentPage = ROUTER.current_page.get()
     currentPage isnt page
+    
+  Handlebars.registerHelper 'submittedDone', (page) ->
+    if Session.get("holdSubmitForm")
+      return false
+    u = Meteor.user()
+    if SUBMITTING
+      return true
+    if u.submitted
+      if u._wasntMe
+        return false
+      return true
+    return false
     
