@@ -138,7 +138,7 @@ class @SurveyResponse extends VersionedInstance
         "much too low", "much higher than necessary")  
       yes and expBonusPay: (new ScaleQuestion Template?.expBonusPay, 
         "much too low to be a good motivator", "much higher than necessary")  
-      yes and politics: (new ScaleQuestion """What is two plus two? (If you get this one wrong, we'll know
+      yes and expDerpy: (new ScaleQuestion """What is two plus two? (If you get this one wrong, we'll know
         you're not paying attention)""", 
         "lower", "higher")
       yes and expComments: new TextboxQuestion """Do you have any comments or suggestions? (problems you experienced, 
@@ -146,22 +146,27 @@ class @SurveyResponse extends VersionedInstance
       yes and notify: (new RadioQuestion "Do you wish to be notified (via Amazon Mechanical Turk) about the findings of this research?", 
         ["yes","no"])  
       yes and demographics: new Section "Demographics"
-      yes and politics: (new RadioQuestion "How would you characterize your politics from left (liberal) to right (conservative)?", 
+      yes and demPolitics: (new RadioQuestion "How would you characterize your politics from left (liberal) to right (conservative)?", 
         ["Strongly left","Center-left","Center","Center-right","Strongly right"])
-      yes and politics: (new RadioQuestion "How often do you vote?", 
+      yes and demVoteFreq: (new RadioQuestion "How often do you vote?", 
         ["Every election","Most elections","Occasionally (every 2-4 years)","Rarely","Never","I'm not allowed to"])
-      yes and politics: (new RadioQuestion "Where did you grow up? <em>(Choose the first option which applies)</em>", 
+      yes and demWhere: (new RadioQuestion "Where did you grow up? <em>(Choose the first option which applies)</em>", 
         ["USA","Anglophone country","Latin America","Africa/Middle East","Asia/Pacific","Europe","Not on Earth"])
-      yes and gender: (new RadioQuestion "Choose your gender.", ["male","female"])
-      yes and education: (new RadioQuestion "What's the highest level in school you've reached?", 
+      yes and demGender: (new RadioQuestion "Choose your gender.", ["male","female"])
+      yes and demEd: (new RadioQuestion "What's the highest level in school you've reached?", 
         ["primary", "secondary/middle school", "high school", "some college/associate", "bachelors", "graduate"])
-      yes and age: (new RadioQuestion "How old are you?", 
+      yes and demAge: (new RadioQuestion "How old are you?", 
         ["0-17", "18-21", "22-29", "30-39", "40-59", "60+"])
        ]
   
   questions: questions
-    
-  questionObject = _.extend {}, questions...
+  
+  questionObject = {}
+  for question in questions
+    for name, q of question
+      if questionObject[name]?
+        debug "BAD!!!!!!!!!! Duplicate question name:", name
+      questionObject[name] = q
   
   for qName, q of questionObject
     q.setName qName
