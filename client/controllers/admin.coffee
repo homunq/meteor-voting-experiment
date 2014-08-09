@@ -7,16 +7,19 @@ sT = (ms, fn) ->
 Meteor.startup ->
   Template.electionMaker.events
     'click #create': ->
+      method = $('#methPicker option:selected').attr('value')
+      if method is 'random'
+        method = _.sample METHOD_WHEEL
       attrs = 
         scenario: $('#scenPicker option:selected').attr('value')
-        method: $('#methPicker option:selected').attr('value')
+        method: method
         howManyMore: parseInt($('#howManyMore').val())
       Election.make attrs, true, 0, false, (result, error) =>
         Session.set "madeEid", result
         debug 'madeElection',  attrs#use that template
     
   Handlebars.registerHelper 'allMethods', ->
-    return (name for name, meth of Methods)
+    return ['random'].concat(name for name, meth of Methods)
     
   Handlebars.registerHelper 'allScenarios', ->
     return (name for name, scen of Scenarios)
