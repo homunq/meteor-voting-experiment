@@ -136,10 +136,21 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 		Subjects will be accepted on a first-come, first-served basis. Please do not take the HIT
 		now; if you are accepted into the experiment, this screen will change to tell you to take it then.</p>
 
-	{{> countdownWithSound}}
+	{{!-- {{> countdownWithSound}}
+	{{{renderWith "nextStep" "Consent and next"}}}
 </template>
 
 <template name="scenario">
+    <div class="span6"><p>This is a voting game. You and 17 other turkers are pretending to be
+    	townspeople voting on a library location. You want it to be as close as possible to "your" neighborhood.
+    	You'll all vote 3 times. The first time is for practice, and the next two times you'll get a money bonus depending
+    	on how close to your house the winning site is. The voting system and neighborhood assignments will not change.</p>
+    	<p>Keep an eye on the time (next to the "next" button at bottom); you should have plenty, but if you stall too much,
+    	you will not get to vote, and will not be paid a bonus for that round.</p>
+    	<p>To learn more about the town and where "your house" is, please read through the slides at right.</p>
+      <!--Body content-->
+			{{> scenarioTable}}
+	</div>
 	<div class="span6">
 		{{call "carousel"}}
 		<div class="carousel slide carousel-fade">
@@ -153,7 +164,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 		  <!-- Carousel items -->
 		  <div class="carousel-inner">
 				{{#each scenSlides}}
-				<div class="{{this.active}}item">
+				<div class="{{this.active}} item">
 					<a href="#" onclick="$('.carousel').carousel('next')"><img src="images/{{this.name}}.png" class="cut" /></a>
 				</div>
 				{{/each}}
@@ -163,10 +174,6 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 		  <a class="carousel-control right" href="#myCarousel" data-slide="next" onclick="$('.carousel').carousel('next')">&rsaquo;</a>
 		</div>
     </div>
-    <div class="span6"><p>Please read through the slides at left.</p>
-      <!--Body content-->
-			{{> scenarioTable}}
-	</div>
 	{{{renderWith "nextStep" "Next Step (click AFTER you've finished reading the slides)"}}}
 </template>
 
