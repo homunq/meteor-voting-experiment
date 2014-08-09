@@ -100,7 +100,11 @@ class @MtUser extends VersionedInstance
         
     serverSubmittable: ->
       if Meteor.isServer
+        debug "serverSubmittable"
         if @submitted
+          debug "wasntMe?", @
+          if @_wasntMe
+            return "wasntMe"
           return no
         @submitted = yes
         @save()
@@ -110,6 +114,9 @@ class @MtUser extends VersionedInstance
           stickyWorkerId: @workerId
           submitted: yes
         if similar.count() isnt 1
+          debug "wasntMe?", @
+          if @_wasntMe
+            return "wasntMe"
           return no
         similar = USERS.find
           workerId: @workerId
