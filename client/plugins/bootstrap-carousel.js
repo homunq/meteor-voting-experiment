@@ -97,7 +97,7 @@
         , $next = next || $active[type]()
         , isCycling = this.interval
         , direction = type == 'next' ? 'left' : 'right'
-        , fallback  = type == 'next' ? 'first' : 'last'
+        , fallback  = type == 'next' ? 'last' : 'first'//'first' : 'last' //JQ: switched as simple no-wrap hack
         , that = this
         , e
 
@@ -112,7 +112,7 @@
       , direction: direction
       })
 
-      if ($next.hasClass('active')) return
+      //if ($next.hasClass('active')) return this
 
       if (this.$indicators.length) {
         this.$indicators.find('.active').removeClass('active')
@@ -124,7 +124,7 @@
 
       if ($.support.transition && this.$element.hasClass('slide')) {
         this.$element.trigger(e)
-        if (e.isDefaultPrevented()) return
+        if (e.isDefaultPrevented()) return this
         $next.addClass(type)
         $next[0].offsetWidth // force reflow
         $active.addClass(direction)
@@ -137,7 +137,7 @@
         })
       } else {
         this.$element.trigger(e)
-        if (e.isDefaultPrevented()) return
+        if (e.isDefaultPrevented()) return this
         $active.removeClass('active')
         $next.addClass('active')
         this.sliding = false
