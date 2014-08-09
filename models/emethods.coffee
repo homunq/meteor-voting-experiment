@@ -127,6 +127,8 @@ makeMethods = (methods) ->
         for vote in votes
           for winCand in [0..lastCand]
             for loseCand in [0..lastCand]
+              if not vote[loseCand]?
+                vote[loseCand] = -999
               if vote[winCand] >= vote[loseCand] then tallies[winCand][loseCand] += 1
         minMargins = []
         beats = [] 
