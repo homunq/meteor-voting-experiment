@@ -106,11 +106,15 @@ class @Process
       options.method = nextMethodInWheel options.method
       debug "in beforeFinish"
       Election.findAndJoin election._id, options, (error, eid) ->
-        Session.set "stage", 0
-        debug "Setting STEP_RECORD.election", stepRecord, eid
-        stepRecord.election = eid
-        if cb
-          cb()
+        if error
+          if cb
+            cb(error)
+        else
+          Session.set "stage", 0
+          debug "Setting STEP_RECORD.election", stepRecord, eid
+          stepRecord.election = eid
+          if cb
+            cb()
 , 
   scenario:
     suggestedMins: 1 
@@ -306,7 +310,7 @@ class @StepRecord extends VersionedInstance
         election.save() 
           
       #move along if we can
-      stageForNextStep = PROCESS.step(@step + 1).stage
+      stageForNextStep = PROCESS.step(@step + 1)?.stage
       if election.stage >= stageForNextStep
         
         debug "stageForNextStep"
