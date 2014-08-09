@@ -253,18 +253,21 @@ class @Election extends VersionedInstance
             debug "findAndJoin can't find ", eid
             throw new Meteor.Error 404, "nullElection", "null election"
         catch e
-          debug "findAndJoin make new ", e
+          debug "findAndJoin make new ", e, options.howManyMore
           if e instanceof Meteor.Error
             if e.reason is 'duplicate'
               debug "...but it's just a wasntMe error"
               continue
             else if (e.reason is 'full') or (e.reason is 'tooLate')
+              debug "so make?"
               if options.howManyMore > 0
+                debug "yes"
                 options.howManyMore = options.howManyMore - 1
                 eid = undefined
                 @make(options, true, 0, false)
                 continue
               else
+                debug "no"
                 throw e
             else
               throw e
@@ -451,8 +454,12 @@ class @Election extends VersionedInstance
         delay = PROCESS.minsForStage(stage) * 60 * 1000
         if delay > 0
           debug "poss setting stage timeout (voters,done,slackers)", @numVoters(), numDone, @numSlackers()
-          if (not @sTimes[stage + 1]?) or (@sTimes[stage + 1] < now) #(@numVoters() - numDone) <= @numSlackers()
-            @sTimes[stage + 1] = _.max([now, @sTimes[stage]]) + delay
+          base = now
+          if stage isnt @stage
+            base = _.max([base, @sTimes[stage]])
+          later = base + delay
+          if (not @sTimes[stage + 1]?) or ((@sTimes[stage + 1] < now) and (stage > 0)) or (later < @sTimes[stage + 1]) #(@numVoters() - numDone) <= @numSlackers()
+            @sTimes[stage + 1] = later
             if save
               @save()
             sT = (ms, fn) ->
