@@ -197,7 +197,7 @@ makeMethods = (methods) ->
             winningScore = score
           else if score is winningScore
             winners.push cand
-        [winners, scores]
+        [winners, (+score.toFixed(2) for score in scores)]
         
       honestVotes: [0,1,3,4]
       
@@ -293,8 +293,8 @@ makeMethods = (methods) ->
         #debug "resolveVotes", numCands, votes
         nullVote = (0 for score in [1..@grades.length])
         voteTallies = for vote in votes
-          for score in vote
-            score ?= 0
+          for cand in [0..scen.numCands()]
+            score = vote[cand] or 0
             tally = nullVote.slice()
             tally[score] = 1
             tally
@@ -313,7 +313,9 @@ makeMethods = (methods) ->
             cumulative += tally[median]
           lesses = cumulative - tally[median]
           mores = votes.length - cumulative
-          score = median + ((mores - fakeLesses) / (2 * (votes.length - mores - fakeLesses)))
+          if (mores > 0) or (lesses > 0) #when a whole faction gives the same number, just use that.
+            lesses = fakeLesses
+          score = median + ((mores - lesses) / (2 * (votes.length - mores - lesses)))
           score
         winners = []
         winningScore = -1
@@ -323,7 +325,7 @@ makeMethods = (methods) ->
             winningScore = score
           else if score is winningScore
             winners.push cand
-        [winners, scores]
+        [winners, (+score.toFixed(2) for score in scores)]
         
       honestVotes: [0,1,3,4]
    
