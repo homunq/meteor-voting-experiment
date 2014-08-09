@@ -102,11 +102,15 @@ class @StamperInstance
              
               if cur_instance
                 cur_instance = new self cur_instance
+              else
+                console.log "object not found"
               debug "server method on", id, (cur_instance and "has cur_instance")
             else
               cur_instance = new self obj
             if not cur_instance
-              throw Meteor.Error 404, "NotFound", "No such object on #{ if Meteor.isServer then 'server'  else 'client' }"
+              s = "No such object as #{ id } on #{ if Meteor.isServer then 'server'  else 'client' }"
+              console.log s
+              throw Meteor.Error 404, "NotFound", s
               
             cur_instance.userId = @userId #sneak in a method for current userId
             cur_instance[smname].apply cur_instance, args
