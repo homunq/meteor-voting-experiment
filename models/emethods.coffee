@@ -478,7 +478,7 @@ makeMethods = (methods) ->
 #expose for Node testing        
 exports = Methods unless Meteor?
 
-@METHOD_WHEEL = ["approval", "borda", "condorcet", "SODA", "plurality", "MAV", "IRV"]
+@METHOD_WHEEL = ["approval", "borda", "condorcet", "SODA", "plurality", "MAV", "IRV", "score"]
 @METHOD_WHEEL = _.sample(METHOD_WHEEL, 999) #shuffle
 
 @nextMethodInWheel = (method) ->
