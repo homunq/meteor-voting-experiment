@@ -37,7 +37,7 @@ Includes the following systems:
 <template name="SODA_blurb">
 		<h2>Election Method: SODA (Simple Optionally-Delegated Approval) Voting</h2>
 		<h3>Ballot</h3>
-		<p><strong>The ballot will ask you to approve or disapprove of each
+		<p><strong>The ballot will ask you to delegate to one candidate, or approve of several candidates
 		candidate.</strong> You may approve of any number of candidates. If you approve of all candidates or
 		no candidates, your ballot will not affect the election. If you do not click either option, that
 		counts as disapproval.</p>
@@ -77,9 +77,12 @@ Includes the following systems:
 </template>
 
 <template name="SODA_ballotLine">
-	<input type="radio" name="{{name}}" value="approve" onclick="voteFor({{num}},1);">Approve<br>
-	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
+	<input type="checkbox" name="{{name}}" value="approve"onclick="checkboxVoteFor({{num}},this.checked);">{{SODAvote num}}
 </template>
+
+<template name="SODA_delegate"><b>Delegate</b>/Approve</template>
+<template name="SODA_approve">Delegate/<b>Approve</b></template>
+<template name="SODA_neither">Delegate/Approve</template>
 
 <template name="approval_resultHead">
 	<td>{{meth_subtemplate "resultHeadInner"}}</td>

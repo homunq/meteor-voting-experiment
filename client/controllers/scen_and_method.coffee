@@ -66,7 +66,7 @@ if (Handlebars?.registerHelper?)
   
   Handlebars.registerHelper 'ballotCandInfo', ->
     candInfo = scenCandInfo()
-    processCandInfo = Methods[ELECTION.method].processCandInfo
+    processCandInfo = Methods[ELECTION?.method]?.processCandInfo
     if processCandInfo
       return processCandInfo candInfo
     candInfo
@@ -93,6 +93,16 @@ if (Handlebars?.registerHelper?)
   Handlebars.registerHelper 'legalScores', ->
     Methods.score.scores.slice().reverse()
     
+  Handlebars.registerHelper 'SODAvote', (num) ->
+    result = ->
+      vote = Session.get('vote') or []
+      if not vote[num]
+        return Template.SODA_neither()
+      if (_.reduce vote, ((a,b)->a+b),0) is 1
+        return Template.SODA_delegate()
+      return Template.SODA_approve()
+    new Handlebars.SafeString Spark.labelBranch ("SODAvote"+num), result
+      
   
 @carousel = ->
   Meteor.setTimeout (-> $(".carousel").carousel

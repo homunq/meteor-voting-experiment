@@ -122,6 +122,11 @@ global.VOTE = null
 @voteFor = (cand, grade) ->
   debug "voteFor", cand, grade
   VOTE.vote[cand] = grade
+  
+@checkboxVoteFor = (cand, checked) ->
+  debug "voteFor", cand, checked
+  VOTE.vote[cand] = (if checked then 1 else 0)
+  Session.set('vote',VOTE.vote)
 
 @exclusiveVoteFor = (cand, rank, clearUI) ->
   debug "exclusiveVoteFor", cand, rank
@@ -143,5 +148,6 @@ global.VOTE = null
   
 
 
-Handlebars.registerHelper 'Session', (what) ->
-  Session.get what
+if (Handlebars?.registerHelper?) 
+  Handlebars.registerHelper 'Session', (what) ->
+    Session.get what
