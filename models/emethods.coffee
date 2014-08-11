@@ -33,6 +33,9 @@ class @Method
     if seed == 0
       return (score + i / 100 for i, score of scores)
     return (score + Math.random() for score in scores)
+    
+  normalize: (x) ->
+    (x - @bottom) / (@top - @bottom)
       
       
   
@@ -46,6 +49,8 @@ makeMethods = (methods) ->
   approval:
     longName: "Approval Voting"
     actions:
+      top: 1
+      bottom: 0
       validVote: (numCands, vote) ->
         if vote.length > numCands then return false
         if (_(vote).without 0,1,undefined) isnt [] then return false
@@ -77,6 +82,8 @@ makeMethods = (methods) ->
     longName: "Borda voting"
     
     actions:
+      top: -1
+      bottom: -4
       validVote: (numCands, vote) ->
         if vote.length > numCands 
           return false
@@ -109,6 +116,8 @@ makeMethods = (methods) ->
   condorcet:
     longName: "Condorcet (pairwise) voting"
     actions:
+      top: -1
+      bottom: -4
       validVote: (numCands, vote) ->
         if vote.length > numCands 
           return false
@@ -162,6 +171,8 @@ makeMethods = (methods) ->
   GMJ:
     longName: "Graduated Majority Judgment"
     actions:
+      top: 4
+      bottom: 0
       grades: ['F', 'D', 'C', 'B', 'A']
     
       validVote: (numCands, vote) ->
@@ -204,6 +215,8 @@ makeMethods = (methods) ->
   IRV:
     longName: "Instant Runoff Voting"
     actions:
+      top: -1
+      bottom: -4
       validVote: (numCands, vote) ->
         if vote.length > numCands 
           return false
@@ -280,6 +293,8 @@ makeMethods = (methods) ->
   MAV:
     longName: "Majority Approval Voting"
     actions:
+      top: 4
+      bottom: 0
       grades: ['F', 'D', 'C', 'B', 'A']
     
       validVote: (numCands, vote) ->
@@ -332,6 +347,8 @@ makeMethods = (methods) ->
   plurality:
     longName: "Plurality Voting"
     actions:
+      top: 1
+      bottom: 0
       validVote: (numCands, vote) ->
         if not vote?
           return true #abstaining is OK 
@@ -362,6 +379,8 @@ makeMethods = (methods) ->
   score:
     longName: "Score Voting"
     actions:
+      top: 10
+      bottom: 0
       scores: [0..10]
     
       validVote: (numCands, vote) ->
@@ -394,17 +413,22 @@ makeMethods = (methods) ->
     
     
     actions:
+      top: 1
+      bottom: 0
       validVote: (numCands, vote) ->
         if vote.length > (numCands+1) then return false
         if (_(vote).without 0,1,undefined) isnt [] then return false
         true
         
       processCandInfo: (candInfo) ->
-        candInfo.push
-          color: "#000000"
-          myPayoff: "(cannot win)"
-          name: "DND (Do Not Delegate)"
-          num: 3
+        if candInfo.length isnt 4
+          candInfo.push
+            color: "#000000"
+            myPayoff: "(cannot win)"
+            name: "DND (Do Not Delegate)"
+            num: 3
+        else
+          candInfo[3].name = candInfo[3].name + " (No delegation)"
         candInfo
         
       resolveVotes: (scen, votes, seed) ->
