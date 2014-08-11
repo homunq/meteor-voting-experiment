@@ -98,6 +98,8 @@ class @MyRouter extends ReactiveRouter
     'admin/elections/:password/:fromVersion': 'electionsReport'
     'admin/payments/:password/:eid': 'payments'
     'admin/answers/:password/:eid': 'answers'
+    'admin/voters/:password/:version': 'adminVoters'
+    'admin/votes/:password/:version': 'adminVotes'
     
   electionMaker: () ->
     debug 'maker loaded'
@@ -191,14 +193,35 @@ class @MyRouter extends ReactiveRouter
   answers: (password, eid) ->
     #debug "payments"
     Session.set 'password', password
-    Meteor.subscribe('allElections', password)
+    Elections.adminSubscribe password
     if eid is "x"
       latestElection = Elections.findOne {},
         sort: [["sTimes.0", "desc"]]
       eid = latestElection._id
-    Outcomes.adminSubscribe(password)
+    Outcomes.adminSubscribe password
     Session.set 'adminEid', eid
     @goto 'answers'
+    
+  adminVoters: (password, version) ->
+    Session.set 'password', password
+    Elections.adminSubscribe password
+    Votes.adminSubscribe password
+    q = Session.get 'QUERY'
+    if not q
+      Session.set 'QUERY',
+        version: version
+    @goto 'adminVotes'
+    
+  adminVotes: (password, version) ->
+    Session.set 'password', password
+    Elections.adminSubscribe password
+    Votes.adminSubscribe password
+    Outcomes.adminSubscribe password
+    q = Session.get 'QUERY'
+    if not q
+      Session.set 'QUERY',
+        version: parseInt(version)
+    @goto 'adminVotes'
           
 
 ROUTER = global.ROUTER = new MyRouter()
