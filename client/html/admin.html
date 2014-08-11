@@ -51,6 +51,95 @@
 	</table>
 </template>
 
+
+<template name="adminVoters">
+	<table>
+		<tr>
+			<td>voter</td>
+			<td>eid</td>
+			<td>faction</td>
+			<td>method</td>
+			<td>scenario</td>
+			<td>v1:A</td>
+			<td>v1:B</td>
+			<td>v1:C</td>
+			<td>v1:win</td>
+			<td>v2:A</td>
+			<td>v2:B</td>
+			<td>v2:C</td>
+			<td>v2:win</td>
+			<td>v3:A</td>
+			<td>v3:B</td>
+			<td>v3:C</td>
+		</tr>
+	{{#each adminVoters}}
+		<tr>
+			<td>{{this._id}}</td>
+			<td>{{this.election}}</td>
+			<td>{{this.faction}}</td>
+			<td>{{this.method}}</td>
+			<td>{{this.scenario}}</td>
+			<td>{{v1.vote.[0]}}</td>
+			<td>{{v1.vote.[1]}}</td>
+			<td>{{v1.vote.[2]}}</td>
+			<td><b>{{v2.prevWinner}}</b></td>
+			<td>{{v2.vote.[0]}}</td>
+			<td>{{v2.vote.[1]}}</td>
+			<td></b>{{v2.vote.[2]}}</b></td>
+			<td>{{v3.prevWinner}}</td>
+			<td>{{v3.vote.[0]}}</td>
+			<td>{{v3.vote.[1]}}</td>
+			<td>{{v3.vote.[2]}}</td>
+		</tr>
+	{{/each}}
+	</table>
+</template>
+
+
+<template name="adminVotes">
+	<table>
+		<tr>
+			<td>voter</td>
+			<td>eid</td>
+			<td>faction</td>
+			<td>method</td>
+			<td>scenario</td>
+			<td>stage</td>
+			<td>prev_winner</td>
+			<td>this_winner</td>
+			<td>prev_payoff</td>
+			<td>this_payoff</td>
+			<td>c0</td>
+			<td>c1</td>
+			<td>c2</td>
+			<td>favSupport</td>
+			<td>midSupport</td>
+			<td>oppSupport</td>
+			
+		</tr>
+	{{#each adminVotes}}
+		<tr>
+			<td>{{this.voter}}</td>
+			<td>{{this.election}}</td>
+			<td>{{this.faction}}</td>
+			<td>{{this.method}}</td>
+			<td>{{this.scenario}}</td>
+			<td>{{this.stage}}</td>
+			<td>{{this.prevWinner}}</td>
+			<td>{{this.thisWinner}}</td>
+			<td>{{this.prevPay}}</td>
+			<td>{{this.thisPay}}</td>
+			<td>{{this.vote.[0]}}</td>
+			<td>{{this.vote.[1]}}</td>
+			<td>{{this.vote.[2]}}</td>
+			<td>{{this.support.[0]}}</td>
+			<td>{{this.support.[1]}}</td>
+			<td>{{this.support.[2]}}</td>
+		</tr>
+	{{/each}}
+	</table>
+</template>
+
 <template name="electionsReport">
 	{{#each elections}}
 		<div>

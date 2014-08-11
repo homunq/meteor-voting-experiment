@@ -3,6 +3,8 @@
 sT = (ms, fn) ->
   Meteor.setTimeout fn, ms
 
+global = @
+@EQUERY = undefined 
 
 Meteor.startup ->
   Template.electionMaker.events
@@ -151,3 +153,62 @@ Meteor.startup ->
           
       debug "answererslist", answerersList
       answerersList
+      
+      
+  Handlebars.registerHelper 'adminVoters', ->
+    debug "adminVoters helper"
+    equery = Session.get 'QUERY'
+    electionSet = Elections.find equery
+    electionSet = electionSet.fetch()
+    voters = []
+    for election in electionSet
+      debug "election", election._id
+      eVotes = Votes.find
+        election: election._id
+        yes and 
+          sort:
+            faction:1
+            voter:1
+            stage:1
+      lastVoter = {}
+      for vote in eVotes.fetch()
+        if vote.voter isnt lastVoter.voter
+          if lastVoter.voter
+            voters.push lastVoter
+          lastVoter = vote
+        lastVoter["v#{vote.stage}"] = vote
+      voters.push lastVoter
+    voters
+      
+    
+  Handlebars.registerHelper 'adminVotes', ->
+    debug "adminVoters helper"
+    query = Session.get 'QUERY'
+    voteSet = Votes.find query,
+      sort:
+        election:1
+        faction:1
+        voter:1
+        stage:1
+    votes = voteSet.fetch()
+    elections = _.uniq([vote.election for vote in votes],yes)
+    outcomes = Outcomes.find
+      election:
+        $in: elections
+    outcomeDict = {}
+    for outcome in outcomes.fetch()
+      outcomeDict[outcome.election + outcome.stage] = outcome
+    for vote in votes
+      scen = Scenarios[vote.scenario]
+      meth = Methods[vote.method]
+      vote.support = []
+      for i in [0...scen.numCands()]
+        vote.support[scen.candForFaction(i,vote.faction)] = meth.normalize(vote.vote[i], scen.numCands)
+      vote.thisWinner = outcomeDict[vote.election + vote.stage].winner
+      vote.thisPayoff = scen.payoffs[vote.thisWinner]?[vote.faction]
+      vote.prevPayoff = scen.payoffs[vote.prevWinner]?[vote.faction]
+      vote.thisTies = outcomeDict[vote.election + vote.stage]?.ties
+      vote.prevTies = outcomeDict[vote.election + (vote.stage - 1)]?.ties
+    votes
+      
+      
