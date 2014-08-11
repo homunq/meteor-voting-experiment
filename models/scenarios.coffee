@@ -110,8 +110,22 @@ class @Scenario
       name:@factPngs[faction] + num
       active: if num is 1 then "active " else ""
       
+  candForFaction: (cand, faction) ->
+    [2,1,1,0][@payoffs[cand][faction]]
+      
     
 @Scenarios =
+  chicken9NOTA: new Scenario
+    factSizes: [4, 2, 3]
+    factNames: ['Red', 'Green', 'Blue']
+    factColors: ["#D40000", "#00D400", "#0000D4"]
+    factPngs: ["4pairs", "2pairs", "3pairs"]
+    candNames: ['X', 'Y', 'Z', "Build nothing"]
+    candColors: ["#D40000", "#47D48E", "#008ED4", "#bbbbbb"]
+    payoffs: [[3, 0, 0],
+              [1, 3, 2],
+              [0, 2, 3],
+              [0, 0, 0]]
   chicken9: new Scenario
     factSizes: [4, 2, 3]
     factNames: ['Red', 'Green', 'Blue']
@@ -181,6 +195,17 @@ class @Scenario
     candColors: ["#D40000", "#47D48E", "#008ED4"]
     payoffs: [[3],
               [2],
+              [0]]
+  one1NOTA: new Scenario
+    factSizes: [1]
+    factNames: ['Red']
+    factColors: ["#D40000"]
+    factPngs: ["4pairs"]
+    candNames: ['X', 'Y', 'Z', "Build nothing"]
+    candColors: ["#D40000", "#47D48E", "#008ED4", "#bbbbbb"]
+    payoffs: [[3],
+              [2],
+              [0],
               [0]]
   
     
