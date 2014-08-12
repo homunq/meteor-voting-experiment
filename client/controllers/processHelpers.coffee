@@ -34,7 +34,8 @@ Meteor.startup ->
               playSound 'next'
               STEP_RECORD.moveOn(yes)
             if step is 0
-              debug "move to step 2"
+              debug "move to step 1"
+              Session.set('movedPastZero',yes)
               STEP_RECORD.finish(yes)
           else
             debug "not moving on; no STEP_RECORD"

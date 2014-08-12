@@ -319,8 +319,9 @@ class @Election extends VersionedInstance
           debug "findAndJoin make new ", e, options.howManyMore
           if e instanceof Meteor.Error
             if e.reason is 'duplicate'
-              debug "...but it's just a wasntMe error"
-              continue
+              debug "...but it's just a wasntMe error. Still, easier to bail than to re-add."
+              throw e
+              #continue #this causes infinite loop. Correct thing to do would be to re-add on client but not server, or something...
             else if (e.reason is 'full') or (e.reason is 'tooLate')
               debug "so make?"
               if options.howManyMore > 0
@@ -706,6 +707,13 @@ else if Meteor.isClient
       if user?.faction isnt OLD_USER?.faction
         Session.set 'faction', user?.faction
       if user?.step isnt OLD_USER?.step
+        if user?.step is 1 and not Session.get('movedPastZero')
+          debug "straight to step 1 - better to restart, election could be stale."
+          Meteor.logout ->
+            login_then "", ->
+              Election.watchMain (error, result) ->
+                debug "now I should have a new user:", Meteor.user()
+          return
         Session.set 'step', user?.step
       if user?.step isnt OLD_USER?.step or user?.lastStep isnt OLD_USER?.lastStep
         Session.set 'stepLastStep', [user?.step, user?.lastStep or -1]

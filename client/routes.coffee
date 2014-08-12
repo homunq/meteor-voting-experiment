@@ -118,7 +118,7 @@ class @MyRouter extends ReactiveRouter
       debug "one param", k, v
     if xparams?.debugNum
       global.debugNum = parseInt xparams.debugNum
-    debug "gonna login_then 1"
+    debug "gonna login_then 1", newUser
     login_then newUser, =>
       debug "did login_then 1"
       user = new MtUser Meteor.user()
