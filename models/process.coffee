@@ -142,7 +142,7 @@ class @Process
 , 
   results:
     suggestedMins: 1
-    maxMins: 2
+    maxMins: 2.5
     stage: 2
     hit: on
     longName: "Practice results"
@@ -183,7 +183,7 @@ class @Process
       election.addVote VOTE.raw(), cb
 , 
   payouts:
-    suggestedMins: 0.5
+    suggestedMins: 0.0
     maxMins: 0.5
     stage: 4
     hit: on
