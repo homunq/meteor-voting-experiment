@@ -38,9 +38,13 @@
 </template>
 
 <template name="stepTitle">
-	<h2>Step {{Session step}}: {{stepName}}
+	<h2>Step {{Session 'step'}}: {{niceStepName}}
 		{{#if hurryTime}}
-			Hurry; {{{timeLeft}}} left
+			{{#if stepWaiting}}
+				(ending soon)
+			{{else}}
+				Hurry; {{{timeLeft}}} left
+			{{/if}}
 		{{/if}}
 	</h2>
 </template>

@@ -90,11 +90,11 @@ do ->
           
 
 Handlebars.registerHelper 'timeLeft', ->
-  seconds2roughTime Session.get 'countDown'/1000
+  seconds2roughTime ((Session.get 'countDown')/1000)
   
 Handlebars.registerHelper 'hurryTime', ->
   cd = Session.get 'countDown' 
-  _.isNumber(cd) and 0 < cd < 30000 #30 sec
+  _.isNumber(cd) and 0 < cd < 35000 #35 sec
 
 
 Handlebars.registerHelper 'call', (funcName, data) ->
