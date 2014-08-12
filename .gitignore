@@ -9,3 +9,4 @@ smart.lock
 .meteor/*
 *.bson
 private/dbackup/
+private/asses/
