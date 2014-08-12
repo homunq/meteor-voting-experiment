@@ -41,6 +41,8 @@ class @MtUser extends VersionedInstance
       if params.workerId
         likeMe = Meteor.users.findOne
           stickyWorkerId: params.workerId
+          step:
+            $gt: 2
         @nonunique = (likeMe and (likeMe._id isnt @_id))
         if @_wasntMe or likeMe?._wasntMe
           @_wasntMe = true
