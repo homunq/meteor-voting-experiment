@@ -115,6 +115,8 @@ class @Election extends VersionedInstance
       debug "new election"#, options 
       options ?= {}
       options = _(options).pick "scenario", "method", "howManyMore"
+      if _.isNumber options.howManyMore
+        options.method = METHOD_WHEEL[options.howManyMore % METHOD_WHEEL.length]
       if delay
         later = minutesFromNow delay
         if roundBackTo >= 0
