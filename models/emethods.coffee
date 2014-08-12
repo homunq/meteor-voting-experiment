@@ -169,7 +169,7 @@ makeMethods = (methods) ->
             winningScore = score
           else if score is winningScore
             winners.push cand
-        console.log "minMargins, beats, winners", minMargins..., beats..., winners...
+        debug "minMargins, beats, winners", minMargins..., beats..., winners...
         scores = for beat, b in beats
           "beats #{beat.length} others; worst margin #{minMargins[b]}"
         [winners, scores]
