@@ -125,7 +125,7 @@ class @Scenario
     payoffs: [[3, 0, 0],
               [1, 3, 2],
               [0, 2, 3],
-              [0, 0, 0]]
+              [-.001, -.001, -.001]]
   chicken9: new Scenario
     factSizes: [4, 2, 3]
     factNames: ['Red', 'Green', 'Blue']
@@ -206,7 +206,7 @@ class @Scenario
     payoffs: [[3],
               [2],
               [0],
-              [0]]
+              [-.001]]
   
     
 #expose for Node testing        

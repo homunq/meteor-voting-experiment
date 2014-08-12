@@ -3,7 +3,10 @@ nobind = (f) ->
   f.nobind = true
   f
   
-
+payKey = (payout) -> #handle silly issue with negative keys in honestVotes object literals
+  if payout >= 0
+    return payout
+  ""+payout
   
 class @Method
   constructor: (@name, options) ->
@@ -18,7 +21,7 @@ class @Method
             action.apply @, arguments
   
   honestVote: (payouts) ->
-    @honestVotes[payout] for payout in payouts
+    @honestVotes[payKey(payout)] for payout in payouts
     
   resolveHonestVotes: (scenario, seed) ->
     @resolveVotes scenario, (@allHonestVotes scenario), seed
@@ -111,7 +114,12 @@ makeMethods = (methods) ->
             winners.push cand
         [winners, sums]
         
-      honestVotes: [-3,-2,-2,-1]
+      honestVotes: 
+        3:-1
+        2:-2
+        1:-2
+        0:-3
+        "-0.001":-4
           
   condorcet:
     longName: "Condorcet (pairwise) voting"
@@ -166,7 +174,12 @@ makeMethods = (methods) ->
           "beats #{beat.length} others; worst margin #{minMargins[b]}"
         [winners, scores]
         
-      honestVotes: [-3,-2,-2,-1]
+      honestVotes:
+        3:-1
+        2:-2
+        1:-2
+        0:-3
+        "-0.001":-4
       
   GMJ:
     longName: "Graduated Majority Judgment"
@@ -210,7 +223,12 @@ makeMethods = (methods) ->
             winners.push cand
         [winners, (+score.toFixed(2) for score in scores)]
         
-      honestVotes: [0,1,3,4]
+      honestVotes: 
+        3:4
+        2:3
+        1:1
+        0:0
+        "-0.001":0
       
   IRV:
     longName: "Instant Runoff Voting"
@@ -288,7 +306,12 @@ makeMethods = (methods) ->
         #debug "sortAndElim", votes, piles
         elims    
         
-      honestVotes: [-3,-2,-2,-1]
+      honestVotes:
+        3:-1
+        2:-2
+        1:-2
+        0:-3
+        "-0.001":-4
      
   MAV:
     longName: "Majority Approval Voting"
@@ -342,7 +365,12 @@ makeMethods = (methods) ->
             winners.push cand
         [winners, (+score.toFixed(2) for score in scores)]
         
-      honestVotes: [0,1,3,4]
+      honestVotes: 
+        3:4
+        2:3
+        1:1
+        0:0
+        "-0.001":0
    
   plurality:
     longName: "Plurality Voting"
@@ -406,7 +434,12 @@ makeMethods = (methods) ->
             winners.push cand
         [winners, sums]
         
-      honestVotes: [0,2,8,10]
+      honestVotes: 
+        3:10
+        2:7
+        1:3
+        0:0
+        "-0.001":0
       
   SODA:
     longName: "SODA voting"
@@ -497,7 +530,12 @@ makeMethods = (methods) ->
             bestI = i
         return bestI
         
-      honestVotes: [0,0,0,1]
+      honestVotes:
+        3:1
+        2:0
+        1:0
+        0:0
+        "-0.001":0
         
 #expose for Node testing        
 exports = Methods unless Meteor?
