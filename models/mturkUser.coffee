@@ -20,6 +20,7 @@ class @MtUser extends VersionedInstance
     stickyWorkerId: undefined
     workerId: undefined
     assignmentId: undefined
+    stickyAssignmentId: undefined
     hitId: undefined
     nonunique: undefined
     submitted: false
@@ -79,15 +80,6 @@ class @MtUser extends VersionedInstance
       @paid = yes
       @save()
       
-    serverCentsDue: ->
-      @centsDue()
-      
-    serverNumVoted: ->
-      steps = StepRecords.find
-        voter: @_id
-      votes = Votes.find
-        voter: @_id
-      [steps.count(), votes.count()]
       
     serverAnswers: ->
       
@@ -162,6 +154,18 @@ class @MtUser extends VersionedInstance
           outcome = new Outcome outcome
           cents += outcome.payFactionCents @faction
     cents
+    
+  numVoted: ->
+    steps = StepRecords.find
+      voter: @_id
+    votes = Votes.find
+      voter: @_id
+    
+    result = [steps.count(), votes.count()]
+    #debug result
+    result
+
+MtUser.admin()
     
 @getUser = -> 
   (new MtUser Meteor.user())
