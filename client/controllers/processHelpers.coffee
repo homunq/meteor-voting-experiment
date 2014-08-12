@@ -230,11 +230,17 @@ if (Handlebars?)
     new Handlebars.SafeString steps.join ""
     
     
-  Handlebars.registerHelper 'stepName', ->
+  Handlebars.registerHelper 'niceStepName', ->
     step = Session.get 'step'
     if step?
       s = PROCESS.steps[step].name
       return s.charAt(0).toUpperCase() + s.slice(1) #capitalize
+    "Init"
+    
+  Handlebars.registerHelper 'stepName', ->
+    step = Session.get 'step'
+    if step?
+      return PROCESS.steps[step].name
     "Init"
     
 
