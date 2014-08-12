@@ -88,6 +88,15 @@ do ->
       debug "No experiment currently pending"
       return "No experiment currently pending"
           
+
+Handlebars.registerHelper 'timeLeft', ->
+  seconds2roughTime Session.get 'countDown'/1000
+  
+Handlebars.registerHelper 'hurryTime', ->
+  cd = Session.get 'countDown' 
+  _.isNumber(cd) and 0 < cd < 30000 #30 sec
+
+
 Handlebars.registerHelper 'call', (funcName, data) ->
   window[funcName] data
   ""

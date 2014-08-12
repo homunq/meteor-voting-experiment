@@ -37,6 +37,14 @@
 	{{{countdownToStage 0 "countdownClock" "countdownDone"}}}
 </template>
 
+<template name="stepTitle">
+	<h2>Step {{Session step}}: {{stepName}}
+		{{#if hurryTime}}
+			Hurry; {{{timeLeft}}} left
+		{{/if}}
+	</h2>
+</template>
+
 <template name="countdownClock">
 	<h1>Experiment starts at {{{displayAbsoluteTime}}} by your clock (in {{{displayCount}}})</h1>
 </template>
