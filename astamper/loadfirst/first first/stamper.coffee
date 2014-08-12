@@ -46,13 +46,13 @@ class @StamperInstance
       for pname, prop of props
         if pname isnt "_id"
           if not @_fields[pname]?
-            if pname not in ["createdAt", 'services']
+            if pname is not 'createdAt'
               err = "Invalid property name: #{ pname } (#{ prop }) when constructing a #{ @constructor::__name__ }"
               debug "ERROR: ", err
               if @_strict
                 throw new Error err
-              if @_loose #keep extra fields and use them when saving
-                @_looseFields.push pname
+            if @_loose #keep extra fields and use them when saving
+              @_looseFields.push pname
           else if @_fields[pname].invalid()
             throw new Error "Invalid property val: #{ pname } (#{ prop }) when constructing a #{ @constructor::__name__ }"
       for fname, f of @_fields
