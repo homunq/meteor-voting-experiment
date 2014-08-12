@@ -126,14 +126,16 @@ class @Process
  Also, wait until the experiment fills up before proceeding (a sound will play when ready)."
     popover: true
 , 
-  practice:
+  method:
     suggestedMins: 1
     maxMins: 2.5
     stage: 1
     hit: on
     prereqForNextStage: true
-    longName: "Election method practice"
+    longName: "Election method; explanation and practice"
     blurb: "Learn and practice the election method to be used."
+    popover: true
+    popoverStyle: "max-width:600px; width:600px;"
     beforeFinish: (stepRecord, cb) ->
       election = (Session.get 'election') and ELECTION
       election.addVote VOTE.raw(), cb
