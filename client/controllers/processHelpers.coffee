@@ -25,17 +25,19 @@ Meteor.startup ->
       
       [step, lastStep] = (Session.get 'stepLastStep') or [0,-1]
       if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
-          #is again separate autosubscribe?
-        if STEP_RECORD?
-          debug "stepLastStep", step, lastStep, stage #, Elections.findOne({})
-          if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
-            debug "so let's move on"
-            playSound 'next'
-            STEP_RECORD.moveOn(yes)
-          if step is 0
-            nextStep()
-        else
-          debug "not moving on; no STEP_RECORD"
+        if _.isNumber(stage)
+            #is again separate autosubscribe?
+          if STEP_RECORD?
+            debug "stepLastStep", step, lastStep, stage #, Elections.findOne({})
+            if STEP_RECORD and PROCESS.shouldMoveOn(step, lastStep, stage)
+              debug "so let's move on"
+              playSound 'next'
+              STEP_RECORD.moveOn(yes)
+            if step is 0
+              debug "move to step 2"
+              STEP_RECORD.finish(yes)
+          else
+            debug "not moving on; no STEP_RECORD"
       
 @nextStep = ->
   beforeFinish = PROCESS.step(STEP_RECORD.step).beforeFinish
