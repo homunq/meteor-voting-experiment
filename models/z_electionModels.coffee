@@ -143,32 +143,50 @@ class @Election extends VersionedInstance
         e.promote()
       e._id
       
-    makeNext: @static (eid, options, promote, delay, roundBackTo, cb) ->
+    makeNext: @static (old_eid, options, promote, delay, roundBackTo, cb) ->
       #sleep 100 #TESTING! REMOVE REMOVE REMOVE!
       #debug "You idiot, remove the line above."
       #it never worked perfectly with above, but close enough. Someday, I may fix this.
+      debug "makeNext", old_eid, options, promote, delay, roundBackTo, cb
+      debug "@", @
       if Meteor.isClient
         return undefined #sorry, no can do.
       gotSemaphore = Elections.update
-        _id: eid
+        _id: old_eid
         nextElection: undefined
         yes and
           $set:
             nextElection: true
+      debug "gotSemaphore", gotSemaphore
       if not gotSemaphore
-        me = Elections.findOne
-          _id: eid
-        if me?.nextElection is true #in progress
-          sleep 100
-          return undefined
-        return me.nextElection
+        while true
+          me = Elections.findOne
+            _id: old_eid
+          debug me?.nextElection
+          if me?.nextElection isnt true #in progress
+            debug "sleeping"
+            sleep 100
+            debug "slept"
+            continue
+          debug "why sleep?"
+          return me.nextElection
       #make it ourselves
-      eid = @make options, promote, delay, roundBackTo
-      if not eid
-        eid = undefined
-      @nextElection = eid
-      @save
-      cb eid
+      debug "make"
+      new_eid = @make options, promote, delay, roundBackTo
+      
+      debug "made", new_eid
+      if not new_eid
+        new_eid = undefined
+      saved = Elections.update
+        _id: old_eid
+        nextElection: undefined
+        yes and
+          $set:
+            nextElection: new_eid
+      debug saved
+      if cb
+        cb new_eid
+      return new_eid
       
     join: @static (eid) ->
       uid = @userId
