@@ -210,7 +210,6 @@ if (Handlebars?)
     new Handlebars.SafeString steps.join ""
     
   Handlebars.registerHelper 'stepPopover', (stepName) ->
-    debug stepName
     new Handlebars.SafeString Template["#{ stepName }_popover"]()
     
   Handlebars.registerHelper 'stepExplanations', ->
@@ -232,9 +231,7 @@ if (Handlebars?)
     
     
   Handlebars.registerHelper 'stepName', ->
-    debug 'stepName'
     step = Session.get 'step'
-    debug step
     if step?
       return PROCESS.steps[step].name
     "init"
