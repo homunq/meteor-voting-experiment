@@ -1,0 +1,65 @@
+csvToArray = (csvString) ->
+  
+  # The array we're going to build
+  csvArray = []
+  
+  # Break it into rows to start
+  csvRows = csvString.split(/\n/)
+  
+  # Take off the first line to get the headers, then split that into an array
+  csvHeaders = csvRows.shift().split(",")
+  
+  # Loop through remaining rows
+  rowIndex = 0
+
+  while rowIndex < csvRows.length
+    rowArray = csvRows[rowIndex].split(",")
+    
+    # Create a new row object to store our data.
+    rowObject = csvArray[rowIndex] = {}
+    
+    # Then iterate through the remaining properties and use the headers as keys
+    propIndex = 0
+
+    while propIndex < rowArray.length
+      
+      # Grab the value from the row array we're looping through...
+      propValue = rowArray[propIndex].replace(/^"|"$/g, "")
+      
+      # ...also grab the relevant header (the RegExp in both of these removes quotes)
+      propLabel = csvHeaders[propIndex]?.replace(/^"|"$/g, "")
+      rowObject[propLabel] = propValue
+      ++propIndex
+    ++rowIndex
+  csvArray
+  
+Meteor.startup ->
+  fixers = {}
+  for i in [0..9]
+    csv = Assets.getText("asses/x#{i}.csv")
+    data = csvToArray(csv)
+    for datum in data
+      fixers[datum.WorkerId] ?= {}
+      fixers[datum.WorkerId].stickyAssignmentId = datum.AssignmentId
+      fixers[datum.WorkerId].manuallySet = yes
+  for i in [0..9]
+    csv = Assets.getText("asses/h#{i}.csv")
+    data = csvToArray(csv)
+    for datum in data
+      fixers[datum.WorkerId] ?= {}
+      fixers[datum.WorkerId].stickyAssignmentId = datum.AssignmentId
+      fixers[datum.WorkerId].manuallySet = yes
+      fixers[datum.WorkerId].old = yes
+      
+  for wid, fixer of fixers
+    if wid
+      debug "updating", wid, fixer
+      debug "num:", Meteor.users.update
+        stickyWorkerId: wid
+        yes and
+          $set:
+            fixer
+        yes and
+          multi: true
+            
+            
