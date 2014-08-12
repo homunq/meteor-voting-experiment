@@ -139,16 +139,16 @@ class @Process
       election.addVote VOTE.raw(), cb
 , 
   results:
-    suggestedMins: 0.5
-    maxMins: 1
+    suggestedMins: 1
+    maxMins: 2
     stage: 2
     hit: on
     longName: "Practice results"
     blurb: "See results of the practice election: the winner and how much you would have been paid."
 , 
   voting:
-    suggestedMins: 0.5
-    maxMins: 1
+    suggestedMins: 1
+    maxMins: 1.5
     stage: 2
     hit: on
     prereqForNextStage: true
@@ -159,8 +159,8 @@ class @Process
       election.addVote VOTE.raw(), cb
 , 
   payouts:
-    suggestedMins: 0.5
-    maxMins: 0.5
+    suggestedMins: 1
+    maxMins: 1.5
     stage: 3
     hit: on
     payout: ->
@@ -169,7 +169,7 @@ class @Process
     blurb: "See results of the round 1 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
   voting:
-    suggestedMins: 0.5
+    suggestedMins: 1
     maxMins: 1
     stage: 3
     hit: on
@@ -192,7 +192,7 @@ class @Process
     blurb: "See results of the round 2 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
   survey:
-    suggestedMins: 2
+    suggestedMins: 3
     maxMins: 6
     stage: 4
     hit: on
