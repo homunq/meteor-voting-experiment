@@ -178,16 +178,29 @@ class @MyRouter extends ReactiveRouter
     #debug "going to elections report..."
     @goto 'electionsReport'
     
-  payments: (password, eid) ->
+  payments: (password, version) ->
     #debug "payments"
     Session.set 'password', password
-    Meteor.subscribe('allElections', password)
-    if eid is "x"
+    Elections.adminSubscribe password
+    Outcomes.adminSubscribe password
+    Meteor.users.adminSubscribe password
+    StepRecords.adminSubscribe password
+    Votes.adminSubscribe password
+    if version is "latestElection"
       latestElection = Elections.findOne {},
         sort: [["sTimes.0", "desc"]]
-      eid = latestElection._id
-    Outcomes.adminSubscribe(password)
-    Session.set 'adminEid', eid
+      Session.set 'QUERY',
+        eid: [latestElection._id] #eid, not election; used on users collection
+    else if version is "current"
+      Session.set 'QUERY',
+        version: VERSION
+        faction: 
+          $in:[0,1,2]
+    else
+      Session.set 'QUERY',
+        version: parseInt version
+        faction: 
+          $in:[0,1,2]
     @goto 'payments'
     
   answers: (password, eid) ->
