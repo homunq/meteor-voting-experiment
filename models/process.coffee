@@ -164,7 +164,7 @@ class @Process
     stage: 3
     hit: on
     payout: ->
-      Template.oneRoundPay() #"$0-{{bonus 3}}"
+      Template.oneRoundPay?() #"$0-{{bonus 3}}"
     longName: "Payout round 1"
     blurb: "See results of the round 1 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
 , 
@@ -186,7 +186,7 @@ class @Process
     stage: 4
     hit: on
     payout: ->
-      Template.oneRoundPay() #"$0-{{bonus 3}}"
+      Template.oneRoundPay?() #"$0-{{bonus 3}}"
     prereq: -1 #a full set of voters must be through the step 1 earlier before anyone starts this step
     longName: "Payout round 2"
     blurb: "See results of the round 2 election: the winner and how much you will be paid. (Payments will arrive within 1 day)"
@@ -197,7 +197,7 @@ class @Process
     stage: 4
     hit: on
     payout: ->
-      Template.baseRate() #"{{baseRate}}"
+      Template.baseRate?() #"{{baseRate}}"
     prereqForNextStage: false
     longName: "Survey"
     blurb: "5-6 simple questions each about:<ul><li>you (gender, age, etc)</li><li>your feelings on the voting system you used</li><li>your general comments about the experiment</li></ul>"
@@ -224,6 +224,7 @@ class @Process
 
     
     
+debug "defining StepRecords"
 @StepRecords = new Meteor.Collection 'stepRecords', null
 
 StepRecords.allow
