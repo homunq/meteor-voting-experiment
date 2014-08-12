@@ -34,18 +34,20 @@ Includes the following systems:
 		<h3>Counting</h3>
 			<p><strong>The candidate with the highest total score wins.</strong></p>
 </template>
+
+
 <template name="SODA_blurb">
 		<h2>Election Method: SODA (Simple Optionally-Delegated Approval) Voting</h2>
 		<h3>Ballot</h3>
-		<p><strong>The ballot will ask you to delegate to one candidate, or approve of several candidates
-		candidate.</strong> You may approve of any number of candidates. If you approve of all candidates or
+		<p><strong>The ballot will ask you to delegate to one candidate, or approve of several candidates.</strong> 
+		You may approve of any number of candidates. If you approve of all candidates or
 		no candidates, your ballot will not affect the election. If you do not click either option, that
 		counts as disapproval.</p>
-		<p><strong>If you approve of exactly one candidate, you are delegating your vote
-			to that candidate;</strong> that is, they may add
-		additional approvals to your ballot to help influence the result in case they cannot win.
-		If you want to approve only one, but do not want to delegate, you may "approve" of the fake candidate
-		"Do Not Delegate".</p>
+		<p><strong>If you check exactly one candidate, you are delegating your vote
+			to that candidate.</strong> In that case, your candidate may add
+		additional approvals to your ballot if, after the ballots are counted, it is clear that they cannot win. 
+		This means that your delegated vote will not be wasted, even if you vote for an unpopular candidate.
+		If you check more than one option, your vote will not be delegated.</p>
 		<h3>Counting</h3>
 			<p>All approvals are tallied for each candidate site. Separately, each candidate's delegated ballots 
 				(those which approve only it) are counted.
