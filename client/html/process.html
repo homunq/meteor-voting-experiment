@@ -58,7 +58,7 @@
   <h4>Whether or not you take this HIT, you can only complete it if you have been assigned a slot</h4>
   <div>Slots are given first-come, first served. You get a slot by clicking "next" on the first two steps (overview and consent).</div>
 	<h2>Voting Experiment</h2>
-	<p>This is an experiment on voting. Groups of {{numVoters}} voters like you will
+	<p>This is an experiment on voting. Groups of {{scenNumVoters}} voters like you will
 	decide between three options. Depending on the winning option, participants will 
 	earn extra pay of up to
 	{{bonus 6}} (paid within hours as a "bonus" in AMT). The average pay for each participant will be at least
@@ -66,16 +66,16 @@
 	{{maxPay}} in total.
 	We will be running this experiment several times, using
 	different voting systems, but you may only participate once.</p>
-	<p>This experiment requires {{numVoters}} simultaneous participants for each group. 
+	<p>This experiment requires {{scenNumVoters}} simultaneous participants for each group. 
 		Thus, you must take the HIT, consent, and participate
 		all within a short time. If you'd rather consent before taking the HIT, that's OK too. 
 		We are providing more HITs than there is actual room in the experiment, because
 		we have found that some workers simply grab HITs without actually doing them immediately; such workers will
 		not be paid. Once you have been assigned a slot (by clicking "consent" in step 1 after this), you will have to
-		wait in step 2 until {{numVoters}} subjects join the experiment, or 11 minutes pass, whichever is first. If the experiment
-		does not get {{numVoters}} subjects, the role of the missing subjects will be played by the computer, modeling its behavior
+		wait in step 2 until {{scenNumVoters}} subjects join the experiment, or 11 minutes pass, whichever is first. If the experiment
+		does not get {{scenNumVoters}} subjects, the role of the missing subjects will be played by the computer, modeling its behavior
 		on the actual subjects in other runs of the experiment.
-		<b>Only the groups of {{numVoters}} workers allowed in will be paid for each run of 
+		<b>Only the groups of {{scenNumVoters}} workers allowed in will be paid for each run of 
 		the experiment.</b></p>
 	<h2>Process</h2>
 	<div class="span1"></div><div class="span10">
@@ -150,7 +150,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 </template>
 
 <template name="scenario">
-    <div class="span6"><p>This is a voting game. You and {{numVoters - 1}} other turkers are pretending to be
+    <div class="span5"><p>This is a voting game. You and {{scenNumVoters - 1}} other turkers are pretending to be
     	townspeople voting on a library location. You want it to be as close as possible to "your" neighborhood.
     	You'll all vote 3 times. The first time is for practice, and the next two times you'll get a money bonus depending
     	on how close to your house the winning site is. The voting system and neighborhood assignments will not change.</p>
@@ -161,7 +161,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
       <!--Body content-->
 			{{> scenarioTable}}
 	</div>
-	<div class="span6">
+	<div class="span5">
 		{{call "carousel"}}
 		<div class="carousel slide carousel-fade">
 		  <ol class="carousel-indicators">
@@ -187,7 +187,7 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	{{{renderWith "nextStep" "Next Step (click AFTER you've finished reading the slides)"}}}
 </template>
 
-<template name="practice">
+<template name="method">
 	{{{meth_subtemplate "blurb"}}}
 	<h2>Practice voting</h2>
 	<p>Vote using the ballot below. This is a practice election with no cash bonuses based on the results.  
