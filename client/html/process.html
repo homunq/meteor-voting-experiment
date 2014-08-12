@@ -34,6 +34,10 @@
 	<img src="/images/{{mapImg}}Bare.png">
 </template>
 
+<template name="practice_popover">
+	<img src="/images/{{mapImg}}Bare.png">
+</template>
+
 <template name="oneStepExplanation">
 		<tr><td><h4>{{num}}</h4></td>
 			<td><h4>{{longName}}</h4></td>
@@ -51,7 +55,7 @@
   <h4>Whether or not you take this HIT, you can only complete it if you have been assigned a slot</h4>
   <div>Slots are given first-come, first served. You get a slot by clicking "next" on the first two steps (overview and consent).</div>
 	<h2>Voting Experiment</h2>
-	<p>This is an experiment on voting. Groups of 18 voters like you will
+	<p>This is an experiment on voting. Groups of {{numVoters}} voters like you will
 	decide between three options. Depending on the winning option, participants will 
 	earn extra pay of up to
 	{{bonus 6}} (paid within hours as a "bonus" in AMT). The average pay for each participant will be at least
@@ -59,14 +63,16 @@
 	{{maxPay}} in total.
 	We will be running this experiment several times, using
 	different voting systems, but you may only participate once.</p>
-	<p>This experiment requires 18 simultaneous participants. Thus, you must take the HIT, consent, and participate
-		all within a short time. We are providing more HITs than there is actual room in the experiment, because
+	<p>This experiment requires {{numVoters}} simultaneous participants for each group. 
+		Thus, you must take the HIT, consent, and participate
+		all within a short time. If you'd rather consent before taking the HIT, that's OK too. 
+		We are providing more HITs than there is actual room in the experiment, because
 		we have found that some workers simply grab HITs without actually doing them immediately; such workers will
 		not be paid. Once you have been assigned a slot (by clicking "consent" in step 1 after this), you will have to
-		wait in step 2 until 18 subjects join the experiment, or 11 minutes pass, whichever is first. If the experiment
-		does not get 18 subjects, the role of the missing subjects will be played by the computer, modeling its behavior
+		wait in step 2 until {{numVoters}} subjects join the experiment, or 11 minutes pass, whichever is first. If the experiment
+		does not get {{numVoters}} subjects, the role of the missing subjects will be played by the computer, modeling its behavior
 		on the actual subjects in other runs of the experiment.
-		<b>Only the 18 workers allowed in will be paid for each run of 
+		<b>Only the groups of {{numVoters}} workers allowed in will be paid for each run of 
 		the experiment.</b></p>
 	<h2>Process</h2>
 	<div class="span1"></div><div class="span10">
@@ -141,12 +147,13 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 </template>
 
 <template name="scenario">
-    <div class="span6"><p>This is a voting game. You and 17 other turkers are pretending to be
+    <div class="span6"><p>This is a voting game. You and {{numVoters - 1}} other turkers are pretending to be
     	townspeople voting on a library location. You want it to be as close as possible to "your" neighborhood.
     	You'll all vote 3 times. The first time is for practice, and the next two times you'll get a money bonus depending
     	on how close to your house the winning site is. The voting system and neighborhood assignments will not change.</p>
     	<p>Keep an eye on the time (next to the "next" button at bottom); you should have plenty, but if you stall too much,
-    	you will not get to vote, and will not be paid a bonus for that round.</p>
+    	you will not get to vote, and will not be paid a bonus for that round. Note that the time for the practice round is
+    	slightly longer than the other two rounds.</p>
     	<p>To learn more about the town and where "your house" is, please read through the slides at right.</p>
       <!--Body content-->
 			{{> scenarioTable}}
