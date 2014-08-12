@@ -27,11 +27,14 @@
 <template name="stepGuts">
 	<a href="#" class="hasPopover">{{num}}:
 		{{name}}{{#if 1}}<div class="underbar">{{stepCompletedNum num}}/{{scenNumVoters}} done</div>{{/if}}{{#if false}}
-			{{/if}}{{#if popover}}<span style="font-size: 80%">hover for pic</span><span class="popover">{{stepPopover name}}</span>{{/if}}</a>
+			{{/if}}{{#if popover}}<span style="font-size: 80%">hover for info</span><span class="popover" style="{{popoverStyle}}">{{stepPopover name}}</span>{{/if}}</a>
 </template>
 
 <template name="scenario_popover">
 	<img src="/images/{{mapImg}}Bare.png">
+</template>
+<template name="method_popover">
+	{{{meth_subtemplate "blurb"}}}
 </template>
 
 <template name="practice_popover">
