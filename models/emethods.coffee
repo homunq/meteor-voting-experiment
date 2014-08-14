@@ -38,7 +38,11 @@ class @Method
     return (score + Math.random() for score in scores)
     
   normalize: (x) ->
+    x ?= @bottom
     (x - @bottom) / (@top - @bottom)
+    
+  normSupportFor: (whom, ballotVote) ->
+    @normalize ballotVote[whom]
       
       
   
@@ -377,6 +381,10 @@ makeMethods = (methods) ->
     actions:
       top: 1
       bottom: 0
+      
+      normSupportFor: (whom, ballotVote) ->
+        if whom is ballotVote then 1 else 0
+        
       validVote: (numCands, vote) ->
         if not vote?
           return true #abstaining is OK 
