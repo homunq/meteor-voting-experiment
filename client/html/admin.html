@@ -38,13 +38,30 @@
 <template name="answers">
 	<table>
 		<tr>
+			
+			<td>eid</td>
+			<td>faction</td>
+			<td>method</td>
+			<td>scenario</td>
+			
+			<td>p1</td>
+			<td>p2</td>
+			<td>p3</td>
 	{{#each questions}}
 			<td>{{name}}</td>
 	{{/each}}
 		</tr>
 	{{#each answerers}}
 		<tr>
-		{{#each this}}
+			<td>{{this.election}}</td>
+			<td>{{this.faction}}</td>
+			<td>{{this.method}}</td>
+			<td>{{this.scenario}}</td>
+			
+			<td>{{this.payoffs.[0]}}</td>
+			<td>{{this.payoffs.[1]}}</td>
+			<td>{{this.payoffs.[2]}}</td>
+		{{#each this.answerList}}
 				<td>{{this}}</td>
 		{{/each}}
 		</tr>
@@ -113,9 +130,11 @@
 			<td>c0</td>
 			<td>c1</td>
 			<td>c2</td>
+			<td>NOTA</td>
 			<td>favSupport</td>
 			<td>midSupport</td>
 			<td>oppSupport</td>
+			<td>NOTASupport</td>
 			
 		</tr>
 	{{#each adminVotes}}
@@ -128,14 +147,16 @@
 			<td>{{this.stage}}</td>
 			<td>{{this.prevWinner}}</td>
 			<td>{{this.thisWinner}}</td>
-			<td>{{this.prevPay}}</td>
-			<td>{{this.thisPay}}</td>
+			<td>{{this.prevPayoff}}</td>
+			<td>{{this.thisPayoff}}</td>
 			<td>{{this.vote.[0]}}</td>
 			<td>{{this.vote.[1]}}</td>
 			<td>{{this.vote.[2]}}</td>
+			<td>{{this.vote.[3]}}</td>
 			<td>{{this.support.[0]}}</td>
 			<td>{{this.support.[1]}}</td>
 			<td>{{this.support.[2]}}</td>
+			<td>{{this.support.[3]}}</td>
 		</tr>
 	{{/each}}
 	</table>

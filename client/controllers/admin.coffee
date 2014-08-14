@@ -87,18 +87,32 @@ Meteor.startup ->
     for voter in voters
       [voter.nSteps, voter.nVoted] = (voter.numVoted() or [0,0])
       voter.paymentDue = voter.centsDue()
-      if voter.nSteps
-        #debug "#next voter", voter.paymentDue, voter.nSteps, voter.nVoted
-        prefix = (if voter.assignmentId is "ASSIGNMENT_ID_NOT_AVAILABLE" then "#" else "")
-        if prefix is "#" and voter.manuallySet and not voter.old
-          if voter.paymentDue > 0
+      if voter.nVoted
+        if voter.manuallySet
+          q=4
+            #debug "#"
+        else
+          
+          debug "echo \"#next voter", voter.stickyWorkerId, voter.paymentDue, voter.nSteps, voter.nVoted, '"'
+          
+          
+          if voter.stickyAssignmentId
+            debug "WTFWTF?????"
+          voter.stickyAssignmentId = voter.assignmentId #TEMP - DELETE
+          
+          
+          
+          prefix = (if voter.stickyAssignmentId is "ASSIGNMENT_ID_NOT_AVAILABLE" then "#" else "")
+          #if prefix isnt "#" #and voter.manuallySet and not voter.old
+          if true or voter.paymentDue > 0
             debug("./grantBonus.sh -assignment", voter.stickyAssignmentId, 
-              "-amount", accounting.formatMoney(voter.paymentDue/100,""), 
+              "-amount", "0.01" #accounting.formatMoney(voter.paymentDue/100,""), 
               "-workerid", voter.stickyWorkerId,
               '-reason "Good work."'
             )
+            debug "#./assignQualification.sh -qualtypeid 3HRCVKUHL3W1J5HR0CWK9CR3A6GRTG -workerid", voter.stickyWorkerId
             #debug "#"
-          #debug prefix, "./approveWork.sh -force -assignment", voter.assignmentId
+          #debug prefix, "./approveWork.sh -force -assignment", voter.stickyAssignmentId
           #debug "#"
       
     #debug "paymentList", voters
@@ -113,29 +127,31 @@ Meteor.startup ->
   Handlebars.registerHelper 'answerers', ->
     SURVEY = new SurveyResponse
     debug "answerers helper"
-    eid = Session.get 'adminEid'
-    voters = Session.get "avoters"
-    if voters is undefined
-      MtUser.forElection eid, (error, result) ->
-        Session.set "avoters", result
-      voters = []
-    if voters?.length
-      answerersList = Session.get "answerersList"
-      if answerersList is undefined
-        answerersList = (("xxx" for question in SURVEY.questions) for voter in voters)
-        
-        for voter, i in voters
-          brainyVoter = new MtUser voter
-          do (i) ->
-            brainyVoter.serverAnswers (error, result) ->
-              answerersList[i] = result
-              debug "brainyVoter replyN", i, error, result
-              Session.set "answerersList", answerersList
-              
-               
-          
-      debug "answererslist", answerersList
-      answerersList
+    query = Session.get 'QUERY'
+    responses = SurveyResponses.find query,
+      sort:
+        election:1
+    responses = responses.fetch()
+    theElections = _.uniq((response.election for response in responses),yes)
+    outcomes = Outcomes.find
+      election:
+        $in: theElections
+    global.outcomeDict = {}
+    for outcome in outcomes.fetch()
+      outcomeDict[outcome.election + outcome.stage] = outcome
+    for response in responses
+      #debug "response", response
+      response.answerList = for question in SURVEY.questions
+        response[Object.keys(question)[0]]
+      responder = Meteor.users.findOne
+        _id: response.voter
+      outcome1 = outcomeDict[response.election + "1"]
+      response.faction = responder?.faction
+      response.method = outcome1?.method
+      response.scenario = outcome1?.scenario
+      response.payoffs = for i in [1..3]
+        Scenarios[response.scenario]?.payoffs[outcomeDict[response.election + i].winner]?[response.faction]
+    responses
       
       
   Handlebars.registerHelper 'adminVoters', ->
@@ -174,11 +190,11 @@ Meteor.startup ->
         voter:1
         stage:1
     votes = voteSet.fetch()
-    elections = _.uniq([vote.election for vote in votes],yes)
+    global.theElections = _.uniq((vote.election for vote in votes),yes)
     outcomes = Outcomes.find
       election:
-        $in: elections
-    outcomeDict = {}
+        $in: theElections
+    global.outcomeDict = {}
     for outcome in outcomes.fetch()
       outcomeDict[outcome.election + outcome.stage] = outcome
     for vote in votes
@@ -186,8 +202,8 @@ Meteor.startup ->
       meth = Methods[vote.method]
       vote.support = []
       for i in [0...scen.numCands()]
-        vote.support[scen.candForFaction(i,vote.faction)] = meth.normalize(vote.vote[i], scen.numCands)
-      vote.thisWinner = outcomeDict[vote.election + vote.stage].winner
+        vote.support[scen.candForFaction(i,vote.faction)] = meth.normSupportFor(i, vote.vote)
+      vote.thisWinner = outcomeDict[vote.election + vote.stage]?.winner
       vote.thisPayoff = scen.payoffs[vote.thisWinner]?[vote.faction]
       vote.prevPayoff = scen.payoffs[vote.prevWinner]?[vote.faction]
       vote.thisTies = outcomeDict[vote.election + vote.stage]?.ties
