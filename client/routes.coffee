@@ -97,7 +97,7 @@ class @MyRouter extends ReactiveRouter
     'elections/makeOne/:scenario/:method/:delay/:roundBackTo': 'makeElection'
     'admin/elections/:password/:fromVersion': 'electionsReport'
     'admin/payments/:password/:eid': 'payments'
-    'admin/answers/:password/:eid': 'answers'
+    'admin/answers/:password/:eid': 'adminAnswers'
     'admin/voters/:password/:version': 'adminVoters'
     'admin/votes/:password/:version': 'adminVotes'
     
@@ -203,16 +203,17 @@ class @MyRouter extends ReactiveRouter
           $in:[0,1,2]
     @goto 'payments'
     
-  answers: (password, eid) ->
+  adminAnswers: (password, version) ->
     #debug "payments"
     Session.set 'password', password
+    Meteor.users.adminSubscribe password
     Elections.adminSubscribe password
-    if eid is "x"
-      latestElection = Elections.findOne {},
-        sort: [["sTimes.0", "desc"]]
-      eid = latestElection._id
+    SurveyResponses.adminSubscribe password
     Outcomes.adminSubscribe password
-    Session.set 'adminEid', eid
+    q = Session.get 'QUERY'
+    if not q
+      Session.set 'QUERY',
+        version: parseInt(version)
     @goto 'answers'
     
   adminVoters: (password, version) ->
@@ -222,8 +223,8 @@ class @MyRouter extends ReactiveRouter
     q = Session.get 'QUERY'
     if not q
       Session.set 'QUERY',
-        version: version
-    @goto 'adminVotes'
+        version: parseInt(version)
+    @goto 'adminVoters'
     
   adminVotes: (password, version) ->
     Session.set 'password', password
