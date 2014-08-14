@@ -180,6 +180,8 @@ class @SurveyResponse extends VersionedInstance
           Session.get("election")?._id
         method: ->
           Session.get("method")
+        faction: ->
+          Session.get("election")?.faction
     
     
   @fields questionObject
