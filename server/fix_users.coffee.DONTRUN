@@ -35,21 +35,21 @@ csvToArray = (csvString) ->
   
 Meteor.startup ->
   fixers = {}
-  for i in [0..9]
-    csv = Assets.getText("asses/x#{i}.csv")
+  for i in [1..6]
+    csv = Assets.getText("asses/q#{i}.csv")
     data = csvToArray(csv)
     for datum in data
       fixers[datum.WorkerId] ?= {}
       fixers[datum.WorkerId].stickyAssignmentId = datum.AssignmentId
       fixers[datum.WorkerId].manuallySet = yes
-  for i in [0..9]
-    csv = Assets.getText("asses/h#{i}.csv")
-    data = csvToArray(csv)
-    for datum in data
-      fixers[datum.WorkerId] ?= {}
-      fixers[datum.WorkerId].stickyAssignmentId = datum.AssignmentId
-      fixers[datum.WorkerId].manuallySet = yes
-      fixers[datum.WorkerId].old = yes
+  #for i in [0..9]
+  #  csv = Assets.getText("asses/h#{i}.csv")
+  #  data = csvToArray(csv)
+  #  for datum in data
+  #    fixers[datum.WorkerId] ?= {}
+  #    fixers[datum.WorkerId].stickyAssignmentId = datum.AssignmentId
+  #    fixers[datum.WorkerId].manuallySet = yes
+  #    fixers[datum.WorkerId].old = yes
       
   for wid, fixer of fixers
     if wid

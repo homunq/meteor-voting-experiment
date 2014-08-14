@@ -196,7 +196,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1107,7 +1107,7 @@
              sodipodi:role="line"
              id="tspan3152-9-5"
              x="328.02481"
-             y="666.35223">($0.80)</tspan></text>
+             y="666.35223">($0.60)</tspan></text>
         <text
            xml:space="preserve"
            style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -1118,7 +1118,7 @@
              sodipodi:role="line"
              id="tspan3156-9-3"
              x="228.95351"
-             y="748.85223">($1.20)</tspan></text>
+             y="748.85223">($0.90)</tspan></text>
       </g>
     </g>
     <g
@@ -1146,7 +1146,7 @@
            y="666.35223"
            x="328.02481"
            id="tspan3152"
-           sodipodi:role="line">($1.20)</tspan></text>
+           sodipodi:role="line">($0.90)</tspan></text>
       <text
          sodipodi:linespacing="125%"
          id="text3154"
@@ -1157,7 +1157,7 @@
            y="748.85223"
            x="228.95351"
            id="tspan3156"
-           sodipodi:role="line">($0.80)</tspan></text>
+           sodipodi:role="line">($0.60)</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -1188,7 +1188,7 @@
            y="339.35226"
            x="277.12738"
            id="tspan3148-5"
-           sodipodi:role="line">($1.20)</tspan></text>
+           sodipodi:role="line">($0.90)</tspan></text>
       <text
          sodipodi:linespacing="125%"
          id="text3150-8"
@@ -1199,7 +1199,7 @@
            y="666.35223"
            x="328.02481"
            id="tspan3152-9"
-           sodipodi:role="line">($0.40)</tspan></text>
+           sodipodi:role="line">($0.30)</tspan></text>
       <text
          sodipodi:linespacing="125%"
          id="text3154-9"

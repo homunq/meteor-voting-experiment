@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9943 custom"
-   sodipodi:docname="WCW map 3pairs slides.svg"
+   sodipodi:docname="WCW map 2pairs slides.svg"
    inkscape:export-filename="/Users/chema/Pictures/3pairs2.png"
    inkscape:export-xdpi="80.971657"
    inkscape:export-ydpi="80.971657">
@@ -158,6 +158,34 @@
          d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
          transform="scale(-0.6,-0.6)" />
     </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend-1"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path4004-6"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="marker5420"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path5422"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)" />
+    </marker>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -175,7 +203,7 @@
      inkscape:window-width="998"
      inkscape:window-height="986"
      inkscape:window-x="90"
-     inkscape:window-y="527"
+     inkscape:window-y="505"
      inkscape:window-maximized="0"
      objecttolerance="1"
      gridtolerance="1"
@@ -196,7 +224,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -204,36 +232,6 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <g
-       id="g3545">
-      <text
-         sodipodi:linespacing="125%"
-         id="text5623"
-         y="397.77902"
-         x="273.17072"
-         style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           id="tspan5627"
-           y="397.77902"
-           x="273.17072"
-           sodipodi:role="line">10 voters live in 2 other </tspan><tspan
-           id="tspan5674"
-           y="420.27902"
-           x="273.17072"
-           sodipodi:role="line">neighborhoods.</tspan></text>
-      <path
-         sodipodi:nodetypes="cc"
-         inkscape:connector-curvature="0"
-         id="path5637"
-         d="m 331.88295,425.78871 80.03471,182.56684"
-         style="fill:none;stroke:#000000;stroke-width:3.88283086;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:3.88283086;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
-         d="M 307.34235,428.15666 152.50774,618.80306"
-         id="path5639"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cc" />
-    </g>
     <g
        id="g3529"
        transform="translate(-2.87239,8.1127026)">
@@ -1049,78 +1047,37 @@
        x="-308.64914"
        y="325.34558"
        transform="scale(-1,1)" />
-    <g
-       id="g4675">
-      <text
-         sodipodi:linespacing="125%"
-         id="text3336"
-         y="451.34396"
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="130"
+       y="451.34396"
+       id="text3336"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
          x="130"
-         style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           id="tspan3340"
-           y="451.34396"
-           x="130"
-           sodipodi:role="line">You're testing a new voting system.</tspan><tspan
-           id="tspan3350"
-           y="473.84396"
-           x="130"
-           sodipodi:role="line">There will be one practice vote and </tspan><tspan
-           id="tspan3352"
-           y="496.34396"
-           x="130"
-           sodipodi:role="line">then two voting rounds for money. </tspan><tspan
-           id="tspan3354"
-           y="518.84399"
-           x="130"
-           sodipodi:role="line">In each of the last two rounds, </tspan><tspan
-           id="tspan3344"
-           y="541.34399"
-           x="130"
-           sodipodi:role="line">you'll get a bonus if a site near </tspan><tspan
-           id="tspan3346"
-           y="563.84399"
-           x="130"
-           sodipodi:role="line">&quot;your house&quot; wins.</tspan></text>
-      <g
-         style="fill:#000000"
-         id="g3375-1-7"
-         transform="translate(-2.0947266e-6,-1.0000001e-6)">
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="277.12738"
-           y="339.35226"
-           id="text3146-8-7"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3148-5-3"
-             x="277.12738"
-             y="339.35226">($0)</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="328.02481"
-           y="666.35223"
-           id="text3150-8-2"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3152-9-5"
-             x="328.02481"
-             y="666.35223">($0.80)</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="228.95351"
-           y="748.85223"
-           id="text3154-9-6"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3156-9-3"
-             x="228.95351"
-             y="748.85223">($1.20)</tspan></text>
-      </g>
-    </g>
+         y="451.34396"
+         id="tspan3340">You're testing a new voting system.</tspan><tspan
+         sodipodi:role="line"
+         x="130"
+         y="473.84396"
+         id="tspan3350">There will be one practice vote and </tspan><tspan
+         sodipodi:role="line"
+         x="130"
+         y="496.34396"
+         id="tspan3352">then two voting rounds for money. </tspan><tspan
+         sodipodi:role="line"
+         x="130"
+         y="518.84399"
+         id="tspan3354">In each of the last two rounds, </tspan><tspan
+         sodipodi:role="line"
+         x="130"
+         y="541.34399"
+         id="tspan3344">you'll get a bonus if a site near </tspan><tspan
+         sodipodi:role="line"
+         x="130"
+         y="563.84399"
+         id="tspan3346">&quot;your house&quot; wins.</tspan></text>
     <g
        id="g3375"
        transform="translate(0,18)"
@@ -1146,7 +1103,7 @@
            y="666.35223"
            x="328.02481"
            id="tspan3152"
-           sodipodi:role="line">($1.20)</tspan></text>
+           sodipodi:role="line">($0.60)</tspan></text>
       <text
          sodipodi:linespacing="125%"
          id="text3154"
@@ -1157,7 +1114,7 @@
            y="748.85223"
            x="228.95351"
            id="tspan3156"
-           sodipodi:role="line">($0.80)</tspan></text>
+           sodipodi:role="line">($0.90)</tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -1188,7 +1145,7 @@
            y="339.35226"
            x="277.12738"
            id="tspan3148-5"
-           sodipodi:role="line">($1.20)</tspan></text>
+           sodipodi:role="line">($0.90)</tspan></text>
       <text
          sodipodi:linespacing="125%"
          id="text3150-8"
@@ -1199,7 +1156,7 @@
            y="666.35223"
            x="328.02481"
            id="tspan3152-9"
-           sodipodi:role="line">($0.40)</tspan></text>
+           sodipodi:role="line">($0.30)</tspan></text>
       <text
          sodipodi:linespacing="125%"
          id="text3154-9"
@@ -1219,16 +1176,6 @@
        xlink:href="data:image/png;base64,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 "
        height="32"
        width="265" />
-    <path
-       sodipodi:type="arc"
-       style="fill:none;stroke:#4d4d4d;stroke-width:25.84826469;stroke-miterlimit:4;stroke-dasharray:51.69653098, 25.84826549, 12.92413274, 25.84826549;stroke-dashoffset:0"
-       id="path4627-0"
-       sodipodi:cx="488.61078"
-       sodipodi:cy="193.22745"
-       sodipodi:rx="92.630989"
-       sodipodi:ry="92.630989"
-       d="m 581.24177,193.22745 a 92.630989,92.630989 0 1 1 -185.26198,0 92.630989,92.630989 0 1 1 185.26198,0 z"
-       transform="matrix(-0.57009628,0,0,0.57009628,405.74661,537.19564)" />
     <g
        transform="translate(1.271106e-7,2.9024218e-6)"
        id="g3538">
@@ -1236,7 +1183,7 @@
          sodipodi:nodetypes="cc"
          inkscape:connector-curvature="0"
          id="path4800"
-         d="M 203.80774,392.36218 147.83641,607.3539"
+         d="M 203.80774,392.36218 378.21762,597.33733"
          style="fill:none;stroke:#000000;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)" />
       <text
          sodipodi:linespacing="125%"
@@ -1248,7 +1195,7 @@
            y="352.36218"
            x="156.68011"
            id="tspan3177"
-           sodipodi:role="line">6 voters,</tspan><tspan
+           sodipodi:role="line">4 voters,</tspan><tspan
            id="tspan5544"
            y="376.4314"
            x="156.68011"
@@ -1257,6 +1204,84 @@
            y="400.50061"
            x="156.68011"
            sodipodi:role="line">live here.</tspan></text>
+    </g>
+    <g
+       transform="translate(-2.0947266e-6,-5.3710937e-7)"
+       id="g3375-3">
+      <text
+         sodipodi:linespacing="125%"
+         id="text3146-6"
+         y="339.35226"
+         x="277.12738"
+         style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="339.35226"
+           x="277.12738"
+           id="tspan3148-53"
+           sodipodi:role="line">($0)</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3150-5"
+         y="666.35223"
+         x="328.02481"
+         style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="666.35223"
+           x="328.02481"
+           id="tspan3152-7"
+           sodipodi:role="line">($0.90)</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text3154-2"
+         y="748.85223"
+         x="228.95351"
+         style="font-size:18px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="748.85223"
+           x="228.95351"
+           id="tspan3156-5"
+           sodipodi:role="line">($0.60)</tspan></text>
+    </g>
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:#4d4d4d;stroke-width:25.84826469;stroke-miterlimit:4;stroke-dasharray:51.69653098, 25.84826549, 12.92413274, 25.84826549;stroke-dashoffset:0"
+       id="path4627"
+       sodipodi:cx="488.61078"
+       sodipodi:cy="193.22745"
+       sodipodi:rx="92.630989"
+       sodipodi:ry="92.630989"
+       d="m 581.24177,193.22745 a 92.630989,92.630989 0 1 1 -185.26198,0 92.630989,92.630989 0 1 1 185.26198,0 z"
+       transform="matrix(-0.57009628,0,0,0.57009628,706.63225,535.19233)" />
+    <g
+       transform="translate(-1.5389328e-6,1.3804101e-6)"
+       id="g3545">
+      <text
+         sodipodi:linespacing="125%"
+         id="text5623"
+         y="397.77902"
+         x="273.17072"
+         style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           id="tspan5627"
+           y="397.77902"
+           x="273.17072"
+           sodipodi:role="line">14 voters live in 2 other </tspan><tspan
+           id="tspan5674"
+           y="420.27902"
+           x="273.17072"
+           sodipodi:role="line">neighborhoods.</tspan></text>
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path5637"
+         d="M 276.79179,426.79037 154.4917,612.36218"
+         style="fill:none;stroke:#000000;stroke-width:3.88283086;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:3.88283086;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend)"
+         d="m 314.35395,385.08539 43.49357,-32.72321"
+         id="path5639"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
     </g>
   </g>
 </svg>
