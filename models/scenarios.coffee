@@ -110,8 +110,18 @@ class @Scenario
       name:@factPngs[faction] + num
       active: if num is 1 then "active " else ""
       
+  _candForFaction:
+    3:0
+    2:1
+    1:1
+    0:2
+    "-0.001":3
+    
   candForFaction: (cand, faction) ->
-    [2,1,1,0][@payoffs[cand][faction]]
+    payoff = @payoffs[cand][faction]
+    if payoff < 0
+      payoff = ""+payoff
+    @_candForFaction[payoff]
       
     
 @Scenarios =
@@ -119,7 +129,7 @@ class @Scenario
     factSizes: [4, 2, 3]
     factNames: ['Red', 'Green', 'Blue']
     factColors: ["#D40000", "#00D400", "#0000D4"]
-    factPngs: ["4pairs", "2pairs", "3pairs"]
+    factPngs: ["4h.", "2h.", "3h."]
     candNames: ['X', 'Y', 'Z', "Build nothing"]
     candColors: ["#D40000", "#47D48E", "#008ED4", "#bbbbbb"]
     payoffs: [[3, 0, 0],
