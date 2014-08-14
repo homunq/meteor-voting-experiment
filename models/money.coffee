@@ -1,5 +1,5 @@
-@$baseRate = 160
-@$bonusUnit = 40
+@$baseRate = 100
+@$bonusUnit = 30
 
 if (Handlebars?.registerHelper?) 
   Handlebars.registerHelper "baseRate", ->
@@ -12,6 +12,8 @@ if (Handlebars?.registerHelper?)
     mult
   Handlebars.registerHelper "minAverage", ->
     accounting.formatMoney(($baseRate + ($bonusUnit * 2 * 12 / 9)) / 100)
+  Handlebars.registerHelper "minAverageBonus", ->
+    accounting.formatMoney(($bonusUnit * 2 * 12 / 9) / 100)
   Handlebars.registerHelper "maxAverage", ->
     accounting.formatMoney(($baseRate + ($bonusUnit * 2 * 16 / 9)) / 100)
   Handlebars.registerHelper "maxPay", ->
