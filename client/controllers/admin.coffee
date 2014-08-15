@@ -121,7 +121,7 @@ Meteor.startup ->
   Handlebars.registerHelper 'questions', ->
     SURVEY = new SurveyResponse
     questions = ({name:Object.keys(question)[0]} for question in SURVEY.questions)
-    debug "questions", questions
+    debug "questions helper"#, questions
     questions
     
   Handlebars.registerHelper 'answerers', ->
