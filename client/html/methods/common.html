@@ -1,4 +1,20 @@
 
+<template name="mainStratBlurb">
+		<h4>Strategy note</h4>
+		<em><p>Now you've had a chance to use this voting method, here are some words about voting strategy.
+		"Strategy" is how you would vote if you wanted to do everything you could to maximize your faction's payoff,
+		and didn't care about other factions' payoffs. Depending on the circumstances, the advice below might not
+		end up helping you do that, but, unless otherwise noted, it cannot hurt.
+		There is a mathematical proof (the "Gibbard-Satterthwaite theorem") that shows that any possible voting method
+		will sometimes have strategies which depend on how you expect others to vote; but some methods might have
+		more strategy than others.</p>
+		
+		<p>Not all voters are getting this advice.</p></em>
+		
+		
+	{{meth_subtemplate "stratBlurb"}}
+</template>
+
 <template name="ballot">
 	{{call "ballotSetup" step}}
 	{{#if stepWaiting}}

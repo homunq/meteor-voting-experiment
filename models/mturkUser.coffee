@@ -1,6 +1,29 @@
 
 @USERS = Meteor.users
 
+@blurbConditions =
+  none: 3 #2
+  stratBlurb1: 2 #1
+  stratBlurb2: 2 #1
+  
+@payoffConditions = 
+  noAverages: 3 #1
+  averages: 4 #1
+
+@generateCondition = (probs) ->
+  conditionList = []
+  for key, val of probs
+    for i in [0...val]
+      conditionList.push(key)
+  _.sample conditionList
+  
+@generatePayoffCondition = (faction, election) ->
+  generateCondition @payoffConditions
+
+@generateBlurbCondition = (faction, election) ->
+  generateCondition @blurbConditions
+  
+
 class @MtUser extends VersionedInstance
   __name__: "User"
     
@@ -16,6 +39,8 @@ class @MtUser extends VersionedInstance
     step: undefined
     lastStep: undefined
     faction: undefined
+    blurbCondition: undefined
+    payoffCondition: undefined
     turkSubmitTo: undefined
     stickyWorkerId: undefined
     workerId: undefined
@@ -179,7 +204,7 @@ if Meteor.isServer
   userFields = {}
   for k, v of MtUser.prototype._fields
     userFields[k] = 1
-  debug "server publishing userData!", userFields# server
+  debug "server publishing userData!"#, userFields# server
   Meteor.users.allow
     update: (uid, doc) ->
       debug "updating user", uid, doc

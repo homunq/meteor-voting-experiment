@@ -19,6 +19,21 @@ Includes the following systems:
 				that ballot is discarded. If there are two candidates equally eligible for elimination, one is chosen randomly.</small></p>
 </template>
 
+
+<template name="IRV_stratBlurb">
+	<ul>
+		<li>
+			In IRV (this voting system), it can never hurt you to explicitly rank all three candidates. Your lower
+			ranks will never count against your higher ranks.
+		</li>
+		<li>
+			If you fear your least-favorite option is likely to win, and your second choice has a better chance of beating
+			it than your first choice, it can sometimes be advantageous to rate your true second choice in first place,
+			to help protect them from premature elimination.
+		</li>
+	</ul>
+</template>
+
 <template name="borda_blurb">
 		<h3>Election Method: Borda Voting</h3>
 		<p><em>Also known as the Borda count</em></p>
@@ -32,6 +47,19 @@ Includes the following systems:
 			<p>(In Borda voting each rank is always worth 1 more point than the one below, so if there were 10 candidates,
 				first place would be worth 9 points.)</p>
 </template>
+
+<template name="borda_stratBlurb">
+	<ul>
+		<li>
+			In Borda Voting (this voting system), it is strategic to focus on the two candidates you think have the best
+			chance of winning.
+		</li>
+		<li>
+			Of those two, you should vote the one you prefer as high as possible, and the other one as low as possible.
+		</li>
+	</ul>
+</template>
+
 
 <template name="condorcet_blurb">
 		<h3>Election Method: Condorcet Voting</h3>
@@ -47,6 +75,22 @@ Includes the following systems:
 			<p>For instance, if you vote X:1, Y:2, Z:3, your vote will be tallied for X in the X vs Y race and the X vs Z race,
 				 and for Y in the Y vs Z race.</p>
 </template>
+
+<template name="condorcet_stratBlurb">
+	<ul>
+		<li>
+			In Condorcet voting, as long as there's one candidate which could beat all the others one-on-one, it's strategic
+			to rank your favorite candidate at the top.
+		</li>
+		<li>
+			Occasionally, there can be strategic benefit in rating your second choice at bottom. If this causes a cycle,
+			where your favorite beats your least favorite, who beats your second choice, who beats your favorite,
+			it is possible (though not certain) that your favorite candidate could come out as the winner. However, doing
+			this also carries strategic risk; you could help your least-favorite site to win.
+		</li>
+	</ul>
+</template>
+
 
 <template name="IRV_ballotLine">
 	{{#each candRanks}}

@@ -220,6 +220,10 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	<h2>Voting</h2>
 	<p>Please vote. You will be paid a bonus of $0 to {{bonus 3}}, depending on the results of this election among you and
 		the other voters.</p>
+		
+		{{#if shouldStratBlurb}}
+			<div>{{> mainStratBlurb}}</div>
+		{{/if}}
 	{{> ballot}}
 	{{{renderWith "nextStep" "Next"}}}
 </template>

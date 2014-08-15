@@ -78,6 +78,13 @@
 			{{#each payoffs}}<td>{{bonus this}}</td>{{/each}}
 		</tr>
 	{{/with}}{{/each}}
+	
+	{{#with scenAvePayoffs}}{{#if payoffAverages}}
+		<tr><td>Average<br/><small>(across all voters)</small></td>
+			<td>{{factSize}}</td>
+			{{#each payoffs}}<td>{{bonus this}}</td>{{/each}}
+		</tr>
+	{{/if}}{{/with}}
 	</table>
 </template>
 

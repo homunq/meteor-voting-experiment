@@ -70,6 +70,20 @@ class @Scenario
     factSize: @factSizes[faction]
     payoffs: (payoff[faction] for payoff in @payoffs)
     
+  averagePayoffs: ->
+    factSize = 0
+    payoffs = (0 for cand in [0...@candNames.length])
+    for faction in [0...@factSizes.length]
+      factSize += @factSizes[faction]
+      for cand in [0...@candNames.length]
+        payoffs[cand] += @factSizes[faction] * @payoffs[cand][faction]
+        
+    result =
+      factSize: factSize
+      payoffs: ((payoff/factSize) for payoff in payoffs)
+    result
+      
+    
   payoffCents: (winner, faction) ->
     @payoffs[winner][faction] * $bonusUnit
     
@@ -210,7 +224,7 @@ class @Scenario
     factSizes: [1]
     factNames: ['Red']
     factColors: ["#D40000"]
-    factPngs: ["4pairs"]
+    factPngs: ["4h."]
     candNames: ['X', 'Y', 'Z', "Build nothing"]
     candColors: ["#D40000", "#47D48E", "#008ED4", "#bbbbbb"]
     payoffs: [[3],

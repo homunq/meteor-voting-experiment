@@ -381,6 +381,8 @@ class @Election extends VersionedInstance
               eid: @_id
               faction: @factions[vIndex]
               watcher: false
+              blurbCondition: generateBlurbCondition @factions[vIndex], @
+              payoffCondition: generatePayoffCondition @factions[vIndex], @
           ,
             multi: false
       
@@ -703,7 +705,7 @@ else if Meteor.isClient
     debug 'autosubscribe (re)new'
     if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
       user = Meteor.user()
-      debug "got new user", user
+      debug "got new user", user._id
       if user?.faction isnt OLD_USER?.faction
         Session.set 'faction', user?.faction
       if user?.step isnt OLD_USER?.step
@@ -735,9 +737,9 @@ else if Meteor.isClient
         if not e?
           debug "no election for eid", eid
           return 1
-        debug "really (re)loading",Meteor.user().eid,  e
+        debug "really (re)loading",Meteor.user().eid,  e?._id
         global.ELECTION = new Election e
-        debug "set ELECTION", e, global.ELECTION, "global", global, "Election", Election
+        debug "set ELECTION", e?._id#, global.ELECTION, "global", global, "Election", Election
         Session.set 'election', e
         Session.set 'stage', ELECTION.stage
         Session.set 'stepCompletedNums', ELECTION.stepsDoneBy
@@ -762,4 +764,4 @@ else if Meteor.isClient
             Session.set 'method', ELECTION.method
           OLD_ELECTION = ELECTION
                 
-          debug "fully (re)loaded ",Meteor.user().eid,  e
+          debug "fully (re)loaded ",Meteor.user().eid,  e?._id

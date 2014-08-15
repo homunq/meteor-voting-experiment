@@ -55,6 +55,14 @@ if (Handlebars?.registerHelper?)
     if scenario
       scenario.payoffsExceptFaction Session.get 'faction'
     
+  Handlebars.registerHelper 'scenAvePayoffs', ->
+    scenario = ((Session.get 'scenario') and SCENARIO)
+    if scenario
+      scenario.averagePayoffs()
+      
+  Handlebars.registerHelper 'payoffAverages', ->
+    Meteor.user()?.payoffCondition is "averages"
+    
   scenCandInfo = ->
     scenario = ((Session.get 'scenario') and SCENARIO)
     if scenario

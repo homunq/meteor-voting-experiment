@@ -15,6 +15,18 @@ Includes the following systems:
 		<p><strong>The candidate with the most approvals wins.</strong></p>
 </template>
 
+<template name="approval_stratBlurb">
+	<ul>
+		<li>
+			In Approval Voting (this voting method), it is always strategic to approve your favorite candidate and disapprove your
+			least favorite.
+		</li>
+		<li>
+			As for your second choice, you should approve it if you hope that your most-favorite option might beat it,
+			but disapprove it if you fear that your least-favorite option may win.
+		</li>
+	</ul>
+</template>
 
 
 <template name="plurality_blurb">
@@ -27,6 +39,18 @@ Includes the following systems:
 </template>
 
 
+<template name="plurality_stratBlurb">
+	<ul>
+		<li>
+			In Plurality Voting (this voting system), it is strategic to focus on the two candidates you think have the best
+			chance of winning.
+		</li>
+		<li>
+			Of those two, you should vote for the one you prefer.
+		</li>
+	</ul>
+</template>
+
 <template name="score_blurb">
 		<h3>Election Method: Score Voting</h3>
 		<p><em>Also known as Range Voting.</em></p>
@@ -38,6 +62,18 @@ Includes the following systems:
 			<p><strong>The candidate with the highest total score wins.</strong></p>
 </template>
 
+<template name="score_stratBlurb">
+	<ul>
+		<li>
+			In Score Voting (this voting method), it is always strategic to give your favorite candidate the highest score (10) and your
+			least favorite the lowest (0).
+		</li>
+		<li>
+			As for your second choice, you should grade it relatively low (0-3) if you hope that your most-favorite option might beat it,
+			but relatively high (7-10) if you fear that your least-favorite option may win.
+		</li>
+	</ul>
+</template>
 
 <template name="SODA_blurb">
 		<h3>Election Method: SODA Voting</h3>
@@ -61,6 +97,26 @@ Includes the following systems:
 				to behave rationally, so they will only assign votes to another candidate if they cannot win themselves. 
 				When this is finished, <strong>the candidate with the highest 
 					final approval tally wins.</strong></p>
+					
+				<p>This process typically ensures that everyone who agrees with their candidate's preferences and 
+					delegates their vote, has their ballot counted in favor of exactly one of the two frontrunners
+					(the top two vote-getters in the final count). Thus, if all voters check one candidate each, a runoff
+					election between the final frontrunners would be redundant.</p>
+</template>
+
+<template name="SODA_stratBlurb">
+	<ul>
+		<li>
+			In SODA Voting (this voting system), it is usually strategic to delegate your vote (by checking only your favorite).
+			For example, if you expect all other voters to delegate their votes, then
+			it is always strategic for you to delegate too. In this case, the SODA result will be the same as if there had been a
+			two-way vote between the two strongest candidates.
+		</li>
+		<li>
+			If you believe that others will not delegate, delegating is often still best for you. However, there are cases
+			where not delegating (by checking both your favorite and "Do Not Delegate") is strategic.
+		</li>
+	</ul>
 </template>
 
 
@@ -82,7 +138,7 @@ Includes the following systems:
 </template>
 
 <template name="SODA_ballotLine">
-	<input type="checkbox" name="{{name}}" value="approve"onclick="checkboxVoteFor({{num}},this.checked);">{{SODAvote num}}
+	<input type="checkbox" name="{{name}}" value="approve"onclick="checkboxVoteFor({{num}},this.checked);">{{#if checkText}}{{checkText}}{{else}}{{SODAvote num}}{{/if}}
 </template>
 
 <template name="SODA_delegate"><b>Delegate</b>/Approve</template>

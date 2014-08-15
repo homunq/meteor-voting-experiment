@@ -301,3 +301,12 @@ if (Handlebars?)
       return true
     return false
     
+    
+  Handlebars.registerHelper 'shouldStratBlurb', ->
+    blurbCondition = Meteor.user()?.blurbCondition
+    if blurbCondition is 'none'
+      return false
+    if blurbCondition is 'stratBlurb1'
+      return true
+    return Session.get('stage') is 3
+    

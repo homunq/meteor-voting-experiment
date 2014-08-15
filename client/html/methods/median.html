@@ -18,11 +18,29 @@ Includes the following systems:
 		If two candidates would reach 50% at the same
 		grade, whichever of them has more votes at higher grades wins.</p>
 		
-		<p>To simplify reporting, the grades for each candidate will be
+		<p>This process ensures that the winner will be one of the candidates with the <strong>highest median grade</strong>.
+			A candidate site's "median" means the grade where at least half of the voters give that site the median or better.
+			So if 5 of 9 voters give a certain site A's and B's, its median will be B.</p>
+		
+		<p>Note: to simplify reporting, the grades for each candidate will be
 			used to calculate a number on a scale from 0 (F) to 4 (A), using a formula
 			that gives higher scores the more above-median votes a candidate has. 
 			These "scores" for each candidate, along with 
             their equivalent grades, will be reported after each election.</p>
+</template>
+
+<template name="MAV_stratBlurb">
+	<ul>
+		<li>
+			In MAV (this voting method), it is always strategic to give your favorite candidate the highest grade (A) and your
+			least favorite the lowest (F).
+		</li>
+		<li>
+			As for your second choice, you should grade it relatively low (D or F) 
+			if you hope that your most-favorite option might beat it,
+			but relatively high (A or B) if you fear that your least-favorite option may win.
+		</li>
+	</ul>
 </template>
 
 <template name="GMJ_blurb">
