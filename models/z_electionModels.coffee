@@ -381,8 +381,9 @@ class @Election extends VersionedInstance
               eid: @_id
               faction: @factions[vIndex]
               watcher: false
-              blurbCondition: generateBlurbCondition @factions[vIndex], @
-              payoffCondition: generatePayoffCondition @factions[vIndex], @
+              blurbCondition: generateBlurbCondition @factions[vIndex], vIndex, @
+              showAverageCondition: generateShowAverageCondition @factions[vIndex], vIndex, @
+              subtotalCondition: generateSubtotalCondition @factions[vIndex], vIndex, @
           ,
             multi: false
       

@@ -61,7 +61,10 @@ if (Handlebars?.registerHelper?)
       scenario.averagePayoffs()
       
   Handlebars.registerHelper 'payoffAverages', ->
-    Meteor.user()?.payoffCondition is "averages"
+    Meteor.user()?.showAverageCondition is 1
+    
+  Handlebars.registerHelper 'showSubtotals', ->
+    Meteor.user()?.subtotalCondition is 1
     
   scenCandInfo = ->
     scenario = ((Session.get 'scenario') and SCENARIO)

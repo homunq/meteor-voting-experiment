@@ -1,27 +1,37 @@
 
 @USERS = Meteor.users
 
-@blurbConditions =
-  none: 3 #2
-  stratBlurb1: 2 #1
-  stratBlurb2: 2 #1
+@blurbConditions = [
+  3 #2 #no strategy blurb
+  2 #1 #blurb stage 2 and 3
+  2 #1 #blurb stage 3 
+]
   
-@payoffConditions = 
-  noAverages: 3 #1
-  averages: 4 #1
+@showAverageConditions = [
+  3 #1 #do not show average payoffs in table or ballot
+  4 #1 #show averages in table and ballot
+]
+  
+@subtotalConditions = [
+  4 #1 #do not show faction subtotal results in outcomes
+  3 #1 #show faction subtotal results in outcomes
+]
 
 @generateCondition = (probs) ->
   conditionList = []
-  for key, val of probs
+  for val, key in probs
     for i in [0...val]
       conditionList.push(key)
   _.sample conditionList
   
-@generatePayoffCondition = (faction, election) ->
-  generateCondition @payoffConditions
+@generateShowAverageCondition = (faction, index, election) ->
+  generateCondition showAverageConditions
 
-@generateBlurbCondition = (faction, election) ->
-  generateCondition @blurbConditions
+@generateBlurbCondition = (faction, index, election) ->
+  generateCondition blurbConditions
+  
+@generateSubtotalCondition = (faction, election) ->
+  generateCondition subtotalConditions
   
 
 class @MtUser extends VersionedInstance
@@ -40,7 +50,8 @@ class @MtUser extends VersionedInstance
     lastStep: undefined
     faction: undefined
     blurbCondition: undefined
-    payoffCondition: undefined
+    showAverageCondition: undefined
+    subtotalCondition: undefined
     turkSubmitTo: undefined
     stickyWorkerId: undefined
     workerId: undefined

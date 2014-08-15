@@ -70,7 +70,8 @@ class @Scenario
     factSize: @factSizes[faction]
     payoffs: (payoff[faction] for payoff in @payoffs)
     
-  averagePayoffs: ->
+  
+  calcAveragePayoffs: -> #for caching
     factSize = 0
     payoffs = (0 for cand in [0...@candNames.length])
     for faction in [0...@factSizes.length]
@@ -82,6 +83,11 @@ class @Scenario
       factSize: factSize
       payoffs: ((payoff/factSize) for payoff in payoffs)
     result
+  
+  averagePayoffs: -> #do caching
+    if not @_averagePayoffs
+      @_averagePayoffs = @calcAveragePayoffs()
+    @_averagePayoffs
       
     
   payoffCents: (winner, faction) ->
@@ -96,7 +102,8 @@ class @Scenario
     num: candNum
     name: @candNames[candNum]
     color: @candColors[candNum]
-    myPayoff: @candNames[candNum] and @payoffs[candNum][faction]
+    myPayoff: @candNames[candNum] and @payoffs[candNum]?[faction] #belt and suspenders
+    averagePayoff: @averagePayoffs()['payoffs'][candNum]
     count: outcome.counts?[candNum]
     candTied: candNum in (outcome.ties or []) 
     factionCounts: for faction in (scen?.factions(faction) or [])

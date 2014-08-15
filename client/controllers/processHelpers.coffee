@@ -164,7 +164,9 @@ if (Handlebars?)
     losers = _.range e.scen().numCands()
     losers.splice outcome.winner, 1
     for loser in losers
-      e.scen().candInfo loser, faction, outcome, e.scen()
+      info = e.scen().candInfo loser, faction, outcome, e.scen()
+      debug "loser", info
+      info
     
   Handlebars.registerHelper 'stepCompletedNum', (num) ->
     (Session.get 'stepCompletedNums')?[num] ? 0
@@ -304,9 +306,9 @@ if (Handlebars?)
     
   Handlebars.registerHelper 'shouldStratBlurb', ->
     blurbCondition = Meteor.user()?.blurbCondition
-    if blurbCondition is 'none'
+    if blurbCondition is 0
       return false
-    if blurbCondition is 'stratBlurb1'
+    if blurbCondition is 1
       return true
     return Session.get('stage') is 3
     
