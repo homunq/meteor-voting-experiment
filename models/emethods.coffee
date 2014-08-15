@@ -263,7 +263,7 @@ makeMethods = (methods) ->
         numVotes -= @sortAndElim ballots, piles
         round = 1
         losers = [] #in case there are no votes
-        while winner is null and numVotes
+        while (winner is null) and numVotes
           losers = []
           losingScore = winningScore = numVotes/2
           for pile, cand in piles
@@ -287,7 +287,7 @@ makeMethods = (methods) ->
             piles[loser] = round
             numVotes -= @sortAndElim resort, piles
           round += 1
-        if winner 
+        if winner isnt null
           winners = [winner]
         else
           winners = (cand for cand in [0..(numCands - 1)] when cand not in losers)
@@ -462,12 +462,15 @@ makeMethods = (methods) ->
         true
         
       processCandInfo: (candInfo) ->
-        if candInfo.length isnt 4
+        if true # candInfo.length isnt 4
           candInfo.push
             color: "#000000"
             myPayoff: "(cannot win)"
             name: "DND (Do Not Delegate)"
-            num: 3
+            num: candInfo.length
+            checkText: "Approve only"
+        if candInfo.length is 5
+          candInfo.splice(3,1)
         else
           candInfo[3].name = candInfo[3].name + " (No delegation)"
         candInfo
