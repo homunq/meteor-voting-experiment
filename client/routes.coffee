@@ -121,16 +121,21 @@ class @MyRouter extends ReactiveRouter
     debug "gonna login_then 1", newUser
     login_then newUser, =>
       debug "did login_then 1"
-      user = new MtUser Meteor.user()
-      user.setParams xparams
-      if not user.eid
-        #debug "About to watchMain", user._id
-        Election.watchMain (error, result) =>
-          #debug "watchmain e=", error
-          #debug "watchmain r=", result
-        
+      user = Meteor.user()
+      if user
+        user = new MtUser Meteor.user()
+        user.setParams xparams
+        if not user.eid
+          #debug "About to watchMain", user._id
+          Election.watchMain (error, result) =>
+            #debug "watchmain e=", error
+            #debug "watchmain r=", result
+          
+            @goto 'loggedIn'
+        else
           @goto 'loggedIn'
       else
+        Session.set 'error', "Login failed; please reload"
         @goto 'loggedIn'
         #debug 'qwpr' + JSON.stringify Meteor.user()
     #@navigate 'election/new',
