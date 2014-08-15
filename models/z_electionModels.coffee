@@ -706,7 +706,7 @@ else if Meteor.isClient
     debug 'autosubscribe (re)new'
     if (Session.get 'router') and ROUTER?.current_page.get() is 'loggedIn'
       user = Meteor.user()
-      debug "got new user", user._id
+      debug "got new user", user?._id
       if user?.faction isnt OLD_USER?.faction
         Session.set 'faction', user?.faction
       if user?.step isnt OLD_USER?.step
