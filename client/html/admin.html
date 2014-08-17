@@ -20,6 +20,8 @@
 			<td>steps</td>
 			<td>votedRounds</td>
 			<td>paymentDue</td>
+			
+			<td>version</td>
 		</tr>
 	{{#each payments}}
 		<tr>
@@ -29,6 +31,8 @@
 			<td>{{nSteps}}</td>
 			<td>{{nVoted}}</td>
 			<td>{{paymentDue}}</td>
+			
+			<td>{{version}}</td>
 		</tr>
 	{{/each}}
 	
@@ -39,7 +43,10 @@
 	<table>
 		<tr>
 			
+			<td>version</td>
 			<td>eid</td>
+			<td>voter</td>
+			
 			<td>faction</td>
 			<td>method</td>
 			<td>scenario</td>
@@ -52,13 +59,16 @@
 	{{/each}}
 	
 			<td>whenVoted</td>
-			<td>showAveraged}</td>
+			<td>showAveraged</td>
 			<td>blurbd</td>
 			<td>subtotald</td>
+			
 		</tr>
 	{{#each answerers}}
 		<tr>
+			<td>{{version}}</td>
 			<td>{{this.election}}</td>
+			<td>{{this.voter}}</td>
 			<td>{{this.faction}}</td>
 			<td>{{this.method}}</td>
 			<td>{{this.scenario}}</td>
@@ -73,8 +83,12 @@
 			<td>{{this.showAveraged}}</td>
 			<td>{{this.blurbd}}</td>
 			<td>{{this.subtotald}}</td>
+			
+			
 		</tr>
 	{{/each}}
+	
+			
 	</table>
 </template>
 
@@ -98,6 +112,8 @@
 			<td>v3:A</td>
 			<td>v3:B</td>
 			<td>v3:C</td>
+			
+			<td>version</td>
 		</tr>
 	{{#each adminVoters}}
 		<tr>
@@ -117,6 +133,8 @@
 			<td>{{v3.vote.[0]}}</td>
 			<td>{{v3.vote.[1]}}</td>
 			<td>{{v3.vote.[2]}}</td>
+			
+			<td>{{this.version}}</td>
 		</tr>
 	{{/each}}
 	</table>
@@ -152,6 +170,9 @@
 			<td>subtotald</td>
 			<td>stagesSoFar</td>
 			
+			
+			<td>version</td>
+			
 		</tr>
 	{{#each adminVotes}}
 		<tr>
@@ -178,6 +199,8 @@
 			<td>{{this.blurbd}}</td>
 			<td>{{this.subtotald}}</td>
 			<td>{{this.stagesSoFar}}</td>
+			
+			<td>{{version}}</td>
 		</tr>
 	{{/each}}
 	</table>
