@@ -50,6 +50,11 @@
 	{{#each questions}}
 			<td>{{name}}</td>
 	{{/each}}
+	
+			<td>whenVoted</td>
+			<td>showAveraged}</td>
+			<td>blurbd</td>
+			<td>subtotald</td>
 		</tr>
 	{{#each answerers}}
 		<tr>
@@ -64,6 +69,10 @@
 		{{#each this.answerList}}
 				<td>{{this}}</td>
 		{{/each}}
+			<td>{{this.whenVoted}}</td>
+			<td>{{this.showAveraged}}</td>
+			<td>{{this.blurbd}}</td>
+			<td>{{this.subtotald}}</td>
 		</tr>
 	{{/each}}
 	</table>
@@ -136,6 +145,13 @@
 			<td>oppSupport</td>
 			<td>NOTASupport</td>
 			
+			
+			
+			<td>showAveraged}</td>
+			<td>blurbd</td>
+			<td>subtotald</td>
+			<td>stagesSoFar</td>
+			
 		</tr>
 	{{#each adminVotes}}
 		<tr>
@@ -157,6 +173,11 @@
 			<td>{{this.support.[1]}}</td>
 			<td>{{this.support.[2]}}</td>
 			<td>{{this.support.[3]}}</td>
+			
+			<td>{{this.showAveraged}}</td>
+			<td>{{this.blurbd}}</td>
+			<td>{{this.subtotald}}</td>
+			<td>{{this.stagesSoFar}}</td>
 		</tr>
 	{{/each}}
 	</table>

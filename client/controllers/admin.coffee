@@ -88,32 +88,19 @@ Meteor.startup ->
       [voter.nSteps, voter.nVoted] = (voter.numVoted() or [0,0])
       voter.paymentDue = voter.centsDue()
       if voter.nVoted
-        if voter.manuallySet
-          q=4
-            #debug "#"
-        else
-          
-          debug "echo \"#next voter", voter.stickyWorkerId, voter.paymentDue, voter.nSteps, voter.nVoted, '"'
-          
-          
-          if voter.stickyAssignmentId
-            debug "WTFWTF?????"
-          voter.stickyAssignmentId = voter.assignmentId #TEMP - DELETE
-          
-          
-          
-          prefix = (if voter.stickyAssignmentId is "ASSIGNMENT_ID_NOT_AVAILABLE" then "#" else "")
-          #if prefix isnt "#" #and voter.manuallySet and not voter.old
-          if true or voter.paymentDue > 0
-            debug("./grantBonus.sh -assignment", voter.stickyAssignmentId, 
-              "-amount", "0.01" #accounting.formatMoney(voter.paymentDue/100,""), 
-              "-workerid", voter.stickyWorkerId,
-              '-reason "Good work."'
-            )
-            debug "#./assignQualification.sh -qualtypeid 3HRCVKUHL3W1J5HR0CWK9CR3A6GRTG -workerid", voter.stickyWorkerId
-            #debug "#"
-          #debug prefix, "./approveWork.sh -force -assignment", voter.stickyAssignmentId
+        debug "echo \"#next voter", voter.stickyWorkerId, voter.paymentDue, voter.nSteps, voter.nVoted, '"'
+        
+        #if prefix isnt "#" #and voter.manuallySet and not voter.old
+        if voter.paymentDue > 0
+          debug("./grantBonus.sh -assignment", voter.stickyAssignmentId, 
+            "-amount", accounting.formatMoney(voter.paymentDue/100,""), 
+            "-workerid", voter.stickyWorkerId,
+            '-reason "Good work."'
+          )
+          #debug "#./assignQualification.sh -qualtypeid 3HRCVKUHL3W1J5HR0CWK9CR3A6GRTG -workerid", voter.stickyWorkerId
           #debug "#"
+        debug "./approveWork.sh -force -assignment", voter.stickyAssignmentId
+        #debug "#"
       
     #debug "paymentList", voters
     voters
@@ -141,16 +128,35 @@ Meteor.startup ->
       outcomeDict[outcome.election + outcome.stage] = outcome
     for response in responses
       #debug "response", response
-      response.answerList = for question in SURVEY.questions
-        response[Object.keys(question)[0]]
-      responder = Meteor.users.findOne
+      voter = Meteor.users.findOne
         _id: response.voter
       outcome1 = outcomeDict[response.election + "1"]
-      response.faction = responder?.faction
-      response.method = outcome1?.method
-      response.scenario = outcome1?.scenario
-      response.payoffs = for i in [1..3]
-        Scenarios[response.scenario]?.payoffs[outcomeDict[response.election + i].winner]?[response.faction]
+      votes = Votes.find
+        voter: response.voter
+        
+      a=1  
+        
+        
+      whenVoted = 0
+      for vote in votes.fetch()
+        whenVoted += 1 << (vote.stage - 1)
+      _.extend response,
+        whenVoted: whenVoted
+        faction: voter.faction
+        method: outcome1?.method
+        scenario: outcome1?.scenario
+        payoffs: for i in [1..3]
+          Scenarios[response.scenario]?.payoffs[outcomeDict[response.election + i].winner]?[response.faction]
+        answerList: for question in SURVEY.questions
+          response[Object.keys(question)[0]]
+        showAveraged: voter.showAverageCondition
+        blurbd: voter.blurbCondition
+        subtotald: voter.subtotalCondition
+          
+          
+          
+          
+          
     responses
       
       
@@ -197,6 +203,8 @@ Meteor.startup ->
     global.outcomeDict = {}
     for outcome in outcomes.fetch()
       outcomeDict[outcome.election + outcome.stage] = outcome
+    soFar = 0
+    prevVoter = ""
     for vote in votes
       scen = Scenarios[vote.scenario]
       meth = Methods[vote.method]
@@ -208,6 +216,21 @@ Meteor.startup ->
       vote.prevPayoff = scen.payoffs[vote.prevWinner]?[vote.faction]
       vote.thisTies = outcomeDict[vote.election + vote.stage]?.ties
       vote.prevTies = outcomeDict[vote.election + (vote.stage - 1)]?.ties
+      
+      if vote.voter is prevVoter
+        soFar += 1
+      else
+        soFar = 0
+      prevVoter = vote.voter
+      
+      voter = Meteor.users.findOne
+        _id: vote.voter
+        
+      _.extend vote,
+        showAveraged: voter.showAverageCondition
+        blurbd: voter.blurbCondition
+        subtotald: voter.subtotalCondition
+        stagesSoFar: soFar
     votes
       
       

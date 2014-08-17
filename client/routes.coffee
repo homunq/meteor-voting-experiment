@@ -183,6 +183,26 @@ class @MyRouter extends ReactiveRouter
     #debug "going to elections report..."
     @goto 'electionsReport'
     
+  vToQ: (version, extra) ->
+    query = Session.get 'QUERY'
+    if not query
+      if version is "latestElection"
+        latestElection = Elections.findOne {},
+          sort: [["sTimes.0", "desc"]]
+        query = 
+          eid: [latestElection._id] #eid, not election; used on users collection
+      else if version is "current"
+        query = 
+          version: VERSION
+          
+      else
+        query = 
+          version: parseInt version
+      
+      if extra
+        _.extend query, extra
+      Session.set 'QUERY', query
+          
   payments: (password, version) ->
     #debug "payments"
     Session.set 'password', password
@@ -191,44 +211,26 @@ class @MyRouter extends ReactiveRouter
     Meteor.users.adminSubscribe password
     StepRecords.adminSubscribe password
     Votes.adminSubscribe password
-    if version is "latestElection"
-      latestElection = Elections.findOne {},
-        sort: [["sTimes.0", "desc"]]
-      Session.set 'QUERY',
-        eid: [latestElection._id] #eid, not election; used on users collection
-    else if version is "current"
-      Session.set 'QUERY',
-        version: VERSION
-        faction: 
-          $in:[0,1,2]
-    else
-      Session.set 'QUERY',
-        version: parseInt version
-        faction: 
-          $in:[0,1,2]
+    @vToQ version,
+      faction: 
+        $in:[0,1,2]
     @goto 'payments'
     
   adminAnswers: (password, version) ->
     #debug "payments"
     Session.set 'password', password
     Meteor.users.adminSubscribe password
-    Elections.adminSubscribe password
     SurveyResponses.adminSubscribe password
     Outcomes.adminSubscribe password
-    q = Session.get 'QUERY'
-    if not q
-      Session.set 'QUERY',
-        version: parseInt(version)
+    Votes.adminSubscribe password
+    @vToQ version
     @goto 'answers'
     
   adminVoters: (password, version) ->
     Session.set 'password', password
     Elections.adminSubscribe password
     Votes.adminSubscribe password
-    q = Session.get 'QUERY'
-    if not q
-      Session.set 'QUERY',
-        version: parseInt(version)
+    @vToQ version
     @goto 'adminVoters'
     
   adminVotes: (password, version) ->
@@ -236,10 +238,8 @@ class @MyRouter extends ReactiveRouter
     Elections.adminSubscribe password
     Votes.adminSubscribe password
     Outcomes.adminSubscribe password
-    q = Session.get 'QUERY'
-    if not q
-      Session.set 'QUERY',
-        version: parseInt(version)
+    Meteor.users.adminSubscribe password
+    @vToQ version
     @goto 'adminVotes'
           
 
