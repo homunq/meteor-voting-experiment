@@ -23,6 +23,10 @@
 		<table class="table">
 			<tr>
 				<td >Candidate</td>
+				{{#if hasBackupCands}}
+					<td >(Corresponding</br>
+						backup choice)</td>
+				{{/if}}
 				<td>Vote</td>
 				<td>Your payoff<br/><small>(if this candidate wins)</small></td>
 				{{#if payoffAverages}}
@@ -30,14 +34,19 @@
 				{{/if}}
 			</tr>
 			{{#each ballotCandInfo}}
-			<tr style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">
-				<td>{{name}}</td>
-				<td>{{{meth_subtemplate "ballotLine" this}}}</td>
-				<td>{{bonus myPayoff}}</td>
+			<tr>
+				<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}}; {{#if bgColor}}background-color:{{bgColor}};{{/if}}">{{name}}</td>
+				
+				{{#if hasBackupCands}}
+					<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}}; {{#if bgColor}}background-color:{{bgColor}};{{/if}}">{{#if checkText}} {{else}}({{backupChoiceFor num}}){{/if}}</td>
+				{{/if}}
+				<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}}; {{#if bgColor}}background-color:{{bgColor}};{{/if}}">{{{meth_subtemplate "ballotLine" this}}}</td>
+				<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}}; {{#if bgColor}}background-color:{{bgColor}};{{/if}}">{{bonus myPayoff}}</td>
 				{{#if payoffAverages}}
-					<td><span style="color: #AAA">{{bonus averagePayoff}}</span></td>
+					<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}}; {{#if bgColor}}background-color:{{bgColor}};{{/if}}"><span style="color: #AAA">{{bonus averagePayoff}}</span></td>
 				{{/if}}
 			</tr>
+			<tr style="height:3px;"></tr>
 			{{/each}}
 		</table>
 	{{/if}}

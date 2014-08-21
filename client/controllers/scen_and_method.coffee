@@ -113,7 +113,15 @@ if (Handlebars?.registerHelper?)
         return Template.SODA_delegate()
       return Template.SODA_approve()
     new Handlebars.SafeString Spark.labelBranch ("SODAvote"+num), result
+    
+  Handlebars.registerHelper 'hasBackupCands', ->
+    meth = Session.get 'method'
+    meth is 'SODA'
       
+  Handlebars.registerHelper 'backupChoiceFor', (num) ->
+    scenario = ((Session.get 'scenario') and SCENARIO)
+    debug 'backupChoiceFor', (num)
+    scenario.candNames?[scenario.prefs()?[num]?[1]]
   
 @carousel = ->
   Meteor.setTimeout (-> $(".carousel").carousel

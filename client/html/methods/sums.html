@@ -35,7 +35,7 @@ Includes the following systems:
 		<h4>Ballot</h4>
 		<p><strong>You may vote for exactly one candidate.</strong> </p>
 		<h4>Counting</h4>
-			<p><strong>The candidate site with the most votes wins.</strong></p>
+			<p><strong>The candidate with the most votes wins.</strong></p>
 </template>
 
 
@@ -75,18 +75,20 @@ Includes the following systems:
 	</ul>
 </template>
 
-<template name="SODA_blurb">
+<template name="SODAx_blurb">
 		<h3>Election Method: SODA Voting</h3>
 		<p><em>SODA stands for Simple Optionally-Delegated Approval.</em></p>
 		<h4>Ballot</h4>
 		<p><strong>The ballot will ask you to delegate to one candidate, or approve of several candidates.</strong> 
 		You may approve of any number of candidates. If you approve of all candidates or
 		no candidates, your ballot will not affect the election.</p>
+		
 		<p><strong>If you check exactly one candidate, you are delegating your vote
 			to that candidate.</strong> In that case, your candidate may add
 		additional approvals to your ballot if, after the ballots are counted, it is clear that they cannot win. 
 		This means that your delegated vote will not be wasted, even if you vote for an unpopular candidate.
 		If you check more than one option, your vote will not be delegated.</p>
+		
 		<h4>Counting</h4>
 			<p>All approvals are tallied for each candidate site. Separately, each candidate's delegated ballots 
 				(those which approve only it) are counted.
@@ -104,7 +106,82 @@ Includes the following systems:
 					election between the final frontrunners would be redundant.</p>
 </template>
 
-<template name="SODA_stratBlurb">
+<template name="SODA_blurb">
+		<h3>Election Method: SODA Voting</h3>
+		<p><em>SODA stands for Simple Optionally-Delegated Approval.</em></p>
+		<h4>Ballot</h4>
+		<p>The ballot has a checkbox for each candidate, plus a separate checkbox labeled "Do Not Delegate". 
+			You can use your ballot to either approve of some number of candidates, 
+			   or delegate one of the candidates to allocate your approvals for you.</p>
+			
+		<p><strong>
+		  If you just check one candidate's box, you are delegating your vote to them.</strong> 
+			In that case, they will get one point from you, 
+			  and they may also decide whether allocate an additional point to the "backup choice" shown next to the their name. 
+			  They will only allocate this additional point if it is clear that they themselves cannot win.</p>
+		
+		<p><strong>
+			If you check more than one candidate, your ballot will be counted as one point each for the candidates you check. </strong>
+			Checking all candidates or no candidates means your ballot won't affect who wins.</p>
+			
+		<p>If you want to vote for one candidate, but do not want to delegate, check "Do Not Delegate". 
+		Then your vote will only give one point to the candidate you checked.  
+		"Do Not Delegate" does not matter unless you've checked exactly one candidate.</p>
+	
+		
+		<h4>Counting</h4>
+			<p>As the name implies, SODA is based on approval voting: 
+				each voter can vote for any number of candidates; 
+				each ballot can give at most one point to any given candidate; 
+				and <strong>the winner is the candidate with the highest total,</strong> 
+				including both direct and candidate-allocated votes. 
+				To find the totals, after the raw ballots are tallied, 
+					each candidate (in order from most approvals to least), gets one chance to allocate their delegated votes 
+					by adding their delegated vote tally onto the approval tally of their backup choice.</p>
+				
+		<h4>Why it works like this</h4>
+				<p><strong>Delegation:</strong> 
+					You always want to give a point to your favorite candidate, and never to your least favorite. 
+					For your second preference, however, it depends. 
+					On the one hand, you want to give them a point if it's needed to help them beat the least favorite; 
+					   on the other hand, you don't want to if they might beat your favorite. 
+					Delegating lets your favorite candidate make this choice for you, after the ballots are counted. 
+					By that time, the choice is simple; 
+					  they need only allocate a point to the "backup choice" if it's clear they themselves can't win.</p>
+				
+				<p><strong>Approval:</strong> 
+					In this system, a single ballot often ends up giving points to more than one candidate.
+					However, a ballot can never give more than one point to a candidate.
+					In this way, 
+					   each voter is actually more likely to get an equal voice in deciding which of the two frontrunners wins.
+					Unlike plurality voting (the more customary system, in which each voter can support only one candidate),
+					   votes in approval-based systems like SODA 
+					   are not likely to be "wasted" on a third candidate who had no real chance of winning.
+					In fact, if all voters delegate their votes, SODA guarantees that no ballots will be "wasted" in that sense.
+					</p>
+				
+				<p><strong>Stronger candidates allocate first:</strong> 
+					Since all candidates eventually get a chance to decide how to allocate their delegated votes, 
+					  the order in which they do so usually does not matter. 
+					One important exception is a situation where two allied candidates have to cooperate to beat a third. 
+					In such circumstances, the stronger of the two allies should go first, so that they will win. 
+				  Then, by the time the weaker ally decides, 
+				     the only	reasonable option left is to cooperate by allocating votes to the stronger.</p>
+				
+				<p>This experimental scenario is actually simpler than a real-world election in a couple of ways. 
+					<strong>"Do not delegate":</strong> 
+					In the "voter/candidate map" used here, all voters agree with their favorite candidate's "backup choice". 
+					In a real-world election, 
+					   disagreeing with that choice could be one good reason to choose the "Do Not Delegate" option. 
+					<strong>Backup choices:</strong>
+					Since there are only three candidates, each candidate here has only one "backup choice". 
+					If there were more candidates,
+					  each would have a list of predeclared "backups", 
+					  and could choose to allocate points to one or more from the top of their list.</p>
+				
+</template>
+
+<template name="xSODA_stratBlurb">
 	<ul>
 		<li>
 			In SODA Voting (this voting system), it is usually strategic to delegate your vote (by checking only your favorite).
@@ -119,6 +196,21 @@ Includes the following systems:
 	</ul>
 </template>
 
+<template name="SODA_stratBlurb">
+	<ul>
+		<li>
+			In SODA Voting (this voting system), it is usually strategic to delegate your vote (by checking only your favorite),
+			especially if you expect all other voters to also delegate.
+		</li>
+		<li>
+			In certain specific circumstances, it may be strategic for you not to delegate, depending on exactly which other
+			voters do so. For instance, if you think the voters in both your faction and enemy factions 
+			(those who like your favorite candidate the least)
+			will not delegate, but voters in allied factions (those who like your favorite candidate second)
+			will delegate, then it is strategic for you to vote undelegated by checking both your favorite and "Do Not Delegate".
+		</li>
+	</ul>
+</template>
 
 <template name="approval_ballotLine">
 	<input type="radio" name="{{name}}" value="approve" onclick="voteFor({{num}},1);">Approve<br>
@@ -138,7 +230,7 @@ Includes the following systems:
 </template>
 
 <template name="SODA_ballotLine">
-	<input type="checkbox" name="{{name}}" value="approve"onclick="checkboxVoteFor({{num}},this.checked);">{{#if checkText}}{{checkText}}{{else}}{{SODAvote num}}{{/if}}
+	<input type="checkbox" name="{{name}}" value="approve"onclick="checkboxVoteFor({{num}},this.checked);">{{#if checkText}}{{checkText}}{{else}}{{#if checkText}}{{checkText}}{{else}}{{SODAvote num}}{{/if}}{{/if}}
 </template>
 
 <template name="SODA_delegate"><b>Delegate</b>/Approve</template>
@@ -177,7 +269,7 @@ Includes the following systems:
 </template>
 
 <template name="SODA_resultHead">
-	<td>{{meth_subtemplate "resultHeadInner"}}<br/>(direct + indirect)</td>
+	<td>{{meth_subtemplate "resultHeadInner"}}<br/>(direct + allocated)</td>
 </template>
 <template name="SODA_resultHeadInner">
 	Final scores

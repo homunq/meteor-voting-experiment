@@ -465,12 +465,13 @@ makeMethods = (methods) ->
         if true # candInfo.length isnt 4
           candInfo.push
             color: "#000000"
-            myPayoff: "(cannot win)"
+            myPayoff: " "
             name: "DND (Do Not Delegate)"
             num: candInfo.length
-            checkText: "Approve only"
-        if candInfo.length is 5
-          candInfo.splice(3,1)
+            checkText: " "
+            bgColor: "#aaa"
+        #if candInfo.length is 5
+        #  candInfo.splice(3,1)
         else
           candInfo[3].name = candInfo[3].name + " (No delegation)"
         candInfo
