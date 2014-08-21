@@ -94,21 +94,30 @@
 			{{#if showSubtotals}}{{> factionResultHead}}{{/if}}
 		</tr>
 	{{#with winner}}
-		<tr><td>{{name}}</td><td>{{{meth_subtemplate "result" this}}}</td><td>WINNER{{#if this.candTied}}<br/>*(tied){{/if}}</td><td>{{bonus myPayoff}} - {{#if userVoted}}to be paid{{else}}would be yours,<br/>but you didn't participate{{/if}}</td>
+		<tr><td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">{{name}}</td>
+			<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">{{{meth_subtemplate "result" this}}}</td>
+			<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">WINNER{{#if this.candTied}}<br/>*(tied){{/if}}</td>
+			<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">{{bonus myPayoff}} - {{#if userVoted}}to be paid{{else}}would be yours,<br/>but you didn't participate{{/if}}</td>
 			{{#if showSubtotals}}
 				{{#each this.factionCounts}}
-					<td><span style="color: {{color}}">{{{meth_subtemplate "result" this}}}</span> </td>
-				{{/each}}</tr>
+					<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};><span style="color: {{color}}">{{{meth_subtemplate "result" this}}}</span> </td>
+				{{/each}}
 			{{/if}}
+			</tr>
+		<tr style="height:3px;"></tr>
 	{{/with}}
 	{{#each losers}}
-		<tr><td>{{name}}</td><td>{{{meth_subtemplate "result" this}}}</td><td>LOSER{{#if this.candTied}}<br/>*(tied){{/if}}</td><td><small>({{bonus myPayoff}} - if they had won)</small></td>
+		<tr><td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">{{name}}</td>
+			<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">{{{meth_subtemplate "result" this}}}</td>
+			<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};">LOSER{{#if this.candTied}}<br/>*(tied){{/if}}</td>
+			<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};"><small>({{bonus myPayoff}} - if they had won)</small></td>
 			{{#if showSubtotals}}
 				{{#each this.factionCounts}}
-					<td><span style="color: {{color}}">{{{meth_subtemplate "result" this}}}</span></td>
+					<td style="border-bottom: thin solid {{color}}; border-top: thin solid {{color}};"><span style="color: {{color}}">{{{meth_subtemplate "result" this}}}</span></td>
 				{{/each}}
 			{{/if}}
 		</tr>
+		<tr style="height:3px;"></tr>
 	{{/each}}
 	</table>
 </template>
