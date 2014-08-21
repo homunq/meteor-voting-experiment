@@ -206,7 +206,7 @@
 	</table>
 </template>
 
-<template name="electionsReport">
+<template name="electionsReportX">
 	{{#each elections}}
 		<div>
 			xxx
@@ -215,6 +215,31 @@
 			{{renderWith "electionVoters" this}}
 		</div>
 	{{/each}}
+</template>
+
+<template name="electionsReport">
+	<table>
+		<tr>
+			<td>Election:</td>
+			<td> version: </td>
+			<td>method:</td>
+			<td>v1</td>
+			<td> v2</td>
+			<td> v3</td>
+		</tr>
+	{{#each elections}}
+	
+		<tr>
+			<td>{{_id}}</td>
+			<td>{{version}} </td>
+			<td>{{this.method}}</td>
+			<td>{{this.voteCounts.[0]}}</td>
+			<td> {{this.voteCounts.[1]}}</td>
+			<td> {{this.voteCounts.[2]}}</td>
+		</tr>
+		
+	{{/each}}
+	</table>
 </template>
 
 

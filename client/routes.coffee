@@ -95,9 +95,9 @@ class @MyRouter extends ReactiveRouter
     'elections/makeOne/:scenario/:method': 'makeElection'
     'elections/makeOne/:scenario/:method/:delay': 'makeElection'
     'elections/makeOne/:scenario/:method/:delay/:roundBackTo': 'makeElection'
-    'admin/elections/:password/:fromVersion': 'electionsReport'
-    'admin/payments/:password/:eid': 'payments'
-    'admin/answers/:password/:eid': 'adminAnswers'
+    'admin/elections/:password/:version': 'electionsReport'
+    'admin/payments/:password/:version': 'payments'
+    'admin/answers/:password/:version': 'adminAnswers'
     'admin/voters/:password/:version': 'adminVoters'
     'admin/votes/:password/:version': 'adminVotes'
     
@@ -177,9 +177,13 @@ class @MyRouter extends ReactiveRouter
     @goto 'madeElection' #use that template
     Meteor.logout()
     
-  electionsReport: (password, fromVersion) ->
+  electionsReport: (password, version) ->
+    debug "electionsReport"
     Session.set 'password', password
-    Session.set 'fromVersion', (parseFloat fromVersion) or 0.93
+    @vToQ version
+    Elections.adminSubscribe password
+    Outcomes.adminSubscribe password
+    Votes.adminSubscribe password
     #debug "going to elections report..."
     @goto 'electionsReport'
     

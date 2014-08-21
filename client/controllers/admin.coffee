@@ -28,17 +28,15 @@ Meteor.startup ->
     
   Handlebars.registerHelper 'elections', ->
     debug "reporting on electionsEOE"
-    password = Session.get 'password'
-    versionQuery =
-      version: Session.get 'fromVersion'
-    
-    elections = Session.get 'elections'
-    if not elections?
-      Elections.adminSubscribe(password)
-      sT 0, ->
-        Election.getAllFor versionQuery, password, 'Elections', (error, result) ->
-          if result?
-            Session.set 'elections', result
+    query = Session.get 'QUERY'
+    elections = Elections.find query
+    elections = elections.fetch()
+    for election in elections
+      election.voteCounts = for s in [1..3]
+        votes = Votes.find
+          election: election._id
+          stage: s
+        votes.count()
     elections
     
   Handlebars.registerHelper 'voters', (election) ->
