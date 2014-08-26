@@ -105,7 +105,8 @@ Meteor.startup ->
         
   Handlebars.registerHelper 'questions', ->
     SURVEY = new SurveyResponse
-    questions = ({name:Object.keys(question)[0]} for question in SURVEY.questions)
+    questions = ({name:Object.keys(question)[0]} for question in SURVEY.questions \
+            when not (question[Object.keys(question)[0]] instanceof Section) )
     debug "questions helper"#, questions
     questions
     
@@ -128,7 +129,7 @@ Meteor.startup ->
       #debug "response", response
       voter = Meteor.users.findOne
         _id: response.voter
-      outcome1 = outcomeDict[response.election + "1"]
+      outcome1 = outcomeDict[voter?.eid + "1"]
       votes = Votes.find
         voter: response.voter
         
@@ -144,8 +145,8 @@ Meteor.startup ->
         method: outcome1?.method
         scenario: outcome1?.scenario
         payoffs: for i in [1..3]
-          Scenarios[response.scenario]?.payoffs[outcomeDict[response.election + i].winner]?[response.faction]
-        answerList: for question in SURVEY.questions
+          Scenarios[outcome1?.scenario]?.payoffs[outcomeDict[voter?.eid + i].winner]?[voter?.faction]
+        answerList: for question in SURVEY.questions when not (question[Object.keys(question)[0]] instanceof Section)
           response[Object.keys(question)[0]]
         showAveraged: voter.showAverageCondition
         blurbd: voter.blurbCondition
@@ -194,13 +195,23 @@ Meteor.startup ->
         voter:1
         stage:1
     votes = voteSet.fetch()
+    
     global.theElections = _.uniq((vote.election for vote in votes),yes)
+    
     outcomes = Outcomes.find
       election:
         $in: theElections
     global.outcomeDict = {}
     for outcome in outcomes.fetch()
       outcomeDict[outcome.election + outcome.stage] = outcome
+      
+    elections = Elections.find
+      _id:
+        $in: theElections
+    electionsById = {}
+    for election in elections.fetch()
+      electionsById[election._id] = election
+      
     soFar = 0
     prevVoter = ""
     for vote in votes
@@ -209,11 +220,13 @@ Meteor.startup ->
       vote.support = []
       for i in [0...scen.numCands()]
         vote.support[scen.candForFaction(i,vote.faction)] = meth.normSupportFor(i, vote.vote)
-      vote.thisWinner = outcomeDict[vote.election + vote.stage]?.winner
-      vote.thisPayoff = scen.payoffs[vote.thisWinner]?[vote.faction]
-      vote.prevPayoff = scen.payoffs[vote.prevWinner]?[vote.faction]
-      vote.thisTies = outcomeDict[vote.election + vote.stage]?.ties
-      vote.prevTies = outcomeDict[vote.election + (vote.stage - 1)]?.ties
+      
+      _.extend vote,
+        thisWinner: outcomeDict[vote.election + vote.stage]?.winner
+        thisPayoff: scen.payoffs[vote.thisWinner]?[vote.faction]
+        prevPayoff: scen.payoffs[vote.prevWinner]?[vote.faction]
+        thisTies: outcomeDict[vote.election + vote.stage]?.ties
+        prevTies: outcomeDict[vote.election + (vote.stage - 1)]?.ties
       
       if vote.voter is prevVoter
         soFar += 1
@@ -224,10 +237,16 @@ Meteor.startup ->
       voter = Meteor.users.findOne
         _id: vote.voter
         
-      _.extend vote,
-        showAveraged: voter.showAverageCondition
-        blurbd: voter.blurbCondition
-        subtotald: voter.subtotalCondition
+      firstStep = StepRecords.findOne
+        step: 1
+        voter: vote.voter
+      
+      _.extend vote, electionsById[vote.election],
+        voterCreated: firstStep?.created
+          
+        showAveraged: voter?.showAverageCondition
+        blurbd: voter?.blurbCondition
+        subtotald: voter?.subtotalCondition
         stagesSoFar: soFar
     votes
       

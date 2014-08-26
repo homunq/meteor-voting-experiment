@@ -242,6 +242,7 @@ class @MyRouter extends ReactiveRouter
     Elections.adminSubscribe password
     Votes.adminSubscribe password
     Outcomes.adminSubscribe password
+    StepRecords.adminSubscribe password
     Meteor.users.adminSubscribe password
     @vToQ version
     @goto 'adminVotes'

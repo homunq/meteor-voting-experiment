@@ -48,7 +48,7 @@
 			<td>voter</td>
 			
 			<td>faction</td>
-			<td>method</td>
+			<td>emethod</td>
 			<td>scenario</td>
 			
 			<td>p1</td>
@@ -165,7 +165,7 @@
 			
 			
 			
-			<td>showAveraged}</td>
+			<td>showAveraged</td>
 			<td>blurbd</td>
 			<td>subtotald</td>
 			<td>stagesSoFar</td>
@@ -173,6 +173,13 @@
 			
 			<td>version</td>
 			
+			<td>howManyMore</td>
+			<td>voterCreated</td>
+			<td>sTimes0</td>			
+			<td>sTimes1</td>			
+			<td>sTimes2</td>			
+			<td>sTimes3</td>			
+			<td>sTimes4</td>			
 		</tr>
 	{{#each adminVotes}}
 		<tr>
@@ -200,7 +207,14 @@
 			<td>{{this.subtotald}}</td>
 			<td>{{this.stagesSoFar}}</td>
 			
-			<td>{{version}}</td>
+			<td>{{this.version}}</td>
+			
+			<td>{{this.howManyMore}}</td>
+			<td>{{this.voterCreated}}</td>
+			{{#each this.sTimes}}
+				<td>{{this}}</td>
+			{{/each}}
+			
 		</tr>
 	{{/each}}
 	</table>
