@@ -202,9 +202,11 @@ Meteor.startup ->
       election:
         $in: theElections
     global.outcomeDict = {}
+    debug "outcomes"
     for outcome in outcomes.fetch()
       outcomeDict[outcome.election + outcome.stage] = outcome
-      
+    
+    debug "outcomes done"  
     elections = Elections.find
       _id:
         $in: theElections
@@ -212,42 +214,56 @@ Meteor.startup ->
     for election in elections.fetch()
       electionsById[election._id] = election
       
+    debug "elections done"
     soFar = 0
     prevVoter = ""
-    for vote in votes
-      scen = Scenarios[vote.scenario]
-      meth = Methods[vote.method]
-      vote.support = []
-      for i in [0...scen.numCands()]
-        vote.support[scen.candForFaction(i,vote.faction)] = meth.normSupportFor(i, vote.vote)
-      
-      _.extend vote,
-        thisWinner: outcomeDict[vote.election + vote.stage]?.winner
-        thisPayoff: scen.payoffs[vote.thisWinner]?[vote.faction]
-        prevPayoff: scen.payoffs[vote.prevWinner]?[vote.faction]
-        thisTies: outcomeDict[vote.election + vote.stage]?.ties
-        prevTies: outcomeDict[vote.election + (vote.stage - 1)]?.ties
-      
-      if vote.voter is prevVoter
-        soFar += 1
-      else
-        soFar = 0
-      prevVoter = vote.voter
-      
-      voter = Meteor.users.findOne
-        _id: vote.voter
-        
-      firstStep = StepRecords.findOne
-        step: 1
-        voter: vote.voter
-      
-      _.extend vote, electionsById[vote.election],
-        voterCreated: firstStep?.created
-          
-        showAveraged: voter?.showAverageCondition
-        blurbd: voter?.blurbCondition
-        subtotald: voter?.subtotalCondition
-        stagesSoFar: soFar
+    voterPtr = [{}]
+    
+    if votes.length > 0
+      extraVoteAttrs(votes[0], electionsById, outcomeDict, voterPtr)
+      console.log votes[0]
+      attrNames = Object.keys votes[0]
+      console.log attrNames.join "\t"
+      for vote in votes
+        extraVoteAttrs(vote, electionsById, outcomeDict, voterPtr)
+        console.log (vote[attr] for attr in attrNames).join "\t"
     votes
       
       
+@extraVoteAttrs = (vote, electionsById, outcomeDict, voterPtr) ->
+  scen = Scenarios[vote.scenario]
+  meth = Methods[vote.method]
+  #vote.support = []
+  #for i in [0...scen.numCands()]
+  #  vote.support[scen.candForFaction(i,vote.faction)] = meth.normSupportFor(i, vote.vote)
+  
+  _.extend vote,
+    stagey: vote.stage
+    support: meth.normBallot vote.vote, scen
+    rankedSupport: meth.toQuasiRankedBallot(vote.vote, scen)
+    thisWinner: outcomeDict[vote.election + vote.stage]?.winner
+    thisPayoff: scen.payoffs[vote.thisWinner]?[vote.faction]
+    prevPayoff: scen.payoffs[vote.prevWinner]?[vote.faction]
+    thisTies: outcomeDict[vote.election + vote.stage]?.ties
+    prevTies: outcomeDict[vote.election + (vote.stage - 1)]?.ties
+  
+  if vote.voter is voterPtr[0]?.voter
+    soFar += 1
+  else
+    soFar = 0
+    voterPtr[0] = Meteor.users.findOne
+      _id: vote.voter
+      
+  
+    
+  firstStep = StepRecords.findOne
+    step: 1
+    voter: vote.voter
+  
+  _.extend vote, electionsById[vote.election],
+    voterCreated: firstStep?.created
+      
+    showAveraged: voterPtr[0]?.showAverageCondition
+    blurbd: voterPtr[0]?.blurbCondition
+    subtotald: voterPtr[0]?.subtotalCondition
+    stagesSoFar: soFar

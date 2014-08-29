@@ -41,10 +41,49 @@ class @Method
     x ?= @bottom
     (x - @bottom) / (@top - @bottom)
     
-  normSupportFor: (whom, ballotVote) ->
-    @normalize ballotVote[whom]
+  normBallot: (ballotVote, scen) ->
+    (@normalize(vote) for vote in @fixBallot(ballotVote, scen))
+      
+  fixBallot: (ballot, scen) ->
+    (ballot or []).slice(0)
+    
+  toQuasiRankedBallot: (ballotVote, scen) ->
+    ballotVote = @fixBallot ballotVote, scen
+    numCands = scen.numCands() + (@extraCands or 0)
+    for i in [0...numCands]
+      ballotVote[i] ?= @bottom
+    #debug ballotVote, @bottom, numCands
+    indexedBallot = ([cand, val] for val,cand in ballotVote)
+    indexedBallot.sort (a,b) ->
+      b[1] - a[1]  
+    rank = 0
+    candRanks = (undefined for i in [0...numCands])
+    val = undefined
+    topRankInVal = 0
+    bottomRankInVal = 0
+    numRanks = 0
+    while rank <= numCands
+      if indexedBallot[rank]?[1] isnt val
+          
+        for i in [topRankInVal..bottomRankInVal]
+          candRanks[indexedBallot[i]?[0]] = -numRanks
+        
+        #start new group
+        numRanks += 1
+        val = indexedBallot[rank]?[1]
+        topRankInVal = rank
+      
+      bottomRankInVal = rank
+      
+      #debug rank, candRanks, numRanks, indexedBallot
+      
+      rank += 1
       
       
+    numRanks -= 1 #correct for final overshoot
+    #debug candRanks
+    #debug candRanks, numRanks, indexedBallot
+    return (((candRank + numRanks) / (numRanks - 1)) for candRank in candRanks)
   
 makeMethods = (methods) ->
   madeMethods = {}
@@ -130,6 +169,9 @@ makeMethods = (methods) ->
     actions:
       top: -1
       bottom: -4
+      normBallot: ->
+        @toQuasiRankedBallot arguments...
+        
       validVote: (numCands, vote) ->
         if vote.length > numCands 
           return false
@@ -237,6 +279,9 @@ makeMethods = (methods) ->
   IRV:
     longName: "Instant Runoff Voting"
     actions:
+      normBallot: ->
+        @toQuasiRankedBallot arguments...
+        
       top: -1
       bottom: -4
       validVote: (numCands, vote) ->
@@ -382,8 +427,11 @@ makeMethods = (methods) ->
       top: 1
       bottom: 0
       
-      normSupportFor: (whom, ballotVote) ->
-        if whom is ballotVote then 1 else 0
+      fixBallot: (ballotVote, scen) ->
+        ballot = (0 for i in [1..scen.numCands()])
+        if ballotVote?
+          ballot[ballotVote] = 1
+        ballot
         
       validVote: (numCands, vote) ->
         if not vote?
@@ -456,6 +504,23 @@ makeMethods = (methods) ->
     actions:
       top: 1
       bottom: 0
+      extraCands: 1
+      
+      normBallot: ->
+        @toQuasiRankedBallot arguments...
+        
+      
+      fixBallot: (ballot, scen) ->
+        ballot = (ballot or []).slice(0)
+        if (_.countBy ballot)[1] is 1
+          scale= scen.numCands() - 1
+          prefs = (scen.prefs()[ballot.indexOf(1)] or [3])
+          #prefs = prefs.slice(0).reverse()
+          for cand, level in prefs
+            ballot[cand] = (scale - level) / scale
+          return ballot
+        ballot
+        
       validVote: (numCands, vote) ->
         if vote.length > (numCands+1) then return false
         if (_(vote).without 0,1,undefined) isnt [] then return false
