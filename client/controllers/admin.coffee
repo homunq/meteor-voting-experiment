@@ -239,8 +239,8 @@ Meteor.startup ->
   
   _.extend vote,
     stagey: vote.stage
-    support: meth.normBallot vote.vote, scen
-    rankedSupport: meth.toQuasiRankedBallot(vote.vote, scen)
+    support: meth.orderBallot (meth.normBallot vote.vote, scen), scen, vote.faction
+    rankedSupport: meth.orderBallot (meth.toQuasiRankedBallot(vote.vote, scen)), scen, vote.faction
     thisWinner: outcomeDict[vote.election + vote.stage]?.winner
     thisPayoff: scen.payoffs[vote.thisWinner]?[vote.faction]
     prevPayoff: scen.payoffs[vote.prevWinner]?[vote.faction]

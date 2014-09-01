@@ -41,8 +41,14 @@ class @Method
     x ?= @bottom
     (x - @bottom) / (@top - @bottom)
     
+  orderBallot: (ballot, scen, faction) ->
+    prefs = scen.prefs()?[faction]
+    for i in [0...scen.numCands()]
+      #debug i, prefs, prefs?[i]
+      ballot[prefs?[i]]
+      
   normBallot: (ballotVote, scen) ->
-    (@normalize(vote) for vote in @fixBallot(ballotVote, scen))
+    @normalize(vote) for vote in @fixBallot(ballotVote, scen)
       
   fixBallot: (ballot, scen) ->
     (ballot or []).slice(0)
@@ -83,7 +89,7 @@ class @Method
     numRanks -= 1 #correct for final overshoot
     #debug candRanks
     #debug candRanks, numRanks, indexedBallot
-    return (((candRank + numRanks) / (numRanks - 1)) for candRank in candRanks)
+    (((candRank + numRanks) / (numRanks - 1)) for candRank in candRanks)
   
 makeMethods = (methods) ->
   madeMethods = {}
