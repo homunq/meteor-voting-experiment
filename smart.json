@@ -4,6 +4,7 @@
     "tag": "release/0.7.2.2"
   },
   "packages": {
-    "deps-extensions": {}
+    "deps-extensions": {},
+    "bootstrap-3": {}
   }
 }
