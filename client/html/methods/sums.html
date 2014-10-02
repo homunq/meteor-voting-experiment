@@ -36,6 +36,42 @@ Includes the following systems:
 		<p><strong>You may vote for exactly one candidate.</strong> </p>
 		<h4>Counting</h4>
 			<p><strong>The candidate with the most votes wins.</strong></p>
+			
+		<h4>Technical notes</h4>
+    <div class="panel-group" id="accordion1{{extraForId}}">
+    	
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note0'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse0{{extraForId}}">
+	            Spoiled ballots<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapse0{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body">
+						This web voting app does not let you mark more than one candidates.
+						In real elections, some voters try to vote for two or more; 
+						<strong>such ballots are considered "spoiled" and are not counted.</strong>
+			</div></div></div>
+				
+				
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordionOne{{extraForId}}" href="#collapseOne{{extraForId}}">
+	            Ties<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapseOne{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body">
+						If two candidates end up with the same number of points, 
+							the winner is picked at <strong>random</strong> from those two.
+			</div></div></div>
+		</div>
 </template>
 
 
@@ -110,19 +146,18 @@ Includes the following systems:
 		<h3>Election Method: SODA Voting</h3>
 		<p><em>SODA stands for Simple Optionally-Delegated Approval.</em></p>
 		<h4>Ballot</h4>
-		<p>The ballot has a checkbox for each candidate, plus a separate checkbox labeled "Do Not Delegate". 
-			You can use your ballot to either approve of some number of candidates, 
-			   or delegate one of the candidates to allocate your approvals for you.</p>
+		<p>The ballot has a checkbox for each candidate, plus a separate checkbox labeled "Do Not Delegate".</p>
 			
 		<p><strong>
 		  If you just check one candidate's box, you are delegating your vote to them.</strong> 
 			In that case, they will get one point from you, 
-			  and they may also decide whether allocate an additional point to the "backup choice" shown next to the their name. 
+			  and they may also decide whether to allocate an additional point to the "backup choice" shown next to the their name. 
 			  They will only allocate this additional point if it is clear that they themselves cannot win.</p>
 		
 		<p><strong>
 			If you check more than one candidate, your ballot will be counted as one point each for the candidates you check. </strong>
-			Checking all candidates or no candidates means your ballot won't affect who wins.</p>
+			Checking more candidates does not increase your ballot's power, because each still gets just one point from you;
+			for instance, checking all of the candidates would be just as ineffective as checking none of them.</p>
 			
 		<p>If you want to vote for one candidate, but do not want to delegate, check "Do Not Delegate". 
 		Then your vote will only give one point to the candidate you checked.  
@@ -134,51 +169,110 @@ Includes the following systems:
 				each voter can vote for any number of candidates; 
 				each ballot can give at most one point to any given candidate; 
 				and <strong>the winner is the candidate with the highest total,</strong> 
-				including both direct and candidate-allocated votes. 
+				including both direct and candidate-allocated votes.</p>
+				
+				<p>
 				To find the totals, after the raw ballots are tallied, 
 					each candidate (in order from most approvals to least), gets one chance to allocate their delegated votes 
 					by adding their delegated vote tally onto the approval tally of their backup choice.</p>
 				
-		<h4>Why it works like this</h4>
-				<p><strong>Delegation:</strong> 
-					You always want to give a point to your favorite candidate, and never to your least favorite. 
-					For your second preference, however, it depends. 
-					On the one hand, you want to give them a point if it's needed to help them beat the least favorite; 
-					   on the other hand, you don't want to if they might beat your favorite. 
-					Delegating lets your favorite candidate make this choice for you, after the ballots are counted. 
-					By that time, the choice is simple; 
-					  they need only allocate a point to the "backup choice" if it's clear they themselves can't win.</p>
+		<h4>Technical notes</h4>
+    <div class="panel-group" id="accordion0{{extraForId}}">
+    	
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapseOne{{extraForId}}">
+	            Equal voting power<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
 				
-				<p><strong>Approval:</strong> 
-					In this system, a single ballot often ends up giving points to more than one candidate.
-					However, a ballot can never give more than one point to a candidate.
-					In this way, 
-					   each voter is actually more likely to get an equal voice in deciding which of the two frontrunners wins.
-					Unlike plurality voting (the more customary system, in which each voter can support only one candidate),
-					   votes in approval-based systems like SODA 
-					   are not likely to be "wasted" on a third candidate who had no real chance of winning.
-					In fact, if all voters delegate their votes, SODA guarantees that no ballots will be "wasted" in that sense.
+	      <div id="collapseOne{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body">
+						SODA ballots can end up "approving" (giving a point to) more than one candidate.
+						That happens when the favorite candidate is not viable, 
+							so a delegated ballot will end up counting for exactly one 
+							of the two most viable candidates. 
+						<strong>No ballot ever gives two points to the same candidate.</strong>
+			</div></div></div>
+			
+			
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note0'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse0{{extraForId}}">
+	            Delegation<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapse0{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body">
+						<p>In order to cast the most effective vote you can in a point-based voting system, 
+							you have to do two things.
+						First, you must figure out your preference order over the candidates.
+						Then, you want to give points where they have the best chance of making a difference; 
+							here, that means guessing which candidates will be the two frontrunners, and approving one of them 
+							(as well as all the candidates you prefer to both).</p>
+							
+						<p>The delegation option in <strong>SODA voting is designed make both of those jobs easier for many voters</strong>.
+						To find a preference order, some voters may prefer to find one candidate whose judgment they trust,
+							rather than separately evaluating all the candidates; especially if there are a lot of choices.
+						And if you do implicitly trust or explicitly agree with your favorite candidate's declared backup choices,
+							delegating removes the guesswork about frontrunners.
+						That's because candidates allocate delegated votes <em>after</em> the ballots have been tallied.
+						Thus, your favorite can be certain to allocate your vote so that you are counted as supporting 
+							(a set of candidates including)
+							exactly one of the two frontrunners,</p>
+			</div></div></div>
+				
+				
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note2'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse2{{extraForId}}">
+	        		Allocation order<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapse2{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body"> 
+						The order in which candidates get to allocate their delegated ballots usually does not matter. 
+						The exception is when two allied candidates have enough votes to beat a third, 
+							but only if one of them cooperates by allocating points to the other.
+						<strong>SODA is designed so that the ally with more support from the voters wins.</strong>
+						They decide first, 
+							and can safely keep their votes to themselves, 
+							leaving the weaker ally with no good choice but to cooperate.
+			</div></div></div>
+		
+		
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note3'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse3{{extraForId}}">
+	        		Backup preferences and "Do Not Delegate"<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapse3{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body"> 
+						<p>This experimental scenario is actually simpler than a real-world election, 
+							because all voters agree with their favorite candidate's "backup choice". 
+						This leaves voters here with <strong>few reasons to choose the "Do Not Delegate" option.</strong> 
+						The option is still included for the purposes of realism.</p>
+						
+						<p>Also, in a real-world election, there might be more than three candidates.
+						In that case, each would declare a list of backup choices,
+							in order from most to least preferred. 
+						Then, once the votes were tallied, they could allocate their delegated points to any number of those backups, 
+							starting from the top preference.
 					</p>
-				
-				<p><strong>Stronger candidates allocate first:</strong> 
-					Since all candidates eventually get a chance to decide how to allocate their delegated votes, 
-					  the order in which they do so usually does not matter. 
-					One important exception is a situation where two allied candidates have to cooperate to beat a third. 
-					In such circumstances, the stronger of the two allies should go first, so that they will win. 
-				  Then, by the time the weaker ally decides, 
-				     the only	reasonable option left is to cooperate by allocating votes to the stronger.</p>
-				
-				<p>This experimental scenario is actually simpler than a real-world election in a couple of ways. 
-					<strong>"Do not delegate":</strong> 
-					In the "voter/candidate map" used here, all voters agree with their favorite candidate's "backup choice". 
-					In a real-world election, 
-					   disagreeing with that choice could be one good reason to choose the "Do Not Delegate" option. 
-					<strong>Backup choices:</strong>
-					Since there are only three candidates, each candidate here has only one "backup choice". 
-					If there were more candidates,
-					  each would have a list of predeclared "backups", 
-					  and could choose to allocate points to one or more from the top of their list.</p>
-				
+			</div></div></div>
+		</div>
 </template>
 
 <template name="xSODA_stratBlurb">

@@ -215,7 +215,9 @@ if (Handlebars?)
     new Handlebars.SafeString steps.join ""
     
   Handlebars.registerHelper 'stepPopover', (stepName) ->
-    new Handlebars.SafeString Template["#{ stepName }_popover"]()
+    new Handlebars.SafeString Template["#{ stepName }_popover"](
+      extraForId:"navBar"
+    )
     
   Handlebars.registerHelper 'stepExplanations', ->
     steps = []  

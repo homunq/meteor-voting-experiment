@@ -7,29 +7,77 @@ Includes the following systems:
 		<h3>Election Method: Instant Runoff Voting</h3>
 		<p><em>Also known as IRV, RCV, or the Alternative Vote</em></p>
 		<h4>Ballot</h4>
-		<p><strong>The ballot will ask you to rank the candidates in order of preference.</strong> 
-		So you would rank the candidate you wish to help the most as 1, the next as 2, and so on.
-		Any candidate(s) whom you do not explicitly rank will be ranked last.</p>
+		<p><strong>
+			The ballot will ask you to rank the candidates in order of preference – 
+			1st, 2nd, 3rd and so on – in order to elect a single candidate. 
+			Ranking a lesser candidates does not count against your first choice.
+			All unranked candidates are treated as tied for last.</p>
 		<h4>Counting</h4>
-		<p>For each candidate, the votes which ranked that candidate 1 are tallied. If any candidate tallies over
-			half the votes, they win. Otherwise, the candidate site with the lowest tally is eliminated, and its votes
-			are re-tallied for whichever they ranked second.</p>
-			<p><strong>The first candidate to get more than half of the remaining ballots wins.</strong></p>
-			<p><small>Fine print: If a ballot ranked the eliminated candidate first but does not have a second-ranked candidate, 
-				that ballot is discarded. If there are two candidates equally eligible for elimination, one is chosen randomly.</small></p>
+		<p>The name “instant runoff voting” derives from the fact that the tally simulates 
+			a series of runoff elections in which the last-place finisher is eliminated after each round of counting. 
+			Votes are initially tallied for each voter’s first choice. 
+			If no candidate has more than half of those votes, then the candidate with the fewest votes is eliminated. 
+			The voters who selected the defeated candidate as a first choice 
+			will then have their votes added to the totals of their next ranked choice, if any. 
+			This process continues until 
+			<strong>a candidate wins by having more than half of the votes in that round of counting.</strong> </p>
+			
+			
+		<h4>Technical notes</h4>
+    <div class="panel-group" id="accordion1{{extraForId}}">
+    	
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note0'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse0{{extraForId}}">
+	            Majorities<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapse0{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body">
+						Since IRV eliminations continue until one candidate gets more than half of the ballots,
+							<strong>the winner is guaranteed to have a majority of the votes in the final round.</strong>
+						However, if voters for an eliminated candidate didn't bother to mark their next choice,
+							their ballot can no longer counted in the following round,
+							so in that case the winner might not have a majority of all votes.
+			</div></div></div>
+				
+				
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordionOne{{extraForId}}" href="#collapseOne{{extraForId}}">
+	            Ties<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapseOne{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body">
+						If at some point there is a tie for last place, 
+							the candidate to be eliminated is picked at <strong>random.</strong>
+			</div></div></div>
+		</div>
+			
 </template>
 
 
 <template name="IRV_stratBlurb">
 	<ul>
 		<li>
-			In IRV (this voting system), it can never hurt you to explicitly rank all three candidates. Your lower
-			ranks will never count against your higher ranks.
+			Voters can rank as many or as few candidates as they wish without concern that ranking a lesser choice 
+			will hurt the chances of their 1st choice. 
+			If you do not know how others will vote and there is no limitation on rankings, 
+			you should rank your favorite candidate at the top and rank candidates in order of sincere preference 
+			until you are indifferent to the remaining choices. 
 		</li>
 		<li>
-			If you fear your least-favorite option is likely to win, and your second choice has a better chance of beating
-			it than your first choice, it can sometimes be advantageous to rate your true second choice in first place,
-			to help protect them from premature elimination.
+			If you know how others will vote, you may want to elevate a lesser ranked candidate 
+			who you think has a better chance of winning than your favorite. 
+			If there is a limit on rankings, you should try to determine who are the two strongest candidates 
+			and be sure to include one of them among your ranked candidates. 
 		</li>
 	</ul>
 </template>
@@ -45,8 +93,41 @@ Includes the following systems:
 		<p>The candidate you rank first will get 3 points from you; the one you rank second will get 2 points; and third place
 			gets 1 point.</p>
 			<p><strong>The candidate with the most points wins.</strong></p>
-			<p>(In Borda voting each rank is always worth 1 more point than the one below, so if there were 10 candidates,
-				first place would be worth 9 points.)</p>
+				
+		<h4>Technical notes</h4>
+    <div class="panel-group" id="accordion1{{extraForId}}">
+    	
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note0'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse0{{extraForId}}">
+	            If there were more candidates<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapse0{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body">
+	        	In Borda voting <strong>each rank is always worth 1 more point than the one below</strong>, so if there were 10 candidates,
+				first place would be worth 10 points.
+			</div></div></div>
+				
+				
+    	<div class="panel panel-default">
+	      <div class="panel-heading">
+	        <h4 class="panel-title">
+	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordionOne{{extraForId}}" href="#collapseOne{{extraForId}}">
+	            Ties<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+						</a>
+					</h4>
+				</div>
+				
+	      <div id="collapseOne{{extraForId}}" class="panel-collapse collapse">
+	        <div class="panel-body">
+						If two candidates end up with the same number of points, 
+							the winner is picked at <strong>random</strong> from those two.
+			</div></div></div>
+		</div>
 </template>
 
 <template name="borda_stratBlurb">
