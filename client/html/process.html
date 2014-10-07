@@ -170,13 +170,14 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 	</div>
 	<div class="span5">
 		{{call "carousel"}}
-		<div class="carousel slide carousel-fade">
+		<div id="processCarousel" class="carousel slide carousel-fade" data-wrap="false">
+			
 		  <ol class="carousel-indicators">
-		    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-		    <li data-target="#myCarousel" data-slide-to="1"></li>
-		    <li data-target="#myCarousel" data-slide-to="2"></li>
-		    <li data-target="#myCarousel" data-slide-to="3"></li>
-		    <li data-target="#myCarousel" data-slide-to="4"></li>
+		    <li data-target="#processCarousel" data-slide-to="0" class="active"></li>
+		    <li data-target="#processCarousel" data-slide-to="1"></li>
+		    <li data-target="#processCarousel" data-slide-to="2"></li>
+		    <li data-target="#processCarousel" data-slide-to="3"></li>
+		    <li data-target="#processCarousel" data-slide-to="4"></li>
 		  </ol>
 		  <!-- Carousel items -->
 		  <div class="carousel-inner">
@@ -187,10 +188,10 @@ Cambridge, MA 02138. Phone: 617-295-2847. Email: <img src="/images/harvardemail.
 				{{/each}}
 		  </div>
 		  <!-- Carousel nav -->
-		  <a class="carousel-control left" href="#myCarousel" data-slide="prev" onclick="$('.carousel').carousel('prev')">&lsaquo;</a>
-		  <a class="carousel-control right" href="#myCarousel" data-slide="next" onclick="$('.carousel').carousel('next')">&rsaquo;</a>
+		  <a class="carousel-control left" href="#processCarousel" data-slide="prev">&lsaquo;</a>
+		  <a class="carousel-control right" href="#processCarousel" data-slide="next">&rsaquo;</a>
 		</div>
-    </div>
+  </div>
 	{{{renderWith "nextStep" "Next Step (click AFTER you've finished reading the slides)"}}}
 </template>
 
