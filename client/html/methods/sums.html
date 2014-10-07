@@ -37,8 +37,8 @@ Includes the following systems:
 		<h4>Counting</h4>
 			<p><strong>The candidate with the most votes wins.</strong></p>
 			
-		<h4>Technical notes</h4>
-    <div class="panel-group" id="accordion1{{extraForId}}">
+		<h4>Extra notes</h4>
+    <div class="panel-group" id="accordion0{{extraForId}}">
     	
     	<div class="panel panel-default">
 	      <div class="panel-heading">
@@ -60,7 +60,7 @@ Includes the following systems:
     	<div class="panel panel-default">
 	      <div class="panel-heading">
 	        <h4 class="panel-title">
-	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordionOne{{extraForId}}" href="#collapseOne{{extraForId}}">
+	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapseOne{{extraForId}}">
 	            Ties<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
 						</a>
 					</h4>
@@ -156,11 +156,11 @@ Includes the following systems:
 		
 		<p><strong>
 			If you check more than one candidate, your ballot will be counted as one point each for the candidates you check. </strong>
-			Checking more candidates does not increase your ballot's power, because each still gets just one point from you;
-			for instance, checking all of the candidates would be just as ineffective as checking none of them.</p>
+			Checking more candidates does not increase your ballot's power, because each still gets just one point from you.
+			For instance, checking all of the candidates would be just as ineffective as checking none of them.</p>
 			
-		<p>If you want to vote for one candidate, but do not want to delegate, check "Do Not Delegate". 
-		Then your vote will only give one point to the candidate you checked.  
+		<p>If you wanted to vote for one candidate, but did not want to delegate, you could check "Do Not Delegate". 
+		Then your vote would only give one point to the candidate you checked.  
 		"Do Not Delegate" does not matter unless you've checked exactly one candidate.</p>
 	
 		
@@ -176,7 +176,7 @@ Includes the following systems:
 					each candidate (in order from most approvals to least), gets one chance to allocate their delegated votes 
 					by adding their delegated vote tally onto the approval tally of their backup choice.</p>
 				
-		<h4>Technical notes</h4>
+		<h4>Extra notes</h4>
     <div class="panel-group" id="accordion0{{extraForId}}">
     	
     	<div class="panel panel-default">
@@ -190,11 +190,13 @@ Includes the following systems:
 				
 	      <div id="collapseOne{{extraForId}}" class="panel-collapse collapse">
 	        <div class="panel-body">
-						SODA ballots can end up "approving" (giving a point to) more than one candidate.
-						That happens when the favorite candidate is not viable, 
-							so a delegated ballot will end up counting for exactly one 
-							of the two most viable candidates. 
-						<strong>No ballot ever gives two points to the same candidate.</strong>
+						SODA ballots can approve (give a point to) more than one candidate.
+						But <strong>no ballot ever gives two points to the same candidate</strong>. 
+						So in the key race, between the two frontrunners,
+							nobody gets more than their share of voting power.
+						It's just that, even as you help the "lesser evil" frontrunner,
+						 	you can still safely show support for your true favorite.
+					 	Since no candidate is a "spoiler", final tallies reflect each candidate's true support.
 			</div></div></div>
 			
 			
@@ -209,22 +211,11 @@ Includes the following systems:
 				
 	      <div id="collapse0{{extraForId}}" class="panel-collapse collapse">
 	        <div class="panel-body">
-						<p>In order to cast the most effective vote you can in a point-based voting system, 
-							you have to do two things.
-						First, you must figure out your preference order over the candidates.
-						Then, you want to give points where they have the best chance of making a difference; 
-							here, that means guessing which candidates will be the two frontrunners, and approving one of them 
-							(as well as all the candidates you prefer to both).</p>
-							
-						<p>The delegation option in <strong>SODA voting is designed make both of those jobs easier for many voters</strong>.
-						To find a preference order, some voters may prefer to find one candidate whose judgment they trust,
-							rather than separately evaluating all the candidates; especially if there are a lot of choices.
-						And if you do implicitly trust or explicitly agree with your favorite candidate's declared backup choices,
-							delegating removes the guesswork about frontrunners.
-						That's because candidates allocate delegated votes <em>after</em> the ballots have been tallied.
-						Thus, your favorite can be certain to allocate your vote so that you are counted as supporting 
-							(a set of candidates including)
-							exactly one of the two frontrunners,</p>
+						The delegation option in <strong>SODA voting can make it easier to vote effectively</strong>.
+						If you trust or agree with your favorite candidate's declared backup choices,
+							delegating ensures your ballot counts in the key race between the frontrunners.
+						There's no need for guessing about who those are, 
+							because candidates allocate delegated votes <em>after</em> the ballots have been tallied.
 			</div></div></div>
 				
 				
@@ -242,7 +233,7 @@ Includes the following systems:
 						The order in which candidates get to allocate their delegated ballots usually does not matter. 
 						The exception is when two allied candidates have enough votes to beat a third, 
 							but only if one of them cooperates by allocating points to the other.
-						<strong>SODA is designed so that the ally with more support from the voters wins.</strong>
+						<strong>SODA is designed so that the winner is the ally with more direct support.</strong>
 						They decide first, 
 							and can safely keep their votes to themselves, 
 							leaving the weaker ally with no good choice but to cooperate.
@@ -260,17 +251,13 @@ Includes the following systems:
 				
 	      <div id="collapse3{{extraForId}}" class="panel-collapse collapse">
 	        <div class="panel-body"> 
-						<p>This experimental scenario is actually simpler than a real-world election, 
-							because all voters agree with their favorite candidate's "backup choice". 
-						This leaves voters here with <strong>few reasons to choose the "Do Not Delegate" option.</strong> 
-						The option is still included for the purposes of realism.</p>
-						
-						<p>Also, in a real-world election, there might be more than three candidates.
-						In that case, each would declare a list of backup choices,
-							in order from most to least preferred. 
-						Then, once the votes were tallied, they could allocate their delegated points to any number of those backups, 
-							starting from the top preference.
-					</p>
+						This experiment is simpler than real-world elections in a few ways. 
+						First, all voters here agree with their favorite candidate's "backup choice". 
+						This leaves voters with <strong>few reasons to choose the "Do Not Delegate" option</strong> in this experiment.
+						Second, if there were four or more candidates,
+							each would declare a list of backup choices.
+						When it came to allocating their delegated ballots, they could give points to one or more of backups 
+							from the top of their list.
 			</div></div></div>
 		</div>
 </template>
@@ -306,11 +293,16 @@ Includes the following systems:
 	</ul>
 </template>
 
-<template name="approval_ballotLine">
+<template name="approvalX_ballotLine">
 	<input type="radio" name="{{name}}" value="approve" onclick="voteFor({{num}},1);">Approve<br>
 	<input type="radio" name="{{name}}" value="disapprove" onclick="voteFor({{num}},0);">Disapprove<br>
 </template>
 
+
+<template name="approval_ballotLine">
+	<input type="checkbox" id="check{{name}}" value="approve" onclick="checkboxVoteFor({{num}},this.checked);" style="width:auto;"><label for="check{{name}}" style="width:auto;display:inline;">
+		Approve</label>
+</template>
 
 <template name="plurality_ballotLine">
 	<input type="radio" id="cand{{num}}rank1" name="vote" onclick="pluralityVoteFor({{num}});">
@@ -319,12 +311,16 @@ Includes the following systems:
 
 <template name="score_ballotLine">
 	{{#each legalScores}}
-		<input type="radio" name="{{../name}}" value="4" onclick="voteFor({{../num}},{{this}});">{{this}}
+		<input type="radio" name="{{../name}}" id="{{../name}}{{this}}" value="{{this}}" onclick="voteFor({{../num}},{{this}});" style="width:auto;">
+		<label for="{{../name}}{{this}}" style="width:auto;display:inline;">{{this}}</label>
 	{{/each}}
 </template>
 
 <template name="SODA_ballotLine">
-	<input type="checkbox" name="{{name}}" value="approve"onclick="checkboxVoteFor({{num}},this.checked);">{{#if checkText}}{{checkText}}{{else}}{{#if checkText}}{{checkText}}{{else}}{{SODAvote num}}{{/if}}{{/if}}
+	<input type="checkbox" id="check{{name}}" value="approve"onclick="checkboxVoteFor({{num}},this.checked);" style="width:auto;">
+	<label for="check{{name}}" style="width:auto;display:inline;">
+		{{#if checkText}}{{checkText}}{{else}}{{SODAvote num}}{{/if}}
+	</label>
 </template>
 
 <template name="SODA_delegate"><b>Delegate</b>/Approve</template>

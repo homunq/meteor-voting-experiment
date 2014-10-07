@@ -8,7 +8,7 @@ Includes the following systems:
 		<p><em>Also known as IRV, RCV, or the Alternative Vote</em></p>
 		<h4>Ballot</h4>
 		<p><strong>
-			The ballot will ask you to rank the candidates in order of preference – 
+			The ballot will ask you to rank the candidates in order of preference</strong> – 
 			1st, 2nd, 3rd and so on – in order to elect a single candidate. 
 			Ranking a lesser candidates does not count against your first choice.
 			All unranked candidates are treated as tied for last.</p>
@@ -23,13 +23,13 @@ Includes the following systems:
 			<strong>a candidate wins by having more than half of the votes in that round of counting.</strong> </p>
 			
 			
-		<h4>Technical notes</h4>
+		<h4>Extra notes</h4>
     <div class="panel-group" id="accordion1{{extraForId}}">
     	
     	<div class="panel panel-default">
 	      <div class="panel-heading">
 	        <h4 class="panel-title">
-	        	<a onclick="STEP_RECORD.data['note0'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse0{{extraForId}}">
+	        	<a onclick="STEP_RECORD.data['note0'] = true;return true;" data-toggle="collapse" data-parent="#accordion1{{extraForId}}" href="#collapse0{{extraForId}}">
 	            Majorities<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
 						</a>
 					</h4>
@@ -48,7 +48,7 @@ Includes the following systems:
     	<div class="panel panel-default">
 	      <div class="panel-heading">
 	        <h4 class="panel-title">
-	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordionOne{{extraForId}}" href="#collapseOne{{extraForId}}">
+	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordion1{{extraForId}}" href="#collapseOne{{extraForId}}">
 	            Ties<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
 						</a>
 					</h4>
@@ -94,13 +94,13 @@ Includes the following systems:
 			gets 1 point.</p>
 			<p><strong>The candidate with the most points wins.</strong></p>
 				
-		<h4>Technical notes</h4>
-    <div class="panel-group" id="accordion1{{extraForId}}">
+		<h4>Extra notes</h4>
+    <div class="panel-group" id="accordion{{extraForId}}">
     	
     	<div class="panel panel-default">
 	      <div class="panel-heading">
 	        <h4 class="panel-title">
-	        	<a onclick="STEP_RECORD.data['note0'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse0{{extraForId}}">
+	        	<a onclick="STEP_RECORD.data['note0'] = true;return true;" data-toggle="collapse" data-parent="#accordion{{extraForId}}" href="#collapse0{{extraForId}}">
 	            If there were more candidates<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
 						</a>
 					</h4>
@@ -116,7 +116,7 @@ Includes the following systems:
     	<div class="panel panel-default">
 	      <div class="panel-heading">
 	        <h4 class="panel-title">
-	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordionOne{{extraForId}}" href="#collapseOne{{extraForId}}">
+	        	<a onclick="STEP_RECORD.data['note1'] = true;return true;" data-toggle="collapse" data-parent="#accordion{{extraForId}}" href="#collapseOne{{extraForId}}">
 	            Ties<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
 						</a>
 					</h4>
@@ -176,7 +176,7 @@ Includes the following systems:
 
 <template name="IRV_ballotLine">
 	{{#each candRanks}}
-	<input type="radio" id="cand{{../num}}rank{{rank}}" name="rank{{rank}}" onclick="exclusiveVoteFor({{../num}},{{rank}},true);">{{ord}}&nbsp;
+	<input type="radio"   name="cand{{../num}}" id="cand{{../num}}rank{{rank}}" name="rank{{rank}}" onclick="exclusiveVoteFor({{../num}},{{rank}},true);"><label for="cand{{../num}}rank{{rank}}" style="width:20px;display:inline;">{{ord}}&nbsp;</label>
 	{{/each}}
 </template>
 

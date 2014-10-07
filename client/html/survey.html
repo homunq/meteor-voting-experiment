@@ -22,7 +22,7 @@
 <template name="answerRadio">
 	{{#if lowEnd}}<span style="width:150px; 	display:inline-block; text-align:right;">{{lowEnd}}</span> &nbsp;{{/if}}
 	{{#each this.optionInfos}}
-	<input type="radio" name="{{../qName}}" id="{{../qName}}{{this.num}}" onclick="surveyAnswer('{{../qName}}',{{this.num}});">&nbsp;{{this.text}} &nbsp;&nbsp;
+	<input type="radio" name="{{../qName}}" id="{{../qName}}{{this.num}}" onclick="surveyAnswer('{{../qName}}',{{this.num}}); "style="width:auto;"><label for="{{../qName}}{{this.num}}" style="width:20px; display:inline;">&nbsp;{{this.text}} &nbsp;&nbsp;</label>
 	{{/each}}
 	{{highEnd}}
 </template>

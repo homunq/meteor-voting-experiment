@@ -122,6 +122,11 @@ if (Handlebars?.registerHelper?)
     scenario = ((Session.get 'scenario') and SCENARIO)
     debug 'backupChoiceFor', (num)
     scenario.candNames?[scenario.prefs()?[num]?[1]]
+    
+  Handlebars.registerHelper 'allGrades', (num) ->
+    for grade, num in ["A", "B", "C", "D", "F"]
+      gradeNum:4-num
+      grade:grade
   
 @carousel = ->
   Meteor.setTimeout (-> $(".carousel").carousel

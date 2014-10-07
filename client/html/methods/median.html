@@ -85,11 +85,9 @@ Includes the following systems:
 
 
 <template name="GMJ_ballotLine">
-	<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},4);">A
-	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},3);">B
-	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},2);">C
-	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},1);">D
-	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},0);">F
+	{{#each allGrades}}
+	<input type="radio"  name="{{../name}}" id="{{../name}}{{grade}}" value="{{gradeNum}}" onclick="voteFor({{../num}},{{gradeNum}});" style="width:auto;"><label for="{{../name}}{{grade}}" style="width:20px;display:inline;">{{grade}}&nbsp;</label>
+	{{/each}}
 </template>
 
 <template name="GMJ_postBlurb">
@@ -97,11 +95,9 @@ Includes the following systems:
 </template>
 
 <template name="MAV_ballotLine">
-	<input type="radio" name="{{name}}" value="4" onclick="voteFor({{num}},4);">A
-	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},3);">B
-	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},2);">C
-	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},1);">D
-	<input type="radio" name="{{name}}" value="3" onclick="voteFor({{num}},0);">F
+	{{#each allGrades}}
+	<input type="radio"  name="{{../name}}" id="{{../name}}{{grade}}" value="{{gradeNum}}" onclick="voteFor({{../num}},{{gradeNum}});" style="width:auto;"><label for="{{../name}}{{grade}}" style="width:20px;display:inline;">{{grade}}&nbsp;</label>
+	{{/each}}
 </template>
 
 <template name="MAV_postBlurb">
