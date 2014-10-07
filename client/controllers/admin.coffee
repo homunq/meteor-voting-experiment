@@ -12,10 +12,15 @@ Meteor.startup ->
       method = $('#methPicker option:selected').attr('value')
       if method is 'random'
         method = _.sample METHOD_WHEEL
+      howManyMore = $('#howManyMore').val()
+      if howManyMore.length
+        howManyMore = parseInt howManyMore
+      else
+        howManyMore = undefined
       attrs = 
         scenario: $('#scenPicker option:selected').attr('value')
         method: method
-        howManyMore: parseInt($('#howManyMore').val())
+        howManyMore: howManyMore
       Election.make attrs, true, 0, false, (result, error) =>
         Session.set "madeEid", result
         debug 'madeElection',  attrs#use that template
