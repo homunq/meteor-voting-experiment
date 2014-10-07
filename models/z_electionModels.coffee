@@ -148,7 +148,6 @@ class @Election extends VersionedInstance
       #debug "You idiot, remove the line above."
       #it never worked perfectly with above, but close enough. Someday, I may fix this.
       debug "makeNext", old_eid, options, promote, delay, roundBackTo, cb
-      debug "@", @
       if Meteor.isClient
         return undefined #sorry, no can do.
       gotSemaphore = Elections.update
@@ -163,12 +162,17 @@ class @Election extends VersionedInstance
           me = Elections.findOne
             _id: old_eid
           debug me?.nextElection
-          if me?.nextElection isnt true #in progress
+          waited = 0
+          if me?.nextElection is true #in progress
             debug "sleeping"
             sleep 100
             debug "slept"
+            waited += 1
+            if waited > 10
+              #something is wrong. Try to make a new one anyway.
+              break
             continue
-          debug "why sleep?"
+          debug "why sleep?", me.nextElection
           return me.nextElection
       #make it ourselves
       debug "make"
@@ -235,6 +239,8 @@ class @Election extends VersionedInstance
       uid = @userId
       if @stage != vote.stage
         debug "wrong stage"
+        if @stage > vote.stage
+          throw new Meteor.Error 403, 'wrongStage', "Sorry, the time ran out before that vote could be registered. (Reload to clear error display)"
         throw new Meteor.Error 403, 'wrongStage', "Wrong stage: election " + @stage + ", vote " + vote.stage + " ((in " + _.keys @
       if uid != vote.voter
         debug "not you"
@@ -359,19 +365,18 @@ class @Election extends VersionedInstance
           throw new Meteor.Error 403, 'full', "Election full."
         @push
           voters: vid
-        , =>
+        , true, (err, n) => #the "true" is to ensure it's called syncronously
           if @stage is 0
             @nextStage("timerOnly")
           debug "voter added", @_id, vid
           vIndex = _.indexOf @voters, vid
           if vIndex < 0
             debug "Adding voter failed mysteriously... BAD BAD BAD"
-            user.pushError "Joining election failed."
+            throw new Meteor.Error 401, 'mystery', "Joining election failed."
           if vIndex >= numVoters
-            user.pushError "Election filled up."
             @pull
               voters: vid
-            return
+            throw new Meteor.Error 403, 'full', "Election filled up."
           @inc
             "stagesDoneBy.0": 1
           Meteor.users.update
