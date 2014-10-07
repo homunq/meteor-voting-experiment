@@ -173,8 +173,12 @@ Includes the following systems:
 				
 				<p>
 				To find the totals, after the raw ballots are tallied, 
-					each candidate (in order from most approvals to least), gets one chance to allocate their delegated votes 
-					by adding their delegated vote tally onto the approval tally of their backup choice.</p>
+					each candidate, in order from most approvals to least, gets one chance to allocate their delegated votes 
+					by adding their delegated vote tally onto the approval tally of their backup choice.
+				(If there were four or more candidates,
+						each would have a list of backup choices,
+						and could give points to one or more of backups 
+							from the top of their list.)</p>
 				
 		<h4>Extra notes</h4>
     <div class="panel-group" id="accordion0{{extraForId}}">
@@ -244,20 +248,17 @@ Includes the following systems:
 	      <div class="panel-heading">
 	        <h4 class="panel-title">
 	        	<a onclick="STEP_RECORD.data['note3'] = true;return true;" data-toggle="collapse" data-parent="#accordion0{{extraForId}}" href="#collapse3{{extraForId}}">
-	        		Backup preferences and "Do Not Delegate"<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+	        		"Do Not Delegate" option<i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
 						</a>
 					</h4>
 				</div>
 				
 	      <div id="collapse3{{extraForId}}" class="panel-collapse collapse">
 	        <div class="panel-body"> 
-						This experiment is simpler than real-world elections in a few ways. 
-						First, all voters here agree with their favorite candidate's "backup choice". 
-						This leaves voters with <strong>few reasons to choose the "Do Not Delegate" option</strong> in this experiment.
-						Second, if there were four or more candidates,
-							each would declare a list of backup choices.
-						When it came to allocating their delegated ballots, they could give points to one or more of backups 
-							from the top of their list.
+						In this experiment, the candidates are locations, not people; and everyone in a faction agrees on their preference order.
+						So when you delegate, backup choices and allocation decisions are made by a simulated voter from your faction.
+						Therefore, you have <strong>few reasons to choose the "Do Not Delegate" option</strong> here.
+						In a real election, you might disagree with your favorite candidate's backup choices.
 			</div></div></div>
 		</div>
 </template>
