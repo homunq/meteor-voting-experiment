@@ -217,24 +217,41 @@ class @StamperInstance
       _id: @_id
     , 
       $inc: incer
-    , =>
+    , (err, n)=>
       if cb
         @reload()
-        cb()
+        cb(err, n)
   
-  push: (pusher, cb) -> #pusher is a {field: item} object
+  push: (pusher, etc...) -> #pusher is a {field: item} object
+                #etc... is a list of [cb] or [sync, cb], where sync is a boolean flag so that cb is called sync, not async
+                
+    if etc[0] is true #not just truthy, true
+      cbFun = etc[1]
+      after = (err, n) =>
+        @reload()
+        cbFun(err, n)
+      cb = undefined
+    else if etc[0]
+      cbFun = etc[0]
+      after = ->
+        no
+      cb = cbFun
+    else
+      cbFun = ->
+        no
+      after = ->
+        no
+      cb = undefined
     if not @_id
       #can't atomically push to a record that's never been saved
-      cb new Meteor.Error(404, "nullPush", "Can't atomically push to a record that's never been saved")
+      cbFun new Meteor.Error(404, "nullPush", "Can't atomically push to a record that's never been saved")
       return
-    @collection.update
+    after undefined, @collection.update
       _id: @_id
     , 
       $push: pusher
-    , =>
-      if cb
-        @reload()
-        cb()
+    , cb
+    
     
     
   pull: (puller, cb) -> #puller is a {field: item} object
@@ -246,10 +263,10 @@ class @StamperInstance
       _id: @_id
     , 
       $pull: puller
-    , =>
+    , (err, n) =>
       if cb
         @reload()
-        cb()
+        cb(err, n)
     
   remove: (cb) ->
     @collection.remove
